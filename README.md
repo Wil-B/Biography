@@ -15,7 +15,7 @@
 - themes: user interface, dark, blend and light
 - custom colours and fonts
 - filmstrip: top, left, right, bottom or hidden
-- image/text, image only and text only modes
+- image+text, image only or text only
 - drag resizing of image and filmstrip (press Ctrl while panel has focus)
 - custom title format for field remapping and save locations
 - and more...
