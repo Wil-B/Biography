@@ -10,7 +10,7 @@
 	- Configurable
 	- Can be used to exclude large images or small images or those below a certain pixel size
 	- Enable/configure: options > image
- - Ability to expand lists
+- Ability to expand lists
 	- Enable/disable: options > display
 - Extra tagger options
 	- Notify tags of current track to other Spider Monkey Panels.
