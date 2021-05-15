@@ -4,7 +4,18 @@
  <img src="https://user-images.githubusercontent.com/35600752/118341123-deb0c700-b515-11eb-9496-4b4cc728c659.png" width=66%>
 
 ### FEATURES
-Downloads and displays artist photos, biographies and reviews from last.fm and allmusic.
+- downloads and displays artist photos, biographies and reviews from last.fm and allmusic
+- main artist, similar artists, contributing artists, performers and composers etc
+- main album and top albums
+- history
+- layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
+- themes: user interface, dark, blend and light
+- custom colours and fonts
+- filmstrip: top, left, right, bottom or hidden
+- image/text, image only and text only modes
+- drag resizing of image and filmstrip (press Ctrl while panel has focus)
+- custom title format for field remapping and save locations
+- and more...
 
 ### REQUIREMENTS:
 - [foobar2000](https://www.foobar2000.org)
