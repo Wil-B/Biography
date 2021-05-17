@@ -4,7 +4,7 @@
 
  Feature rich biography plug-in for foobar2000
  
- <img src="https://user-images.githubusercontent.com/35600752/118539807-c7592000-b747-11eb-8583-a018352952a9.png" width=67%>
+ <img src="https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png" width=67%>
 
 ### FEATURES
 - downloads and displays artist photos, biographies and reviews from last.fm and allmusic
