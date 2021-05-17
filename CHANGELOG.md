@@ -32,7 +32,7 @@ Album list:
 - Look up button can now either be top left or in heading
 - Photo download: improved accessibility to settings (options > photo)
 - Save: reviews and biographies can now all be saved in the same folder
-- Sleep time: optimised time between consecutive internet calls in response to focus and metadb changes (aims to stop freezes reported by one user)
+- Sleep time: optimised time between consecutive internet calls
 - Smooth scroll: enhanced smoothness when using scrollbar
 - Tagger: fixed rare handling issue with certain exotic characters
 - UNC paths: sorted handling
