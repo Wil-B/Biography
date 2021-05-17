@@ -13,8 +13,8 @@
 - Ability to expand lists
 	- Enable/disable: options > display
 - Extra tagger options
-	- Notify tags of current track to other Spider Monkey Panels.
-	- Add ability to write `last.fm listeners` (artist & album).
+	- Notify tags of current track to other Spider Monkey Panels
+	- Add ability to write `last.fm listeners` (artist & album)
 	- View by listeners: example patterns for library viewers:
 
 Library tree:
