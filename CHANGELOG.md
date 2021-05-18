@@ -31,7 +31,7 @@ Album list:
 - Cover cycler: can select on menu which cover sources to cycle
 - Look up button can now either be top left or in heading
 - Photo download: improved accessibility to settings (options > photo)
-- Refactored code (CodeFactor A)
+- Refactored code (codefactor A)
 - Save: reviews and biographies can now all be saved in the same folder
 - Sleep time: optimised time between consecutive internet calls
 - Smooth scroll: enhanced smoothness when using scrollbar
