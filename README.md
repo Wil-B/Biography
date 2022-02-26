@@ -33,6 +33,7 @@
 
 ### INSTALLATION
 Install as package.
+
 New install or update:
 1) Add a spider monkey panel to foobar2000 if required
 2) Close any instances of windows explorer using foobar2000 folders or subfolders
