@@ -4,12 +4,16 @@
 
  Feature rich biography plug-in for foobar2000
  
- <img src="https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png" width=67%>
+ <img src="'https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png" width=67%>
+ 
+ ![beatles](https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png)
+ 
+ ![lyrics](https://user-images.githubusercontent.com/35600752/155840286-84a6d76a-dfe6-4587-9ab9-e98b4f8f3013.png)
 
 ### FEATURES
 - Downloads and displays artist photos, biographies and reviews from last.fm, allmusic and wikipedia
 - main artist, similar artists, contributing artists, performers and composers etc
-- main album and top albums
+- main album, top albums and classical compositions
 - history
 - lyrics
 - layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
