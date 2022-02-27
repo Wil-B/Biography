@@ -1,3 +1,42 @@
+# v1.3.0
+### Release highlights
+Wikipedia + autoscrolling lyrics + flags
+### Added
+- wikipedia (multi-language)
+- lyrics (autoscrolling) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- improved support for track reviews
+- classical music extension (title format tab)
+- flags option (artist country: headings tab)
+- auto-managed cache with configurable storage time: (requires use of default cache download tab)
+- configurable partial match level (miscellaneous tab)
+- choice of summary items (display tab)
+- more colour highlight choices, e.g. summary text (display tab)
+- per panel server settings option (advanced tab)
+- assets\licences for other software used by biography
+
+### Changed
+- improvements to tagger (tagger tab + see below)
+- settings are now stored in package_data folder
+    - biography.cfg should be copied automatically (original in yttm is retained for back-compatibility with v1.2.0, else it can be deleted)
+    - language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
+- removed the ability to auto-update from old versions (v1.1.3 or earlier)
+
+### Fix
+- Wine stabilisation: biography should no longer give errors in Wine, but some limitations remain:
+    - paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, to stop overwriting).
+    - recycler may not to work. It's rarely used. If used, the console gives an alternative.
+    - options dialog may not load: menu now indicates there was a problem & console explains what can be done instead.
+
+### Tagger info
+
+- Last.fm statistics are now written as a multivalue tag: playcount (scrobbles), listeners & a combined score (1-100). Scores rank the long-term popularity of artists and albums on a 1-100 scale using accumulated last.fm playcount (scrobbles) and listeners.
+
+```View by score: possible view for library tree: $nodisplay{$sub(9999,$meta(Artist Statistics Last.fm,5[score]))}[$meta(Artist Statistics Last.fm,5[score]) - ]%artist%|$nodisplay{$sub(9999,$meta(Album Statistics Last.fm,5[score]))}[$meta(Album Statistics Last.fm,5[score]) - ]$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
+
+- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. The last branch in the above can then be replaced with the following for a comprehensive popularity view:
+
+```$nodisplay{$sub(9999,$meta(Track Statistics Last.fm,5[score]))}[$meta(Track Statistics Last.fm,5[score]) - ]%title%```
+
 # v1.2.0
 ### Added
 - New options dialog
