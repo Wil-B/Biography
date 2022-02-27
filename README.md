@@ -18,7 +18,7 @@
 ### FEATURES
 - Downloads and displays artist photos, biographies and reviews from last.fm, allmusic and wikipedia
 - main artist, similar artists, contributing artists, performers and composers etc
-- main album, top albums and classical compositions
+- main album, top albums, tracks classical compositions
 - history
 - lyrics
 - layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
