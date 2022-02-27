@@ -32,7 +32,7 @@
 
 ### REQUIREMENTS:
 - [foobar2000](https://www.foobar2000.org)
-- [Spider Monkey Panel 1.6.1+](https://www.foobar2000.org/components)
+- [Spider Monkey Panel 1.5.2+](https://www.foobar2000.org/components)
 - IE9 or later
 - [FontAwesome](https://github.com/FortAwesome/Font-Awesome/blob/fa-4/fonts/fontawesome-webfont.ttf?raw=true)
 
