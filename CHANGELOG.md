@@ -2,30 +2,30 @@
 ### Release highlights
 Wikipedia + autoscrolling lyrics + flags
 ### Added
-- wikipedia (multi-language)
-- lyrics (autoscrolling) :: view lyrics in more interesting ways (textreader & lyrics tab)
-- improved support for track reviews
-- classical music extension (title format tab)
-- flags option (artist country: headings tab)
-- auto-managed cache with configurable storage time: (requires use of default cache download tab)
-- configurable partial match level (miscellaneous tab)
-- choice of summary items (display tab)
-- more colour highlight choices, e.g. summary text (display tab)
-- per panel server settings option (advanced tab)
-- assets\licences for other software used by biography
+- Wikipedia (multi-language)
+- Lyrics (autoscrolling) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Improved support for track reviews
+- Classical music extension (title format tab)
+- Flags option (artist country: headings tab)
+- Auto-managed cache with configurable storage time: (requires use of default cache download tab)
+- Configurable partial match level (miscellaneous tab)
+- Choice of summary items (display tab)
+- More colour highlight choices, e.g. summary text (display tab)
+- Per panel server settings option (advanced tab)
+- Assets\licences for other software used by biography
 
 ### Changed
-- improvements to tagger (tagger tab + see below)
-- settings are now stored in package_data folder
-    - biography.cfg should be copied automatically (original in yttm is retained for back-compatibility with v1.2.0, else it can be deleted)
-    - language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
-- removed the ability to auto-update from old versions (v1.1.3 or earlier)
+- Improvements to tagger (tagger tab + see below)
+- Settings are now stored in package_data folder
+    - Biography.cfg should be copied automatically (original in yttm is retained for back-compatibility with v1.2.0, else it can be deleted)
+    - Language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
+- Removed the ability to auto-update from old versions (v1.1.3 or earlier)
 
 ### Fix
 - Wine stabilisation: biography should no longer give errors in Wine, but some limitations remain:
-    - paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, to stop overwriting).
-    - recycler may not to work. It's rarely used. If used, the console gives an alternative.
-    - options dialog may not load: menu now indicates there was a problem & console explains what can be done instead.
+    - Paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, to stop overwriting).
+    - Recycler may not to work. It's rarely used. If used, the console gives an alternative.
+    - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead.
 
 ### Tagger info
 
