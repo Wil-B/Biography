@@ -4,6 +4,18 @@
 
  Feature rich biography plug-in for foobar2000
  
+ <img src="https://user-images.githubusercontent.com/35600752/155892284-bfc3231f-f615-403a-aab9-096073355bd9.png" width=67%>
+
+ <img src="https://user-images.githubusercontent.com/35600752/155891911-6dfbd745-e16e-4481-b83c-f9c494ebdc98.png" width=67%>
+
+![Wolf Alice Bio](https://user-images.githubusercontent.com/35600752/155892604-7fc1a9bc-0e12-4c5c-9b59-21eabd2d0572.png)
+
+![Wolf Alice Bio Blue](https://user-images.githubusercontent.com/35600752/155892775-7f597655-d445-4355-bd55-a9c0a04393d6.png)
+
+
+![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
+
+ 
  <img src="'https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png" width=67%>
  
  ![beatles](https://user-images.githubusercontent.com/35600752/118565002-54f93780-b769-11eb-86bc-79fed003268e.png)
