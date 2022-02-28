@@ -40,5 +40,5 @@ New install or update:
 6) Open package manager if it doesn't open automatically
 7) Import the package
 
-#### Screenshot: lyrics (layout: overlay; [see textreader & lyrics tab help for set-up tips]):
+#### Screenshot: lyrics (layout: overlay; theme: dark; [see textreader & lyrics tab help for set-up tips]):
 ![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
