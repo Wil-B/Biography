@@ -11,7 +11,7 @@ Wikipedia + lyrics + flags
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)
 - Choice of summary items (display tab)
-- More colour highlight choices, e.g. summary text (display tab)
+- More colour highlight choices, e.g. summary on & heading + heading line off works well (display tab)
 - Per panel server settings option (advanced tab)
 - Assets\licences for other software used by biography
 
