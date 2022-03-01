@@ -29,12 +29,16 @@ Wikipedia + lyrics + flags
     - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead.
 
 ### Tagger info
-
-- Last.fm statistics are now written as a multivalue tag: playcount (scrobbles), listeners & a combined score (1-100). Scores rank the long-term popularity of artists and albums on a 1-100 scale using accumulated last.fm playcount (scrobbles) and listeners.
+#### Last.fm
+- a whitelist is now used to filter out non-genres that can be present
+- statistics are now written as a multivalue tag: playcount (scrobbles), listeners & a combined score (1-100). Scores rank the long-term popularity of artists and albums on a 1-100 scale using accumulated last.fm playcount (scrobbles) and listeners.
 
 ```View by score: possible view for library tree: $nodisplay{$sub(9999,$meta(Artist Statistics Last.fm,5[score]))}[$meta(Artist Statistics Last.fm,5[score]) - ]%artist%|$nodisplay{$sub(9999,$meta(Album Statistics Last.fm,5[score]))}[$meta(Album Statistics Last.fm,5[score]) - ]$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
 
-- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play changelog for an example of a fully comprehensive popularity view
+- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play changelog for an example of a fully comprehensive popularity view.
+
+#### Wikipedia
+- added option to tag genres
 
 # v1.2.0
 ### Added
