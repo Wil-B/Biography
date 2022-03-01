@@ -1,6 +1,6 @@
 # v1.3.0
 ### Release highlights
-Wikipedia + autoscrolling lyrics + flags
+Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
 - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab)
