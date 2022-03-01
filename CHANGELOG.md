@@ -3,7 +3,7 @@
 Wikipedia + autoscrolling lyrics + flags
 ### Added
 - Wikipedia (multi-language)
-- Lyrics (autoscrolling) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab)
 - Improved support for track reviews
 - Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
