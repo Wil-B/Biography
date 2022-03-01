@@ -39,6 +39,7 @@ Wikipedia + lyrics + flags
 
 #### Wikipedia
 - added option to tag genres
+<br />
 
 # v1.2.0
 ### Added
@@ -57,15 +58,6 @@ Wikipedia + lyrics + flags
 - Extra tagger options
 	- Notify tags of current track to other Spider Monkey Panels
 	- Add ability to write `last.fm listeners` (artist & album)
-	- View by listeners: example patterns for library viewers:
-
-Library tree:
-
-```$nodisplay{$sub(999999999,$replace([%Artist Listeners Last.fm%],',',,.,, ,)) - %artist%}[%Artist Listeners Last.fm% - ]%artist%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
-
-Album list:
-
-```[$replace(%Artist Listeners Last.fm%,',',,.,, ,) - ] %artist%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
 
 ### Other enhancements and fixes
 - Blend theme: optimised default
