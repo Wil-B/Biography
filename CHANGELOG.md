@@ -35,7 +35,9 @@ Wikipedia + lyrics + flags
 
 ```View by score: possible view for library tree: $nodisplay{$sub(9999,$meta(Artist Statistics Last.fm,5[score]))}[$meta(Artist Statistics Last.fm,5[score]) - ]%artist%|$nodisplay{$sub(9999,$meta(Album Statistics Last.fm,5[score]))}[$meta(Album Statistics Last.fm,5[score]) - ]$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
 
-- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play changelog for an example of a fully comprehensive popularity view
+- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play changelog [Track popularity tagger][https://github.com/Wil-B/Find-and-Play/blob/main/CHANGELOG.md] for an example of a fully comprehensive popularity view
+
+[Track popularity tagger](https://github.com/Wil-B/Find-and-Play/blob/main/CHANGELOG.md)
 
 #### Wikipedia
 - added option to tag genres
