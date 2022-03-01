@@ -4,10 +4,11 @@ Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
 - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Textreader
 - Improved support for track reviews
 - Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
-- Auto-managed cache with configurable storage time: (requires use of default cache download tab)
+- Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)
 - Choice of summary items (display tab)
 - More colour highlight choices, e.g. summary text (display tab)
@@ -17,14 +18,14 @@ Wikipedia + lyrics + flags
 ### Changed
 - Improvements to tagger (tagger tab + see below)
 - Settings are now stored in package_data folder
-    - Biography.cfg should be copied automatically (original in yttm is retained for back-compatibility with v1.2.0, else it can be deleted)
+    - Biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
     - Language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
 - Removed the ability to auto-update from old versions (v1.1.3 or earlier)
 
 ### Fix
 - Wine stabilisation: biography should no longer give errors in Wine, but some limitations remain:
     - Paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, to stop overwriting).
-    - Recycler may not to work. It's rarely used. If used, the console gives an alternative.
+    - Recycler may not work. It's rarely used. If used, the console gives an alternative.
     - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead.
 
 ### Tagger info
@@ -33,9 +34,7 @@ Wikipedia + lyrics + flags
 
 ```View by score: possible view for library tree: $nodisplay{$sub(9999,$meta(Artist Statistics Last.fm,5[score]))}[$meta(Artist Statistics Last.fm,5[score]) - ]%artist%|$nodisplay{$sub(9999,$meta(Album Statistics Last.fm,5[score]))}[$meta(Album Statistics Last.fm,5[score]) - ]$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%```
 
-- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. The last branch in the above can then be replaced with the following for a comprehensive popularity view:
-
-```$nodisplay{$sub(9999,$meta(Track Statistics Last.fm,5[score]))}[$meta(Track Statistics Last.fm,5[score]) - ]%title%```
+- Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play changelog for an example of a fully comprehensive popularity view
 
 # v1.2.0
 ### Added
