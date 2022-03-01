@@ -49,4 +49,4 @@ See textreader & lyrics tab help for set-up tips
 
 ### Left layout with user interface theme and context menu
 <img src="https://user-images.githubusercontent.com/35600752/156228501-317fe7af-a436-4ae8-aedd-aa15c9390ff9.png" width=67%>
-Top, left, right, bottom, overlay and freestyle layouts are supported with drag resizing of image & filmstrip
+Top, left, right, bottom, overlay and freestyle layouts are all supported with drag resizing of image & filmstrip
