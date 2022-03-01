@@ -3,9 +3,6 @@
 <!-- <img src= "https://img.shields.io/github/v/release/Wil-b/Biography?include_prereleases">[![CodeFactor](https://www.codefactor.io/repository/github/wil-b/smp-scripts/badge?s=e31aef34da666a7f881d60c035843654ee451e7d)](https://www.codefactor.io/repository/github/wil-b/smp-scripts) -->
 
  Feature rich biography plug-in for foobar2000
- 
- #### Screenshot: layout: top; theme: dark:
- <img src="https://user-images.githubusercontent.com/35600752/155892284-bfc3231f-f615-403a-aab9-096073355bd9.png" width=67%>
 
 ### FEATURES
 - Downloads and displays artist photos, biographies and reviews from last.fm, allmusic and wikipedia
@@ -13,6 +10,7 @@
 - Main album, top albums, tracks and classical compositions
 - History
 - Lyrics
+- Textreader
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
 - Themes: user interface, dark, blend and light
 - Custom colours and fonts
@@ -40,5 +38,11 @@ New install or update:
 6) Open package manager if it doesn't open automatically
 7) Import the package
 
-#### Screenshot: lyrics (layout: overlay; theme: dark; [see textreader & lyrics tab help for set-up tips]):
+### Screenshots
+ 
+#### Top layout with dark theme
+ <img src="https://user-images.githubusercontent.com/35600752/155892284-bfc3231f-f615-403a-aab9-096073355bd9.png" width=67%>
+
+#### Lyrics with overlay layout and dark theme
 ![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
+See textreader & lyrics tab help for set-up tips
