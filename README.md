@@ -52,8 +52,10 @@ New install or update:
 ### Lyrics display with overlay layout and dark theme
 ![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
 See textreader & lyrics tab help for set-up tips
-### Left layout with user interface theme
-<img src="https://user-images.githubusercontent.com/35600752/156223688-3ea48af8-b0ed-4a15-bbae-065c78b42efe.png" width=67%>
+### Left layout with user interface theme and context menu
+<img src="https://user-images.githubusercontent.com/35600752/156228501-317fe7af-a436-4ae8-aedd-aa15c9390ff9.png" width=67%>
+
+<!-- <img src="https://user-images.githubusercontent.com/35600752/156223688-3ea48af8-b0ed-4a15-bbae-065c78b42efe.png" width=67%> -->
 <!-- ![Left Full Dark](https://user-images.githubusercontent.com/35600752/156225350-a9a74614-fcad-4574-9f1a-99ce43bb85c5.png) -->
 
 <!-- ![LeftFull](https://user-images.githubusercontent.com/35600752/156224848-377362fc-a8f6-4376-8ba4-8330627d7a80.png) -->
