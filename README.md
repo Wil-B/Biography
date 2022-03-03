@@ -49,7 +49,7 @@ New install or update:
 ![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
 See textreader & lyrics tab help for set-up tips
 
-### Various layouts and sources
+### Various layouts
 ![Various layouts](https://user-images.githubusercontent.com/35600752/156671553-97584a48-b458-4ee9-a09c-d67d990c87e9.png)
 Top, left, right, bottom, overlay and freestyle layouts are all supported with drag resizing of image & filmstrip
 
