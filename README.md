@@ -41,16 +41,18 @@ New install or update:
 ## Screenshots
  
 ### Top layout with dark theme
- <img src="https://user-images.githubusercontent.com/35600752/155892284-bfc3231f-f615-403a-aab9-096073355bd9.png" width=67%>
+<img src="https://user-images.githubusercontent.com/35600752/156555951-b6bd4732-c25f-43f0-9b32-e10cbeef8ebd.png" width=67%>
+
+<!-- <img src="https://user-images.githubusercontent.com/35600752/155892284-bfc3231f-f615-403a-aab9-096073355bd9.png" width=67%> -->
 
 ### Lyrics display with overlay layout and dark theme
 ![Wolf Alice lyrics](https://user-images.githubusercontent.com/35600752/155892617-06bcf059-bfd9-43dd-bc61-8a06e2da81df.png)
 See textreader & lyrics tab help for set-up tips
 
 ### Left layout with user interface theme and context menu
-![Slate](https://user-images.githubusercontent.com/35600752/156472541-a0dae858-d706-434f-b758-c314a5677d32.png)
+<!-- ![Slate](https://user-images.githubusercontent.com/35600752/156472541-a0dae858-d706-434f-b758-c314a5677d32.png) -->
 
-![Uprising](https://user-images.githubusercontent.com/35600752/156470681-f87f8d7d-b005-4725-a6d3-58f77582d01e.png)
+![Uprising](https://user-images.githubusercontent.com/35600752/156470681-f87f8d7d-b005-4725-a6d3-58f77582d01e.png) -->
 
-<img src="https://user-images.githubusercontent.com/35600752/156228501-317fe7af-a436-4ae8-aedd-aa15c9390ff9.png" width=67%>
+<!-- <img src="https://user-images.githubusercontent.com/35600752/156228501-317fe7af-a436-4ae8-aedd-aa15c9390ff9.png" width=67%>
 Top, left, right, bottom, overlay and freestyle layouts are all supported with drag resizing of image & filmstrip
