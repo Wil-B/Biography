@@ -48,5 +48,7 @@ New install or update:
 See textreader & lyrics tab help for set-up tips
 
 ### Left layout with user interface theme and context menu
+![Uprising](https://user-images.githubusercontent.com/35600752/156470681-f87f8d7d-b005-4725-a6d3-58f77582d01e.png)
+
 <img src="https://user-images.githubusercontent.com/35600752/156228501-317fe7af-a436-4ae8-aedd-aa15c9390ff9.png" width=67%>
 Top, left, right, bottom, overlay and freestyle layouts are all supported with drag resizing of image & filmstrip
