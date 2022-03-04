@@ -45,6 +45,7 @@ Wikipedia + lyrics + flags
 
 #### Auto-optimise album+track (display tab)
 This applies when both album & track reviews are displayed. It avoids duplicating genres, and where present, moods & themes. It also shortens long wikipedia album reviews to improve navigation.
+
 <br />
 
 # v1.2.0
