@@ -16,7 +16,7 @@ Wikipedia + lyrics + flags
 - Assets\licences for other software used by biography
 
 ### Changed
-- Improvements to tagger (tagger tab + see below)
+- Improvements to tagger (tagger tab + see release notes below)
 - Settings are now stored in package_data folder
     - Biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
     - Language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
@@ -28,8 +28,11 @@ Wikipedia + lyrics + flags
     - Recycler may not work. It's rarely used. If used, the console gives an alternative
     - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
 
-### Tagger info
-#### Last.fm
+### Release notes
+#### Wikipedia
+- the following tags are supported: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work
+#### Tagger
+##### Last.fm
 - a whitelist is now used to filter out non-genres that can be present
 - statistics are now written as a multivalue tag: playcount (scrobbles), listeners & a combined score (1-100). Scores rank the long-term popularity of artists and albums on a 1-100 scale using accumulated last.fm playcount (scrobbles) and listeners
 
@@ -37,7 +40,7 @@ Wikipedia + lyrics + flags
 
 - Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play [changelog](https://github.com/Wil-B/Find-and-Play/blob/main/CHANGELOG.md#track-popularity-tagger) for an example of a fully comprehensive popularity view
 
-#### Wikipedia
+##### Wikipedia
 - added option to tag genres
 <br />
 
