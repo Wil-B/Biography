@@ -32,7 +32,7 @@ Wikipedia + lyrics + flags
 #### Wikipedia
 - the following tags are supported: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work
 #### Tagger
-##### Last.fm
+###### Last.fm
 - a whitelist is now used to filter out non-genres that can be present
 - statistics are now written as a multivalue tag: playcount (scrobbles), listeners & a combined score (1-100). Scores rank the long-term popularity of artists and albums on a 1-100 scale using accumulated last.fm playcount (scrobbles) and listeners
 
@@ -40,7 +40,7 @@ Wikipedia + lyrics + flags
 
 - Additionally, Find & Play can write track statistics to tag, where that data is more relevant. See the Find & Play [changelog](https://github.com/Wil-B/Find-and-Play/blob/main/CHANGELOG.md#track-popularity-tagger) for an example of a fully comprehensive popularity view
 
-##### Wikipedia
+###### Wikipedia
 - added option to tag genres
 
 #### Auto-optimise album+track (display tab)
