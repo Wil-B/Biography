@@ -45,11 +45,7 @@ Wikipedia + lyrics + flags
 Handling has been reworked to accommodate new sources. Use 'lock to selected source' (menu > sources > text) if you don't want auto-fallback. If both album & track reviews are displayed, there is now an auto-optimise album+track option (display tab). It avoids duplicating genres, moods & themes and shortens long wikipedia album reviews to improve navigation.
 
 #### Wikipedia
-- the following tags are supported: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work
-
-
-#### Auto-optimise album+track (display tab)
-This applies when both album & track reviews are displayed. It avoids duplicating genres, and where present, moods & themes. It also shortens long wikipedia album reviews to improve navigation.
+- searches support the following tags: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work
 
 <br />
 
