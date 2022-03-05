@@ -43,6 +43,8 @@ Wikipedia + lyrics + flags
 ###### Wikipedia
 - added option to tag genres
 
+#### Text
+Text handling has been reworked to accommodate new sources. Use 'lock to selected source' (menu > sources > text) if you don't want auto-fallback. If both album & track reviews are displayed, there is now an auto-optimise album+track option (display tab). It avoids duplicating genres, moods & themes and shortens long wikipedia album reviews to improve navigation.
 #### Auto-optimise album+track (display tab)
 This applies when both album & track reviews are displayed. It avoids duplicating genres, and where present, moods & themes. It also shortens long wikipedia album reviews to improve navigation.
 
