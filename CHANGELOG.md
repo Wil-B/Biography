@@ -48,7 +48,7 @@ Wikipedia + lyrics + flags
 - Genres can be in native language or limited to English (latter fallback to MusicBrainz)
 - Optionally musicbrainz_XXXXid and MusicBrainz XXXX Id tags are supported where XXXX is artist, releasegroup (release group for latter) or work -->
 - Searches optionally support musicbrainz_XXXXid and MusicBrainz XXXX Id tags where XXXX is artist, releasegroup (release group for latter) or work
-- Rarely will such tags offer any benefit. Best use case may be where there are naming differences, e.g. classical works (compositions) can be variously named
+- Generally such tags shouldn't be needed. They may be useful if names differ to site names, e.g. classical works (compositions) can be variously named
 <!-- - Rarely will such tags offer any benefit. Best use case may be where there are naming differences, e.g. classical works (compositions) have various naming methods
 searches support the following tags: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work -->
 
