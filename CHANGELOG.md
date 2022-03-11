@@ -3,7 +3,7 @@
 Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
-- Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Lyrics (synced & unsynced)
 	- view lyrics in more interesting ways (textreader & lyrics tab)
 	- ultra-smooth scrolling + highlight transition effect + fade effect + offset handling
 - Textreader
