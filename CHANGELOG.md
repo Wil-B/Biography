@@ -6,7 +6,7 @@ Wikipedia + lyrics + flags
 - Lyrics (synced & unsynced)
 	- view lyrics in more interesting ways (textreader & lyrics tab)
 	- ultra-smooth scrolling with highlight and fade effects
-	- supports lyrics offset with on-the-fly adjustment (mouse wheel)
+	- supports lyrics offset with on-the-fly adjustment using mouse wheel (not saved)
 	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
 	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
 - Textreader
