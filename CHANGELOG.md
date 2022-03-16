@@ -3,7 +3,8 @@
 Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
-- Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
+	<!-- - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - highlight transition and fade effects -->
 	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
