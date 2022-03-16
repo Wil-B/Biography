@@ -6,9 +6,9 @@
 
 ### FEATURES
 - Downloads and displays artist photos, biographies and reviews from last.fm, allmusic and wikipedia
-- Main artist, similar artists, contributing artists, performers and composers etc
-- Main album, top albums, tracks and classical compositions
-- History
+     - Main artist, similar artists, contributing artists, performers and composers etc
+     - Main album, top albums, tracks and classical compositions
+     - History
 - Lyrics: synced and unsynced
 - Textreader
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
