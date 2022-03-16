@@ -9,7 +9,7 @@
 - Main artist, similar artists, contributing artists, performers and composers etc
 - Main album, top albums, tracks and classical compositions
 - History
-- Lyrics
+- Lyrics: synced and unsynced
 - Textreader
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
 - Themes: user interface, dark, blend and light
