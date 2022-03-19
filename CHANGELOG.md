@@ -16,7 +16,7 @@ Wikipedia + lyrics + flags
 - Flags option (artist country: headings tab)
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)
-- Choice of summary items (display tab)
+- Choice of summary items with configurable font style (display tab)
 - More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
 - Per panel server settings option (advanced tab)
 - Assets\licences for other software used by biography
