@@ -39,7 +39,7 @@ Choice of summary items (display tab) -->
     - Paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, at end to stop overwriting)
     - Recycler may not work. It's rarely used. If used, the console gives an alternative
     - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
-- Stopped unnecessary on_size calls with certain Panel Stack Splitter layout methods
+- Blocked unnecessary on_size calls from Panel Stack Splitter with certain of its layout methods
 
 ### Release notes
 #### Tagger
