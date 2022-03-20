@@ -3,14 +3,14 @@
 Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
-- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
+- Lyrics: view lyrics in more interesting ways (textreader & lyrics tab)
 	<!-- - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - highlight transition and fade effects -->
 	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
 	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
 	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
-- Textreader (file path or tag)
+- Textreader: file path or tag
 - Improved support for track reviews
 - Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
@@ -28,6 +28,7 @@ Choice of summary items (display tab) -->
 	- custom colour option (custom tab)
 	- configurable font style (display tab)
 - Improvements to tagger (tagger tab + see release notes below)
+- Reinstated the image seeker bar & improved the image seeker positioning with certain layout styles
 - Settings are now stored in package_data folder
     - Biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
     - Language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
@@ -38,6 +39,7 @@ Choice of summary items (display tab) -->
     - Paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, at end to stop overwriting)
     - Recycler may not work. It's rarely used. If used, the console gives an alternative
     - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
+- Stopped image on_size being needlessly called with certain Panel Stack Splitter layout methods
 
 ### Release notes
 #### Tagger
