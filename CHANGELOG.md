@@ -24,7 +24,7 @@ Choice of summary items (display tab) -->
 ### Changed
 - Improvements to summary
 	- new items
-	- choice of items: genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] (display tab)
+	- choice of items: genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
 	- custom colour option (custom tab)
 	- configurable font style (display tab)
 - Improvements to tagger (tagger tab + see release notes below)
