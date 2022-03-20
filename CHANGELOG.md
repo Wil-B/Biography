@@ -10,18 +10,23 @@ Wikipedia + lyrics + flags
 	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
 	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
 	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
-- Textreader
+- Textreader (file path or tag)
 - Improved support for track reviews
 - Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
-- Configurable partial match level (miscellaneous tab)
-- Choice of summary items (display tab)
+- Configurable partial match level (miscellaneous tab)<!-- 
+Choice of summary items (display tab) -->
 - More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
 - Per panel server settings option (advanced tab)
 - Assets\licences for other software used by biography
 
 ### Changed
+- Improvements to summary
+	- new items
+	- choice of items: genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] (display tab)
+	- custom colour option (custom tab)
+	- configurable font style (display tab)
 - Improvements to tagger (tagger tab + see release notes below)
 - Settings are now stored in package_data folder
     - Biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
@@ -47,7 +52,7 @@ Wikipedia + lyrics + flags
 ###### Wikipedia
 - added option to tag genres
 
-#### Wikipedia
+#### Wikipedia biographies and reviews
 <!-- - Searches are integrated with MusicBrainz
 - MusicBrainz provides all the biography links
 - MusicBrainz is tried first for review links, but isn't comprehensive, and there is a fallback to a direct search of Wikipedia
