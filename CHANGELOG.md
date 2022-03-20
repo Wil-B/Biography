@@ -3,21 +3,21 @@
 Wikipedia + lyrics + flags
 ### Added
 - Wikipedia (multi-language)
-- Lyrics: view lyrics in more interesting ways (textreader & lyrics tab)
+- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
 	<!-- - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - highlight transition and fade effects -->
 	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
 	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
 	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
-- Textreader: file path or tag
+- Textreader
 - Improved support for track reviews
 - Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
+- More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)<!-- 
 Choice of summary items (display tab) -->
-- More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
 - Per panel server settings option (advanced tab)
 - Assets\licences for other software used by biography
 
