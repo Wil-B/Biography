@@ -33,7 +33,7 @@ Choice of summary items (display tab) -->
 - Tagger: various improvements (tagger tab + see release notes below)
 - Image seeker: reinstated bar method & improved positioning with certain layout styles
 - Settings
-	- designated package_data folder is now used
+	- now stored in package_data folder
 	- biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
 	- language & language fallback settings will be reset, as a consequence of adding multi-language support for Wikipedia (download tab)
 - Removed the ability to auto-update from old versions (v1.1.3 or earlier)
