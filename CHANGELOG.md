@@ -27,9 +27,9 @@ Choice of summary items (display tab) -->
 	- choice of items displayed
 	- choose from genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
 	<!-- - custom colour option (custom tab). Heading (normally highlight colour), text & summary colours can now all be independently set -->
-	- font style now configurable (display tab)
-- Custom colours
-	- heading (normally highlight colour), summary & text colours can now all be independently set (custom tab)
+	<!--- font style now configurable (display tab) -->
+- Custom colours and font styles
+	- heading (normally highlight colour), summary & text can now all be independently set (custom, display & headings tabs)
 - Improvements to tagger (tagger tab + see release notes below)
 - Reinstated the image seeker bar & improved the image seeker positioning with certain layout styles
 - Settings are now stored in package_data folder
