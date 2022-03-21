@@ -40,9 +40,9 @@ Choice of summary items (display tab) -->
 
 ### Fix
 - Wine stabilisation: biography should no longer give errors in Wine, but some limitations remain:
-    - Paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, at end to stop overwriting)
-    - Recycler may not work. It's rarely used. If used, the console gives an alternative
-    - Options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
+    - paste from clipboard may not work. It's rarely used. The only use is to create custom biographies & album reviews that can be created in a text editor anyway (include 'Custom Biography' or 'Custom Review', respectively, at end to stop overwriting)
+    - recycler may not work. It's rarely used. If used, the console gives an alternative
+    - options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
 - Blocked unnecessary on_size calls from Panel Stack Splitter with certain of its layout methods
 
 ### Release notes
