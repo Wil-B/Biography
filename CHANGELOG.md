@@ -15,7 +15,7 @@ Wikipedia + lyrics + flags
 	- More track review sites
 	- Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
-- More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
+- More colour highlight choices, _e.g. summary on with heading and line off works well_ (display tab)
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)<!-- 
 Choice of summary items (display tab) -->
