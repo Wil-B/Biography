@@ -2,17 +2,18 @@
 ### Release highlights
 Wikipedia + lyrics + flags
 ### Added
-- Wikipedia (multi-language)
-- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
+- New sources
+	- Wikipedia (multi-language)
+	- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
 	<!-- - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - view lyrics in more interesting ways (textreader & lyrics tab) -->
 	<!-- - highlight transition and fade effects -->
 	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
 	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
 	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
-- Textreader
-- Improved support for track reviews
-- Classical music extension (title format tab)
+	- Textreader
+	- More track review sites
+	- Classical music extension (title format tab)
 - Flags option (artist country: headings tab)
 - More colour highlight choices, _e.g. summary on with heading and heading line off works well_ (display tab)
 - Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
@@ -24,7 +25,7 @@ Choice of summary items (display tab) -->
 ### Changed
 - Summary
 	- new items
-	- choice of items displayed
+	- choice of items
 	- choose from genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
 	<!-- - custom colour option (custom tab). Heading (normally highlight colour), text & summary colours can now all be independently set -->
 	<!--- font style now configurable (display tab) -->
