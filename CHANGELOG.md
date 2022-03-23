@@ -31,7 +31,7 @@ Choice of summary items (display tab) -->
 	<!--- font style now configurable (display tab) -->
 - Custom colours and font styles
 	- made more flexible
-	- heading (usually highlight colour), summary and text can now all be independently set (custom, display & headings tabs)
+	- heading*, summary and text can now all be independently set (custom, display & headings tabs). *Use highlight colour
 - Tagger: various improvements (tagger tab + see release notes below)
 - Image seeker: reinstated bar method & improved positioning with certain layout styles
 - Settings
