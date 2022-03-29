@@ -5,30 +5,24 @@ Wikipedia + lyrics + flags
 - New sources
 	- Wikipedia (multi-language)
 	- Lyrics :: view lyrics in more interesting ways (textreader & lyrics tab)
-	<!-- - Lyrics (synced & unsynced) :: view lyrics in more interesting ways (textreader & lyrics tab) -->
-	<!-- - view lyrics in more interesting ways (textreader & lyrics tab) -->
-	<!-- - highlight transition and fade effects -->
-	<!-- - supports lyrics offset + on-the-fly adjustment (mouse wheel - not saved) -->
-	<!-- - ultra-smooth scrolling with highlight transition effect, fade effect and offset support -->
-	<!-- - ultra-smooth scrolling + highlight transition effect + fade effect + offset handling -->
 	- Textreader
 	- More track review sites
-	- Classical music extension (title format tab)
+	- Classical music extension (title format tab)†
 - Flags option (artist country: headings tab)
 - More colour highlight choices, _e.g. summary on with heading and line off works well_ (display tab)
-- Auto-managed cache with configurable storage time: (requires use of default cache: download tab)
+- Auto-managed cache with configurable storage time†: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)<!-- 
 Choice of summary items (display tab) -->
-- Per panel server settings option (advanced tab)
+- Per panel server settings option (advanced tab)†
 - Assets\licences for other software used by biography
+
+† these items should be regarded as beta & might require optimisation in response to user feedback
 
 ### Changed
 - Summary
 	- new items
 	- choice of items
 	- choose from genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
-	<!-- - custom colour option (custom tab). Heading (normally highlight colour), text & summary colours can now all be independently set -->
-	<!--- font style now configurable (display tab) -->
 - Custom colours and font styles
 	- made more flexible
 	- heading*, summary and text can now all be independently set (custom, display & headings tabs). *Usually highlight colour
@@ -61,15 +55,9 @@ Choice of summary items (display tab) -->
 - added option to tag genres
 
 #### Wikipedia biographies and reviews
-<!-- - Searches are integrated with MusicBrainz
-- MusicBrainz provides all the biography links
-- MusicBrainz is tried first for review links, but isn't comprehensive, and there is a fallback to a direct search of Wikipedia
-- Genres can be in native language or limited to English (latter fallback to MusicBrainz)
-- Optionally musicbrainz_XXXXid and MusicBrainz XXXX Id tags are supported where XXXX is artist, releasegroup (release group for latter) or work -->
-- Searches optionally support musicbrainz_XXXXid and MusicBrainz XXXX Id tags. XXXX can be artist, releasegroup (release group for latter) or work
+- Searches optionally support musicbrainz_XXXXid and MusicBrainz XXXX Id tags
+- XXXX can be artist, releasegroup (release group for latter) or work
 - Generally such tags shouldn't be needed. They may be useful if names differ to site names, e.g. classical works (compositions) can be variously named
-<!-- - Rarely will such tags offer any benefit. Best use case may be where there are naming differences, e.g. classical works (compositions) have various naming methods
-searches support the following tags: musicbrainz_XXXXid and MusicBrainz XXXX Id; where XXXX is artist, releasegroup (release group for latter) or work -->
 
 <br />
 
