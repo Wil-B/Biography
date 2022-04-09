@@ -27,7 +27,10 @@ Choice of summary items (display tab) -->
 	- made more flexible
 	- heading*, summary and text can now all be independently set (custom, display & headings tabs). *Usually highlight colour
 - Tagger: various improvements (tagger tab + see release notes below)
-- Image seeker: reinstated bar method & improved positioning with certain layout styles
+- Image seeker
+	- reinstated bar method
+	- improved positioning with certain layout styles
+	- improved auto-mode: show now requires hover over image box area rather than anywhere in panel
 - Settings
 	- now stored in package_data folder
 	- biography.cfg should be copied automatically (original is retained for back-compatibility with v1.2.0, else it can be deleted)
