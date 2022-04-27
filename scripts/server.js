@@ -207,7 +207,9 @@ class Server {
 	}
 
 	format(n) {
-		return n.replace(/<P><\/P>/gi, '').replace(/<p[^>]*>/gi, '').replace(/\r/g, '').replace(/\n/g, '').replace(/<\/p>/gi, '\r\n\r\n').replace(/<br>/gi, '\r\n').replace(/(<([^>]+)>)/ig, '').replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/^ +/gm, '').replace(/^\s+|\s+$/g, '');
+		n = n.replace(/<P><\/P>/gi, '').replace(/<p[^>]*>/gi, '').replace(/\r/g, '').replace(/\n/g, '').replace(/<\/p>/gi, '\r\n\r\n').replace(/<br>/gi, '\r\n');
+		while (n != (n = n.replace(/<[^<>]*>/g, ''))); // handle nested tags: https://blog.stevenlevithan.com/archives/reverse-recursive-pattern (works with abc test in post)
+		return n.replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/^ +/gm, '').replace(/^\s+|\s+$/g, '');
 	}
 
 	getBio(force, art, type) {
@@ -257,8 +259,8 @@ class Server {
 					focus: art.focus,
 					force: force,
 					menu: false,
-					artist: this.artist,//stndBio ? this.artist : name.artist(art.focus, true), why isn't this always this.artist?
-					title: title//name.title(art.focus, true)
+					artist: this.artist,
+					title: title
 				});
 
 				if (!artist_done) {
@@ -529,7 +531,6 @@ class Server {
 				});
 				break;
 		}
-		//this.sort(li, 'score', true);
 		$.sort(li, 'score', true, 'numRev');
 	}
 
@@ -600,7 +601,7 @@ class Server {
 
 		switch (true) {
 			case type == 'review': {
-				if (!wikipedia) { // includes match to deal with am naming quirks
+				if (!wikipedia) {
 					for (i = 0; i < list.length; i++)
 						if (list[i].rel.includes(rel) && list[i].art.includes(a)) return i;
 				}
@@ -609,21 +610,21 @@ class Server {
 				rel = stripAmp(rel);
 				list.forEach(v => v.rel = stripAmp(v.rel));
 				server.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
-				const pm = !force ? cfg.fuzzyMatchReview : Math.min(force, cfg.fuzzyMatchReview); // want Math.min or force || cfg.fuzzyMatchReview
+				const pm = !force ? cfg.fuzzyMatchReview : Math.min(force, cfg.fuzzyMatchReview);
 				for (i = 0; i < list.length; i++)
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				break;
 			}
 			case type == 'song': {
 				server.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
-				const pm = !force ? cfg.fuzzyMatchTrack : Math.min(force, cfg.fuzzyMatchTrack); // want Math.min or force || cfg.fuzzyMatchTrack
+				const pm = !force ? cfg.fuzzyMatchTrack : Math.min(force, cfg.fuzzyMatchTrack);
 				for (i = 0; i < list.length; i++)
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				break;
 			}
 			case type == 'composition': {
 				server.getSortedScores(list, p_release, 'title', 'fuzzyset');
-				const pm = !force ? cfg.fuzzyMatchComposition : Math.min(force, cfg.fuzzyMatchComposition); // want Math.min or force || cfg.fuzzyMatchComposition
+				const pm = !force ? cfg.fuzzyMatchComposition : Math.min(force, cfg.fuzzyMatchComposition);
 				for (i = 0; i < list.length; i++)
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				break;
@@ -673,14 +674,14 @@ class Server {
 		const keys = Object.keys(this.urlRequested);
 		const now = Date.now();
 		keys.forEach(v => {
-			if (now - this.urlRequested[v] > 300000) { // keep for 5 min?
+			if (now - this.urlRequested[v] > 300000) { // keep for 5 min
 				delete this.urlRequested[v];
 			}
 		});
 		const done = this.urlRequested[n] ? true : false;
 		if (!done) {
 			this.urlRequested[n] = now;
-			window.NotifyOthers('bio_webRequest', n); // reconfirm logic 
+			window.NotifyOthers('bio_webRequest', n);
 		}
 		return done;
 	}

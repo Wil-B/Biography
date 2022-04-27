@@ -131,11 +131,11 @@ class DldLastfmBio {
 					let factbox = '';
 					this.con = '';
 					$.htmlParse(div.getElementsByTagName('div'), 'className', 'wiki-content', v => {
-						this.con = server.format(v.innerHTML); // don't use innerText: formatting wrong
+						this.con = server.format(v.innerHTML);
 						return true;
 					});
 					$.htmlParse(div.getElementsByTagName('li'), 'className', 'factbox-item', v => {
-						factbox = ''; // has to be innerHTML
+						factbox = '';
 						factbox = server.format(v.innerHTML.replace(/<\/H4>/gi, ': ').replace(/\s*<\/LI>\s*/gi, ', ').replace(/\s*Show all members\u2026\s*/gi, '')).replace(/\s+/g, ' ').replace(/,$/, '');
 						this.con = txt.add([factbox], this.con);
 					});
@@ -546,7 +546,7 @@ class LfmAlbum {
 
 class LfmTrack {
 	constructor(state_callback) {
-		this.album = '';
+		this.album = [];
 		this.artist;
 		this.fo;
 		this.force = false;
@@ -679,13 +679,18 @@ class LfmTrack {
 					}
 				});
 				$.htmlParse(div.getElementsByTagName('h4'), 'className', 'source-album-name', v => {
-					this.album = v.innerText.trim();
-					return true;
+					this.album[j] = v.innerText.trim();
+					if (j == 1) return true;
+					j++;
 				});
-				if (!cfg.lang.ix) $.htmlParse(div.getElementsByTagName('p'), 'className', 'more-link-fullwidth', v => {
+				if (!cfg.lang.ix && !feat) $.htmlParse(div.getElementsByTagName('p'), 'className', 'more-link-fullwidth-right', v => {
 					feat = v.innerText.trim();
+					if (/^\d+/.test(feat)) {
+						feat = feat.replace(/\D/g, '');
+					} else feat = '';
 					return true;
 				});
+				j = 0;
 				$.htmlParse(div.getElementsByTagName('h4'), 'className', 'header-metadata-tnew-title', v => {
 					scrobbles[j] = $.titlecase(v.innerText.trim());
 					j++
@@ -696,13 +701,17 @@ class LfmTrack {
 					j++
 				});
 				doc.close();
-				if (from && this.album) this.releases += from + ': ' + this.album + '.';
+				if (from && this.album.length) {
+					this.album = [...new Set(this.album)].join('\u200b, ');
+					
+					this.releases += from + '\u200b: ' + this.album;
+				}
 				if (feat) {
-					const featNo = feat.replace(/\D/g, '');
-					const rel = featNo != '1' ? 'releases' : 'release';
-					feat = ` Also featured on ${featNo} other ${rel}.`;
+					const rel = feat != '1' ? 'releases' : 'release';
+					feat = ` \u200band ${feat} other ${rel}`;
 					this.releases += feat;
 				}
+				if (this.releases) this.releases += '.';
 				if (scrobbles[1].length && counts[1].length || scrobbles[0].length && counts[0].length) this.stats += ('Last.fm: ' + (counts[1].length ? scrobbles[1] + ' ' + counts[1] + '; ' : '') + (counts[0].length ? scrobbles[0] + ' ' + counts[0] : ''));
 				this.getStats = false;
 				return this.search(this.artist, this.track, this.fo, this.pth, this.force);

@@ -149,15 +149,6 @@ class Panel {
 			showFilmStrip: false
 		}
 
-		this.summary = {
-			date: ppt.summaryShow && ppt.summaryDate,
-			genre: ppt.summaryShow && ppt.summaryGenre,
-			locale: ppt.summaryShow && ppt.summaryLocale,
-			other: ppt.summaryShow && ppt.summaryOther,
-			popLatest: ppt.summaryShow && ppt.summaryPopLatest,
-			show: ppt.summaryShow
-		}
-
 		this.tbox = {
 			l: 0,
 			t: 0,
@@ -186,6 +177,7 @@ class Panel {
 			l: 0
 		}
 
+		this.setSummary();
 		this.similarArtistsKey = 'Similar Artists: |\\u00c4hnliche K\\u00fcnstler: |Artistas Similares: |Artistes Similaires: |Artisti Simili: |\\u4f3c\\u3066\\u3044\\u308b\\u30a2\\u30fc\\u30c6\\u30a3\\u30b9\\u30c8: |Podobni Wykonawcy: |Artistas Parecidos: |\\u041f\\u043e\\u0445\\u043e\\u0436\\u0438\\u0435 \\u0438\\u0441\\u043f\\u043e\\u043b\\u043d\\u0438\\u0442\\u0435\\u043b\\u0438: |Liknande Artister: |Benzer Sanat\\u00e7\\u0131lar: |\\u76f8\\u4f3c\\u827a\\u672f\\u5bb6: '; this.d = parseFloat(this.q('0000029142')); this.lfm = this.q($.s);
 		this.topAlbumsKey = 'Top Albums: |Top-Alben: |\\u00c1lbumes M\\u00e1s Escuchados: |Top Albums: |Album Pi\\u00f9 Ascoltati: |\\u4eba\\u6c17\\u30a2\\u30eb\\u30d0\\u30e0: |Najpopularniejsze Albumy: |\\u00c1lbuns Principais: |\\u041f\\u043e\\u043f\\u0443\\u043b\\u044f\\u0440\\u043d\\u044b\\u0435 \\u0430\\u043b\\u044c\\u0431\\u043e\\u043c\\u044b: |Toppalbum: |En Sevilen Alb\\u00fcmler: |\\u6700\\u4f73\\u4e13\\u8f91: ';
 
@@ -960,7 +952,8 @@ class Panel {
 	}
 
 	imgBoxTrace(x, y) {
-		if (this.trace.film) return false;
+		if (this.trace.film || this.m.y == -1) return false;
+		if (ppt.img_only) return true;
 		if (ppt.style < 4) {
 			switch (ppt.style) {
 				case 0:
@@ -1045,7 +1038,6 @@ class Panel {
 				this.mode(0);
 				break;
 			case this.trace.image:
-				//this.mode(txt.text ? 1 : 2);
 				this.mode(!ppt.img_only ? 1 : 2);
 				break;
 			case this.trace.text:
@@ -1210,7 +1202,7 @@ class Panel {
 	resetStyle(n) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) {
-				if (ppt.style < 4) ppt.rel_imgs = 0.7;
+				if (ppt.style < 4) ppt.rel_imgs = 0.65;
 				else {
 					const obj = ppt.style == 4 ? this.style.overlay : this.style.free[ppt.style - 5];
 					obj.name = this.style.name[n];
@@ -1494,6 +1486,18 @@ class Panel {
 		this.style.max_y = this.lines_drawn * ui.font.main_h + this.text.t - ui.font.main_h * 0.9;
 		if (!this.id.init) filmStrip.check();
 		this.id.init = false;
+	}
+
+	setSummary() {
+		this.summary = {
+			date: ppt.summaryShow && ppt.summaryDate,
+			genre: ppt.summaryShow && ppt.summaryGenre,
+			latest: ppt.summaryShow && ppt.summaryLatest,
+			locale: ppt.summaryShow && ppt.summaryLocale,
+			other: ppt.summaryShow && ppt.summaryOther,
+			popNow: ppt.summaryShow && ppt.summaryPopNow,
+			show: ppt.summaryShow
+		}
 	}
 
 	sort(data, prop) {

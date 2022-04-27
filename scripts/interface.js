@@ -26,6 +26,7 @@ class UserInterface {
 			headingBaseSize: 16,
 			headingCustom: false,
 			headingStyle: 1,
+			items: [['lyricsFontStyle', 'lyrics'], ['sourceStyle', 'subHeadSource'], ['summaryStyle', 'summary'], ['trackStyle', 'subHeadTrack'], ['wikiStyle', 'subHeadWiki']],
 			lyrics: gdi.Font('Segoe UI', 16, 3),
 			main: gdi.Font('Segoe UI', 16, 0),
 			main_h: 21,
@@ -33,6 +34,8 @@ class UserInterface {
 			small: gdi.Font('Segoe UI', 10, 0),
 			subHeadSource: gdi.Font('Segoe UI', 16, 0),
 			subHeadTrack: gdi.Font('Segoe UI', 16, 0),
+			subHeadWiki: gdi.Font('Segoe UI', 16, 0),
+			summary: gdi.Font('Segoe UI', 16, 0),
 			zoomSize: 16
 		}
 
@@ -56,6 +59,11 @@ class UserInterface {
 			gradient: ppt.overlayGradient / 10 - 1,
 			borderWidth: ppt.typeOverlay != 2 && ppt.typeOverlay != 4 ? 0 : ppt.overlayBorderWidth,
 			strength: $.clamp(255 * (100 - ppt.overlayStrength) / 100, 0, 255)
+		}
+
+		this.pss = {
+			checkOnSize: false,
+			installed: !this.dui && utils.CheckComponent('foo_uie_panel_splitter')
 		}
 
 		this.sbar = {
@@ -173,7 +181,6 @@ class UserInterface {
 	}
 
 	draw(gr) {
-		console.log('this.style.bg',this.style.bg)
 		if (this.style.bg) gr.FillSolidRect(0, 0, panel.w, panel.h, this.col.bg);
 	}
 
@@ -258,25 +265,20 @@ class UserInterface {
 		this.heading.linePad = $.clamp(this.heading.linePad, -ppt.gap, this.font.main.Size * 5);
 
 		ppt.zoomFont = Math.round(this.font.zoomSize / ppt.baseFontSize * 100);
-		const lyricsFontStyle = ppt.lyricsFontStyle < 4 ? ppt.lyricsFontStyle : (ppt.lyricsFontStyle - 4) * 2;
-		const sourceStyle = ppt.sourceStyle < 4 ? ppt.sourceStyle : (ppt.sourceStyle - 4) * 2;
-		const trackStyle = ppt.trackStyle < 4 ? ppt.trackStyle : (ppt.trackStyle - 4) * 2;
-		const wikiStyle = ppt.wikiStyle < 4 ? ppt.wikiStyle : (ppt.wikiStyle - 4) * 2;
+		
+		this.font.items.forEach(v => {
+			const style = ppt[v[0]] < 4 ? ppt[v[0]] : (ppt[v[0]] - 4) * 2
+			this.font[v[1]] = gdi.Font(ppt[v[0]] < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, style);
+		});
 
-		this.font.subHeadSource = gdi.Font(ppt.sourceStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, sourceStyle);
-		this.font.subHeadTrack = gdi.Font(ppt.trackStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, trackStyle);
-		this.font.subHeadWiki = gdi.Font(ppt.wikiStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, wikiStyle);
 		this.font.message = gdi.Font(this.font.main.Name, this.font.main.Size * 1.5, 1);
 		this.font.small = gdi.Font(this.font.main.Name, Math.round(this.font.main.Size * 12 / 14), this.font.main.Style);
-		this.font.lyrics = gdi.Font(ppt.lyricsFontStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, lyricsFontStyle);
+
 
 		this.narrowSbarWidth = ppt.narrowSbarWidth == 0 ? $.clamp(Math.floor(this.font.main.Size / 7), 2, 10) : ppt.narrowSbarWidth;
 		if (this.id.local) {
 			this.font.main = c_font;
-			this.font.lyrics = gdi.Font(this.font.main.Name, this.font.main.Size, ppt.lyricsFontStyle);
-			this.font.subHeadSource = gdi.Font(this.font.main.Name, this.font.main.Size, ppt.sourceStyle);
-			this.font.subHeadTrack = gdi.Font(this.font.main.Name, this.font.main.Size, ppt.trackStyle);
-			this.font.subHeadWiki = gdi.Font(this.font.main.Name, this.font.main.Size, ppt.wikiStyle);
+			this.font.items.forEach(v => this.font[v[1]] = gdi.Font(this.font.main.Name, this.font.main.Size, ppt[v[0]]));
 			this.font.message = gdi.Font(this.font.main.Name, this.font.main.Size * 1.5, 1);
 			if (ppt.sbarShow) {
 				this.sbar.type = 0;
@@ -435,15 +437,7 @@ class UserInterface {
 		};
 		if (this.show.btnRedLastfm) this.show.btnBg = 1;
 
-		panel.summary = {
-			date: ppt.summaryShow && ppt.summaryDate,
-			genre: ppt.summaryShow && ppt.summaryGenre,
-			locale: ppt.summaryShow && ppt.summaryLocale,
-			other: ppt.summaryShow && ppt.summaryOther,
-			popLatest: ppt.summaryShow && ppt.summaryPopLatest,
-			show: ppt.summaryShow
-		}
-
+		panel.setSummary();
 		if (ppt.typeOverlay > 4 || ppt.typeOverlay < 0) ppt.typeOverlay = 0;
 
 		ppt.overlayStrength = $.clamp(ppt.overlayStrength, 0, 100);
@@ -641,11 +635,12 @@ class UserInterface {
 				this.font.zoomSize += step;
 				this.font.zoomSize = Math.max(this.font.zoomSize, 1);
 				this.font.main = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.main.Style);
-				this.font.lyrics = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.lyrics.Style);
 				this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * this.font.zoomSize / ppt.baseFontSize * (100 + ((ppt.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
-				this.font.subHeadSource = gdi.Font(this.font.subHeadSource.Name, this.font.zoomSize, this.font.subHeadSource.Style);
-				this.font.subHeadTrack = gdi.Font(this.font.subHeadTrack.Name, this.font.zoomSize, this.font.subHeadTrack.Style);
-				this.font.subHeadWiki = gdi.Font(this.font.subHeadWiki.Name, this.font.zoomSize, this.font.subHeadWiki.Style);
+
+				['lyrics', 'subHeadSource', 'summary', 'subHeadTrack', 'subHeadWiki'].forEach(v => {
+					this.font[v] = gdi.Font(this.font[v].Name, this.font.zoomSize, this.font[v].Style);
+				});
+
 				this.font.message = gdi.Font(this.font.main.Name, this.font.zoomSize * 1.5, 1);
 				this.font.small = gdi.Font(this.font.main.Name, Math.round(this.font.zoomSize * 12 / 14), this.font.main.Style);
 				this.narrowSbarWidth = ppt.narrowSbarWidth == 0 ? $.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : ppt.narrowSbarWidth;

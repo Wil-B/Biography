@@ -91,7 +91,7 @@ class Settings {
 		if (update) {
 			delete this.cfg.langLfm;
 			delete this.cfg.langLfmFallback;
-			this.autoCache = 0; // keep using custom // needs checking all works as expected: now checked all OK once
+			this.autoCache = 0;
 			this.tagName6 = 'Album Statistics Last.fm';
 			this.tagName8 = 'Artist Statistics Last.fm';
 		}
@@ -121,7 +121,7 @@ class Settings {
 	}
 
 	add(item) {
-		//this.key_list[item[3]] = 1; debug
+		// this.key_list[item[3]] = 1; debug
 		this[item[3] + '_internal'] = new Setting(item[3], item[1], item[2]);
 
 		Object.defineProperty(this, item[3], {
@@ -380,7 +380,7 @@ class Settings {
 
 	parse() {
 		const bioRevItems = ['foLfmRev', 'foLfmBio', 'foImgArt', 'foImgRev', 'foAmRev', 'foAmBio', 'foWikiRev', 'foWikiBio'];
-		const items = ['foLfmRev', 'foLfmBio', 'foImgArt', 'foLfmSim', 'foAmRev', 'foAmBio', 'foWikiRev', 'foWikiBio', 'foImgCov', 'fnImgCov']; // insertion OK?
+		const items = ['foLfmRev', 'foLfmBio', 'foImgArt', 'foLfmSim', 'foAmRev', 'foAmBio', 'foWikiRev', 'foWikiBio', 'foImgCov', 'fnImgCov'];
 		const tfIni = ['tfAlbumArtist', 'tfArtist', 'tfAlbum', 'tfTitle', 'tfComposition'];
 		const tfItems = ['albumArtist', 'artist', 'album', 'title', 'composition'];
 		const tfNames = ['%BIO_ALBUMARTIST%', '%BIO_ARTIST%', '%BIO_ALBUM%', '%BIO_TITLE%', '%BIO_ALBUM%'];
@@ -430,7 +430,7 @@ class Settings {
 			this.suffix.foLfmBio = this.suffix.foAmBio = this.suffix.foWikiBio = '';
 		}
 
-		this.albCovFolder = this.substituteTf(this.foCycCov);
+		this.albCovFolder = this.substituteTf(this.foCycCov.replace(/%profile%\\/i, fb.ProfilePath));
 		this.exp = Math.max(this.exp, 28);
 		this.getLangIndex();
 		if (!this.lang.ok) this.language = 'EN';
@@ -438,7 +438,7 @@ class Settings {
 		this.lfmSim = this.dlLfmSim;
 		if (this.lfmSim && this.menuSimilarNum < 7 && (!this.tagEnabled10 || this.tagEnabled13 < 7)) this.lfmSim = false;
 		if (this.local) {
-			this.pth.foLfmSim = this.pth.foLfmSim.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}').replace('biography-cache', 'find-&-play-cache'); //OK?
+			this.pth.foLfmSim = this.pth.foLfmSim.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}').replace('biography-cache', 'find-&-play-cache');
 			this.lfmSim = false;
 			this.imgRevHQ = true;
 			if (!this.autoCache) this.supCache = true;
@@ -675,7 +675,7 @@ let settings = [
 	['Image [Artist] Folder', '%profile%\\yttm\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foImgArt'],
 	['Image [Review] Folder', '%profile%\\yttm\\rev_img\\$lower($cut(%BIO_ALBUMARTIST%,1))\\%BIO_ALBUMARTIST%', 'text', 'foImgRev'],
 
-	['Auto Cache', 1, 'num', 'autoCache'], // default is to use deafult cache
+	['Auto Cache', 1, 'num', 'autoCache'],
 	['Auto Cache Time', 0, 'num', 'autoCacheTime'],
 	['Save Folder', '%profile%\\yttm\\lastfm\\$lower($cut(%BIO_ARTIST%,1))', 'text', 'foLfmSim'],
 
@@ -710,8 +710,8 @@ let settings = [
 	['Write Tag: Artist Statistics Last.fm', false, 'boolean', 'tagEnabled8'],
 	['Write Tag: Locale Last.fm', true, 'boolean', 'tagEnabled9'],
 	['Write Tag: Similar Artists Last.fm', true, 'boolean', 'tagEnabled10'],
-	['Write Tag: Album Genre MusicBrainz', true, 'boolean', 'tagEnabled11'],
-	['Write Tag: Artist Genre MusicBrainz', true, 'boolean', 'tagEnabled12'],
+	['Write Tag: Album Genre Wikipedia', true, 'boolean', 'tagEnabled11'],
+	['Write Tag: Artist Genre Wikipedia', true, 'boolean', 'tagEnabled12'],
 	['Write Tag: Similar Artists Last.fm: Number to Write (0-100)', 5, 'num', 'tagEnabled13'],
 	['Notify Tags: Current Track', false, 'boolean', 'notifyTags'],
 
@@ -727,8 +727,8 @@ let settings = [
 	['Tag Name: Locale Last.fm', 'Locale Last.fm', 'text', 'tagName9'],
 	['Tag Name: Similar Artists Last.fm', 'Similar Artists Last.fm', 'text', 'tagName10'],
 	
-	['Tag Name: Album Genre MusicBrainz', 'Album Genre MusicBrainz', 'text', 'tagName11'],
-	['Tag Name: Artist Genre MusicBrainz', 'Artist Genre MusicBrainz', 'text', 'tagName12'],
+	['Tag Name: Album Genre Wikipedia', 'Album Genre Wikipedia', 'text', 'tagName11'],
+	['Tag Name: Artist Genre Wikipedia', 'Artist Genre Wikipedia', 'text', 'tagName12'],
 
 	['Tagger Last.fm Genre Custom Genres', '', 'text', 'customGenres'],
 	['Tagger Last.fm Genre Translate', 'alt country>alternative country, canterbury>canterbury scene, chanson francaise>chanson fran\u00e7aise, christmas>christmas music, christmas songs>christmas music, eletronica>electronica, motown soul>motown, musicals>musical, neoclassical>neoclassicism, orchestra>orchestral, popular>pop, prog>progressive, rnb>r&b, rhythm and blues>r&b, rb>r&b, relaxing>relaxation, relax>relaxation, rock & roll>rock and roll, rock n roll>rock and roll, tropicalia>tropic\u00e1lia, xmas>christmas music, ye ye>y\u00e9-y\u00e9', 'text', 'translate'],

@@ -206,14 +206,14 @@ class Tagger {
 		let cur_album = '####';
 		let album = '';
 		const albGenre_am = [];
-		const albGenre_mb = [];
+		const albGenre_w = [];
 		const albListeners = [];
 		const albTags = [];
 		const amMoods = [];
 		const amRating = [];
 		const amThemes = [];
 		const artGenre_am = [];
-		const artGenre_mb = [];
+		const artGenre_w = [];
 		const artListeners = [];
 		const artTags = [];
 		const cue = [];
@@ -278,16 +278,16 @@ class Tagger {
 					}
 				}
 				if (cfg.tagEnabled12) {
-					artGenre_mb[i] = '';
-					const mbBio = panel.cleanPth(cfg.pth.foWikiBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foWikiBio + '.txt';
-					if ($.file(mbBio)) {
-						const mBio = $.open(mbBio);
-						artGenre_mb[i] = this.getTag(mBio, 'Genres: ').tag;
+					artGenre_w[i] = '';
+					const wikiBio = panel.cleanPth(cfg.pth.foWikiBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foWikiBio + '.txt';
+					if ($.file(wikiBio)) {
+						const wBio = $.open(wikiBio);
+						artGenre_w[i] = this.getTag(wBio, 'Genre: ').tag;
 					}
 				}
 			} else {
 				artGenre_am[i] = artGenre_am[i - 1];
-				artGenre_mb[i] = artGenre_mb[i - 1];
+				artGenre_w[i] = artGenre_w[i - 1];
 				artListeners[i] = artListeners[i - 1];
 				artTags[i] = artTags[i - 1];
 				locale[i] = locale[i - 1];
@@ -339,20 +339,20 @@ class Tagger {
 					}
 				}
 				if (cfg.tagEnabled11) {
-					albGenre_mb[i] = '';
-					let mbRev = panel.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foWikiRev + '.txt';
-					if (mbRev.length > 259) {
+					albGenre_w[i] = '';
+					let wikiRev = panel.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foWikiRev + '.txt';
+					if (wikiRev.length > 259) {
 						album = $.abbreviate(album);
-						mbRev = panel.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foWikiRev + '.txt';
+						wikiRev = panel.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foWikiRev + '.txt';
 					}
-					if ($.file(mbRev)) {
-						const mRev = $.open(mbRev);
-						albGenre_mb[i] = this.getTag(mRev, 'Genres: ').tag;
+					if ($.file(wikiRev)) {
+						const wRev = $.open(wikiRev);
+						albGenre_w[i] = this.getTag(wRev, 'Genre: ').tag;
 					}
 				}
 			} else {
 				albGenre_am[i] = albGenre_am[i - 1];
-				albGenre_mb[i] = albGenre_mb[i - 1];
+				albGenre_w[i] = albGenre_w[i - 1];
 				albListeners[i] = albListeners[i - 1];
 				amMoods[i] = amMoods[i - 1];
 				amRating[i] = amRating[i - 1];
@@ -364,7 +364,7 @@ class Tagger {
 		for (let j = 0; j < 13; j++) this[`tagName${j}`] = !notify ? cfg[`tagName${j}`] : cfg[`tagName${j}_internal`].default_value;
 
 		for (let i = 0; i < handles.Count; i++) {
-			if (!cue[i] && (albGenre_am[i] || amMoods[i] || amRating[i] || amThemes[i] || artGenre_am[i] || albTags[i] || albListeners[i] || artTags[i] || artListeners[i] || locale[i] || similarArtists[i])) {
+			if (!cue[i] && (albGenre_am[i] || amMoods[i] || amRating[i] || amThemes[i] || artGenre_am[i] || albTags[i] || albListeners[i] || artTags[i] || artListeners[i] || locale[i] || similarArtists[i] || albGenre_w[i] || artGenre_w[i])) {
 				const tg = {};
 				if (albGenre_am[i]) tg[this.tagName0] = albGenre_am[i];
 				if (amMoods[i]) tg[this.tagName1] = amMoods[i];
@@ -377,8 +377,8 @@ class Tagger {
 				if (artListeners[i]) tg[this.tagName8] = artListeners[i];
 				if (locale[i]) tg[this.tagName9] = locale[i];
 				if (similarArtists[i]) tg[this.tagName10] = similarArtists[i];
-				if (albGenre_mb[i]) tg[this.tagName11] = albGenre_mb[i];
-				if (artGenre_mb[i]) tg[this.tagName12] = artGenre_mb[i];
+				if (albGenre_w[i]) tg[this.tagName11] = albGenre_w[i];
+				if (artGenre_w[i]) tg[this.tagName12] = artGenre_w[i];
 				tags.push(tg);
 			} else rem.push(i);
 		}

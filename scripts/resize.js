@@ -109,19 +109,19 @@ class ResizeHandler {
 		switch (ppt.filmStripPos) {
 			case 0:
 				ppt.filmStripSize = (ppt.filmStripSize * panel.h + y - this.y_start) / panel.h;
-				ppt.filmStripSize = $.clamp(ppt.filmStripSize, 0.02, filmStrip.max_sz / panel.h);
+				ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, filmStrip.max_sz / panel.h);
 				break;
 			case 1:
 				ppt.filmStripSize = (ppt.filmStripSize * panel.w + this.x_start - x) / panel.w;
-				ppt.filmStripSize = $.clamp(ppt.filmStripSize, 0.02, filmStrip.max_sz / panel.w);
+				ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, filmStrip.max_sz / panel.w);
 				break;
 			case 2:
 				ppt.filmStripSize = (ppt.filmStripSize * panel.h + this.y_start - y) / panel.h;
-				ppt.filmStripSize = $.clamp(ppt.filmStripSize, 0.02, filmStrip.max_sz / panel.h);
+				ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, filmStrip.max_sz / panel.h);
 				break;
 			case 3:
 				ppt.filmStripSize = (ppt.filmStripSize * panel.w + x - this.x_start) / panel.w;
-				ppt.filmStripSize = $.clamp(ppt.filmStripSize, 0.02, filmStrip.max_sz / panel.w);
+				ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, filmStrip.max_sz / panel.w);
 				break;
 		}
 		filmStrip.logScrollPos();
@@ -306,7 +306,7 @@ class ResizeHandler {
 						ppt.rel_imgs = (ppt.rel_imgs * pw + x - this.x_init) / pw;
 						break;
 				}
-				ppt.rel_imgs = $.clamp(ppt.rel_imgs, 0.1, 0.9);
+				ppt.rel_imgs = $.clamp(parseFloat(ppt.rel_imgs.toFixed(15)), 0.1, 0.9);
 				this.sizes();
 				break;
 			}

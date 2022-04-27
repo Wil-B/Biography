@@ -39,7 +39,6 @@ class DldAllmusicBio {
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 		this.func = this.analyse;
 		if (!this.force && server.urlDone(md5.hashStr(this.artist + this.title + this.pth_bio + cfg.partialMatch + URL))) return;
-		console.log('URL',URL)
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		if (this.force) this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
@@ -62,7 +61,7 @@ class DldAllmusicBio {
 			case 0:
 				try {
 					div.innerHTML = this.xmlhttp.responseText;
-					list = parseAmSearch(div, 'performers', 'song');
+					list = parse.amSearch(div, 'performers', 'song');
 					i = server.match(this.artist, this.title, list, 'song');
 					if (i != -1) {
 						this.artistLink = list[i].artistLink;
@@ -97,7 +96,7 @@ class DldAllmusicBio {
 						this.sw = 2;
 						return this.search(2, artists[0] + '/biography');
 					}
-					server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + this.artist + ' - ' + this.title); // OK?
+					server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + this.artist + ' - ' + this.title);
 					if (!$.file(this.pth_bio)) {
 						$.trace('allmusic biography: ' + this.artist + (artists.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators' + (this.title ? ', album name or track title, not matched' : ' N/A for menu look ups') : ': not found'), true);
 					}
@@ -107,7 +106,7 @@ class DldAllmusicBio {
 				}
 				break;
 			case 2:
-				processAmBio(this.xmlhttp.responseText, this.artist, '', this.title, this.fo_bio, this.pth_bio, '');
+				parse.amBio(this.xmlhttp.responseText, this.artist, '', this.title, this.fo_bio, this.pth_bio, '');
 				break;
 		}
 	}
@@ -184,12 +183,11 @@ class DldAllmusicRev {
 			case 0:
 				try {
 					div.innerHTML = this.xmlhttp.responseText; 
-					// this.dn_type choices: 'review+biography'* || 'composition+biography' || 'review' || 'composition' || 'track' || 'biography' // *falls back to trying track / artist based biography if art_upd needed
 					const item = {};
-					if (this.dn_type.startsWith('review') || this.dn_type == 'biography') {item.art = 'artist'; item.type = 'album';}
+					if (this.dn_type.startsWith('review') || this.dn_type == 'biography') {item.art = 'artist'; item.type = 'album';} // this.dn_type choices: 'review+biography'* || 'composition+biography' || 'review' || 'composition' || 'track' || 'biography' // *falls back to trying track / artist based biography if art_upd needed
 					else if (this.dn_type == 'track') {item.art = 'performers'; item.type = 'song';}
 					else {item.art = 'composer'; item.type = 'composition';}
-					list = parseAmSearch(div, item.art, item.type);
+					list = parse.amSearch(div, item.art, item.type);
 					const i = server.match(this.albumArtist, this.album, list, item.type);
 					if (i != -1) {
 						if (!this.va) this.artistLink = list[i].artistLink;
@@ -230,7 +228,7 @@ class DldAllmusicRev {
 					let songReleaseYear = '';
 					let tg = '';
 
-					$.htmlParse(dv, 'className', 'text', v => review = server.format(v.innerHTML)); // don't use innerText: formatting wrong
+					$.htmlParse(dv, 'className', 'text', v => review = server.format(v.innerHTML));
 
 					if (this.dn_type.startsWith('review')) {
 						let json = this.xmlhttp.responseText.match(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/);
@@ -238,7 +236,7 @@ class DldAllmusicRev {
 						if (json) json = json.replace(/<script\s+type="application\/ld\+json">/, '').replace('</script>', '').trim();
 						reviewAuthor = $.jsonParse(json, '', 'get', 'review.name');
 					} else {
-						$.htmlParse(div.getElementsByTagName('h3'), 'className', this.dn_type.startsWith('composition') ? 'author headline' : 'headline review-author', v => reviewAuthor = v.innerText.trim()/*server.format(v.innerHTML)*/);
+						$.htmlParse(div.getElementsByTagName('h3'), 'className', this.dn_type.startsWith('composition') ? 'author headline' : 'headline review-author', v => reviewAuthor = v.innerText.trim());
 					}
 
 					if (this.dn_type != 'track') {
@@ -335,96 +333,93 @@ class DldAllmusicRev {
 				break;
 			case 2:
 				doc.close();
-				processAmBio(this.xmlhttp.responseText, this.artist, this.album, '', this.fo_bio, this.pth_bio, this.pth_rev);
+				parse.amBio(this.xmlhttp.responseText, this.artist, this.album, '', this.fo_bio, this.pth_bio, this.pth_rev);
 				break;
 		}
 	}
 }
 
-function parseAmSearch(div, artist, item) {
-	let j = 0, list = [];
-	let items = div.getElementsByTagName('li');
-	for (let i = 0; i < items.length; i++) {
-		if (items[i]['className'] == item) {
-			list[j] = {}
-			$.htmlParse(items[i].getElementsByTagName('div'), 'className', 'title', v => {
-				const a = v.getElementsByTagName('a');
-				list[j].title = a.length && a[0].innerText ? a[0].innerText : 'N/A';
-				list[j].titleLink = a.length && a[0].href ? a[0].href : '';
+class Parse {
+	amBio(responseText, artist, album, title, fo_bio, pth_bio, pth_rev) {
+		doc.open();
+		const div = doc.createElement('div');
+		try {
+			div.innerHTML = responseText;
+			const dv = div.getElementsByTagName('div');
+			let active = '';
+			let biography = '';
+			let biographyAuthor = '';
+			let biographyGenre = [];
+			let biographyLabel = '';
+			let groupMembers = [];
+			let end = '';
+			let start = '';
+			let tg = '';
+
+			$.htmlParse(dv, 'className', 'text', v => biography = server.format(v.innerHTML));
+			$.htmlParse(dv, 'className', 'birth', v => start = server.format(v.innerHTML).replace(/Born/i, 'Born:').replace(/Formed/i, 'Formed:'));
+			$.htmlParse(dv, 'className', 'death', v => end = server.format(v.innerHTML).replace(/Died/i, 'Died:').replace(/Disbanded/i, 'Disbanded:'));
+			$.htmlParse(dv, 'className', 'active-dates', v => active = v.innerText.replace(/Active/i, 'Active: ').trim());
+
+			$.htmlParse(div.getElementsByTagName('a'), false, false, v => {
+				if (v.href.includes('www.allmusic.com/genre') || v.href.includes('www.allmusic.com/style')) {
+					tg = v.innerText.trim();
+					if (tg) biographyGenre.push(tg);
+				}
 			});
-			$.htmlParse(items[i].getElementsByTagName('div'), 'className', artist, v => {
+
+			$.htmlParse(dv, 'className', 'group-members', v => {
 				const a = v.getElementsByTagName('a');
-				list[j].artist = a.length && a[0].innerText ? a[0].innerText : v.innerText;
-				list[j].artistLink = a.length && a[0].href ? a[0].href : '';
+				for (let i = 0; i < a.length; i++) {
+					groupMembers.push(a[i].innerText.trim());
+				}
 			});
-			j++;
-		}
-	}
-	return list;
-}
 
-function processAmBio(responseText, artist, album, title, fo_bio, pth_bio, pth_rev) {
-	doc.open();
-	const div = doc.createElement('div');
-	try {
-		div.innerHTML = responseText;
-		const dv = div.getElementsByTagName('div');
-		let active = '';
-		let biography = '';
-		let biographyAuthor = '';
-		let biographyGenre = [];
-		let biographyLabel = '';
-		let groupMembers = [];
-		let end = '';
-		let start = '';
-		let tg = '';
+			biographyGenre = biographyGenre.length ?  'Genre: ' + biographyGenre.join('\u200b, ') : '';
+			groupMembers = groupMembers.length ? 'Group Members: ' + groupMembers.join('\u200b, ') : '';
+			$.htmlParse(div.getElementsByTagName('h2'), 'className', 'bio-heading', v => biographyLabel = server.format(v.innerHTML));
+			$.htmlParse(div.getElementsByTagName('span'), 'className', 'bio-text', v => biographyAuthor = server.format(v.innerHTML));
+			biographyAuthor = biographyLabel + ' ' + biographyAuthor;
 
-		$.htmlParse(dv, 'className', 'text', v => biography = server.format(v.innerHTML)); // don't use innerText: formatting wrong
-		$.htmlParse(dv, 'className', 'birth', v => start = server.format(v.innerHTML).replace(/Born/i, 'Born:').replace(/Formed/i, 'Formed:'));
-		$.htmlParse(dv, 'className', 'death', v => end = server.format(v.innerHTML).replace(/Died/i, 'Died:').replace(/Disbanded/i, 'Disbanded:'));
-		$.htmlParse(dv, 'className', 'active-dates', v => active = v.innerText.replace(/Active/i, 'Active: ').trim());
+			biography = txt.add([active, start, end, biographyGenre, groupMembers, biographyAuthor], biography);
+			biography = biography.trim();
 
-		$.htmlParse(div.getElementsByTagName('a'), false, false, v => {
-			if (v.href.includes('www.allmusic.com/genre') || v.href.includes('www.allmusic.com/style')) {
-				tg = v.innerText.trim();
-				if (tg) biographyGenre.push(tg);
+			if (biography.length > 19) {
+				$.buildPth(fo_bio);
+				$.save(pth_bio, biography, true);
+				server.res();
+			} else {
+				album ? server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + pth_rev) : server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + artist + ' - ' + title);
+				if (!$.file(pth_bio)) $.trace('allmusic biography: ' + artist + ': not found', true);
 			}
-		});
-
-		$.htmlParse(div.getElementsByTagName('a'), false, false, v => {
-			if (v.href.includes('www.allmusic.com/genre') || v.href.includes('www.allmusic.com/style')) {
-				tg = v.innerText.trim();
-				if (tg) biographyGenre.push(tg);
-			}
-		});
-
-		$.htmlParse(dv, 'className', 'group-members', v => {
-			const a = v.getElementsByTagName('a');
-			for (let i = 0; i < a.length; i++) {
-				groupMembers.push(a[i].innerText.trim());
-			}
-		});
-
-		biographyGenre = biographyGenre.length ?  'Genre: ' + biographyGenre.join('\u200b, ') : '';
-		groupMembers = groupMembers.length ? 'Group Members: ' + groupMembers.join('\u200b, ') : '';
-		$.htmlParse(div.getElementsByTagName('h2'), 'className', 'bio-heading', v => biographyLabel = server.format(v.innerHTML));
-		$.htmlParse(div.getElementsByTagName('span'), 'className', 'bio-text', v => biographyAuthor = server.format(v.innerHTML));
-		biographyAuthor = biographyLabel + ' ' + biographyAuthor;
-
-		biography = txt.add([active, start, end, biographyGenre, groupMembers, biographyAuthor], biography);
-		biography = biography.trim();
-
-		if (biography.length > 19) {
-			$.buildPth(fo_bio);
-			$.save(pth_bio, biography, true);
-			server.res();
-		} else {
+		} catch (e) {
 			album ? server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + pth_rev) : server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + artist + ' - ' + title);
 			if (!$.file(pth_bio)) $.trace('allmusic biography: ' + artist + ': not found', true);
 		}
-	} catch (e) {
-		album ? server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + pth_rev) : server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + artist + ' - ' + title);
-		if (!$.file(pth_bio)) $.trace('allmusic biography: ' + artist + ': not found', true);
+		doc.close();
 	}
-	doc.close();
+
+	amSearch(div, artist, item) {
+		let j = 0, list = [];
+		let items = div.getElementsByTagName('li');
+		for (let i = 0; i < items.length; i++) {
+			if (items[i]['className'] == item) {
+				list[j] = {}
+				$.htmlParse(items[i].getElementsByTagName('div'), 'className', 'title', v => {
+					const a = v.getElementsByTagName('a');
+					list[j].title = a.length && a[0].innerText ? a[0].innerText : 'N/A';
+					list[j].titleLink = a.length && a[0].href ? a[0].href : '';
+				});
+				$.htmlParse(items[i].getElementsByTagName('div'), 'className', artist, v => {
+					const a = v.getElementsByTagName('a');
+					list[j].artist = a.length && a[0].innerText ? a[0].innerText : v.innerText;
+					list[j].artistLink = a.length && a[0].href ? a[0].href : '';
+				});
+				j++;
+			}
+		}
+		return list;
+	}
 }
+
+const parse = new Parse;

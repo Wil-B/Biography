@@ -59,7 +59,6 @@ class DldWikipedia {
 				this.timer = null;
 				if (this.xmlhttp.status == 200) this.func();
 				else {
-					console.log('this.type',this.type,'onStateChange: ',this.xmlhttp.status);
 					this.save();
 				}
 			}
@@ -70,7 +69,7 @@ class DldWikipedia {
 		this.searchItem = p_searchItem;
 		if (this.init) {
 			this.album = p_album;
-			if (p_type == '!stndBio') this.aridType = 2; // !stndBio flags type 0 where recording or release methods can't be used
+			if (p_type == '!stndBio') this.aridType = 2; // !stndBio recording or release methods can't be used
 			this.artist = p_artist;
 			this.force = p_force;
 			this.lookUp = p_type == '!stndBio';
@@ -122,13 +121,11 @@ class DldWikipedia {
 					URL = server.url.mb + 'artist/' + this.ar_mbid + '?inc=genres+url-rels&fmt=json';
 				}
 				if (this.type && this.wikidataArtist) {
-					//console.log('READ this.wikidataArtist',this.wikidataArtist)
 					return this.search(2);
 				}
 				break;
 			case 2: {
 				if (this.rg_mbid) {
-					console.log('read user this.rg_mbid',this.rg_mbid)
 					return this.search(3);
 				}
 				let params = '';
@@ -147,7 +144,6 @@ class DldWikipedia {
 				break;
 			}
 			case 5:
-				//console.log('this.wikititle',this.wikititle);
 				URL = server.url.wikipedia.replace(`//lang`, `//${this.site}`) + this.wikititle; // encodeURIComponent broke Y Viva España
 				break;
 			case 6: {
@@ -189,7 +185,6 @@ class DldWikipedia {
 							if (i != -1) list.push(v);
 						});
 						const artist = $.strip(this.artist);
-						//const get_arid = data => {
 						list.some(v => {
 							if (this.ar_mbid) return true;
 							v['artist-credit'].some(w => {
@@ -229,12 +224,10 @@ class DldWikipedia {
 								});
 							}
 						}
-						//}
-						//get_arid(data);
 						this.aridType = !this.aridType && this.album ? 1 : 2;
 						return this.search(this.ar_mbid ? 1 : 0);
 					}
-					case 2: { // artist name match: type 0: only accepted if single name match: others try wikipedia direct as can validate later 
+					case 2: { // artist name match: type 0: only accepted if single name match: others try wikipedia direct as can validate then
 						const data = $.jsonParse(this.xmlhttp.responseText, [], 'get', 'artists');
 						if (!data.length) {
 							if (this.doFallbackSearch()) return;
@@ -243,7 +236,6 @@ class DldWikipedia {
 						const artist = $.strip(this.artist);
 						const aliases = [];
 						let items = [];
-						//const get_arid = data => {
 						items = data.filter(v => artist == $.strip(v.name));
 						if (items.length == 1 || this.type == 2) server.artistMbid[this.artist] = this.ar_mbid = items[0].id;
 						if (!items.length) {
@@ -262,8 +254,6 @@ class DldWikipedia {
 							}
 							
 						}
-						//}
-						//get_arid(data);
 						if (!this.ar_mbid) {
 							if (this.doFallbackSearch()) return; // type 1-4
 							if (this.type || !$.file(this.pth)) return $.trace('wikipedia: ' + this.artist + (items.length > 1 || aliases.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators' + (!this.lookUp ? ', album name or track title, not matched' : ' N/A for menu look ups') : ': name not matched at musicbrainz'), true); // type 0 only
@@ -271,7 +261,7 @@ class DldWikipedia {
 						return this.search(1);
 					}
 				}
-				break; // added ? esLint
+				break;
 			case 1: { // extractMbArtistLinks
 				let data;
 				data = $.jsonParse(this.xmlhttp.responseText, []);
@@ -281,8 +271,9 @@ class DldWikipedia {
 					$.take(this.genres, 5);
 					this.genres = this.genres.map(v => $.titlecase(v.name));
 				}
-				let countryCode = $.jsonParse(this.xmlhttp.responseText, '', 'get', 'area.iso-3166-1-codes.0');
-				if (!countryCode) countryCode = $.jsonParse(this.xmlhttp.responseText, '', 'get', 'area.iso-3166-2-codes.0');
+				
+				let countryCode = '';
+				['area.iso-3166-1-codes.0', 'area.iso-3166-2-codes.0', 'begin-area.iso-3166-1-codes.0', 'begin-area.iso-3166-2-codes.0'].some(v => countryCode = $.jsonParse(this.xmlhttp.responseText, '', 'get', v));
 				this.saveCountryCode(countryCode, this.force);
 
 				data = $.jsonParse(this.xmlhttp.responseText, [], 'get', 'relations');
@@ -299,7 +290,7 @@ class DldWikipedia {
 							return this.wikidata = v.url.resource;
 						}
 					});
-				} else if (wikidataCount > 1) { // check credit if > 1 link
+				} else if (wikidataCount > 1) {
 					data.some(v => {
 							if (v.type == 'wikidata' && (!v['source-credit'] || $.strip(v['source-credit']).includes($.strip(this.artist)))) {
 							return this.wikidata = v.url.resource;
@@ -311,13 +302,12 @@ class DldWikipedia {
 					alias: this.alias,
 					code: this.wikidata
 				}
-				//console.log('this.type',this.type,'this.wikidata',this.wikidata)
-				if (this.wikidata) { // try first
+				if (this.wikidata) {
 					return this.search(!this.type ? 4 : 2);
 				}
 				let wikidata = '';
 				if (!this.type && cfg.language == 'EN') {
-					data.some(v => { // try direct wikipedia second (EN only)
+					data.some(v => {
 						if (v.type == 'wikipedia' && v.url.resource && v.url.resource.includes('//en.') && !v.url.resource.includes(`disambiguation`)) return wikidata = v.url.resource;
 					});
 					this.wikititle = wikidata.split('/').pop();
@@ -347,19 +337,16 @@ class DldWikipedia {
 						if (levenshtein.get($.strip(nm), ar) > 0.8 || levenshtein.get($.strip(disamb), ar) > 0.8) filteredList.push({artist: this.artist, date: Date.parse(v['first-release-date']) || 0, rg_mbid: v.id, title: v.title});
 					}
 				});
-				//console.log(this.type,'list',list.length);
 				$.sort(list, 'date', 'num');
 				$.sort(list, 'type');
 				let i = -1;
 				if (this.type == 2 || this.type == 4) {
-					i = server.match(this.artist, this.title, filteredList, ['', 'review', 'composition', 'song', 'song'][this.type], true); // artist
+					i = server.match(this.artist, this.title, filteredList, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 					if (i != -1) this.rg_mbid = filteredList[i].rg_mbid;
-					//console.log('filteredList',filteredList.length,'i',i,'this.rg_mbid',this.rg_mbid);
 				}
 				if (i == -1) {
 					i = server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 					if (i != -1) this.rg_mbid = list[i].rg_mbid;
-					//console.log('list',list.length,'i',i,'this.rg_mbid',this.rg_mbid);
 				}
 				if (i == -1) {
 					if (this.type == 1) {
@@ -389,7 +376,7 @@ class DldWikipedia {
 				data = $.jsonParse(this.xmlhttp.responseText, [], 'get', 'relations');
 				this.wikidata = '';
 				data.forEach(v => { // occasionally > 1 link: no obvious discriminators: use earliest: more likely to be main one (less likely to be a video etc)
-					if (v.type == 'wikidata') { // try first
+					if (v.type == 'wikidata') {
 						const newId = v.url.resource.split('/').pop();
 						const curId = this.wikidata.replace('Q', '');
 						if (!this.wikidata || parseInt(newId.replace('Q', '')) < parseInt(curId)) this.wikidata = newId;
@@ -402,7 +389,7 @@ class DldWikipedia {
 				this.wikidata = '';
 				this.wikititle = '';
 				if (cfg.language == 'EN') {
-					data.some(v => { // try direct wikipedia second (EN only)
+					data.some(v => {
 						if (v.type == 'wikipedia' && v.url.resource && v.url.resource.includes('//en.') && !v.url.resource.includes(`disambiguation`)) return this.wikidata = v.url.resource;
 					});
 					this.wikititle = this.wikidata.split('/').pop();
@@ -426,7 +413,6 @@ class DldWikipedia {
 			case 4:	{ // parseWikidata
 				const data = $.jsonParse(this.xmlhttp.responseText, {});
 				if (this.alwaysCheckArtistInWiki && this.type || !this.artistValidated && (this.type == 2 || this.type == 4 || this.fallBackDone)) this.artistValidated = this.wikidataArtist ? this.xmlhttp.responseText.includes(`${this.wikidataArtist}`) : false;
-				console.log('this.artistValidated',this.artistValidated);// console.log('this.searchItem',this.searchItem,'this.type',this.type,'this.wikidataArtist',this.wikidataArtist);
 				const wikititles = server.getObjKeyValue(data, 'title');
 				const wikiurls = server.getObjKeyValue(data, 'url');
 				this.wikititle = '';
@@ -437,18 +423,15 @@ class DldWikipedia {
 						return true;
 					}
 				});
-				//console.log('server.langFallback',server.langFallback)
 				if (!this.wikititle && server.langFallback) {
 					wikiurls.some((v, i) => {
 						if (v.includes(`en.wikipedia`) && !v.includes(`disambiguation`)) {
 							this.site = 'en';
-							//console.log('set en this.site',this.site)
 							this.wikititle = wikititles[i];
 							return true;
 						}
-				});
+					});
 				}
-				//console.log('this.wikititle------------------------',this.wikititle)
 				if (this.wikititle) {
 					return this.search(5);
 				}
@@ -472,8 +455,7 @@ class DldWikipedia {
 				if (!this.artistValidated && needArtistCheck) {
 					this.artistValidated = this.includesArtist(this.wiki);
 				}
-				console.log('this.artistValidated',this.artistValidated,'this.wikidataArtist',this.wikidataArtist,'this.searchItem',this.searchItem,'this.type',this.type,'this.artist',this.artist,'this.related_artist',this.related_artist,'this.alias',this.alias,'this.fallBackDone',this.fallBackDone)
-	
+
 				if (needArtistCheck && !this.artistValidated) {
 					this.wiki = '';
 					if ((this.type == 2 || this.type == 4) && !this.artistWorksChecked) { // try all artist works if query doesn't yield correct match
@@ -494,7 +476,6 @@ class DldWikipedia {
 					list.push({artist: this.artist, rg_mbid: v.id, title: v.title});
 				});
 				const i = server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
-				//console.log('i',i,'this.offset',this.offset,'this.releases',this.releases);
 				if (i == -1) {
 					this.offset += 100;
 					if (this.releases > this.offset) {
@@ -507,7 +488,7 @@ class DldWikipedia {
 				this.rg_mbid = list[i].rg_mbid;
 				return this.search(2);
 			}
-			case 7: {// directSearch
+			case 7: { // directSearch
 				const data = $.jsonParse(this.xmlhttp.responseText, [], 'get', 'query.search');
 				const al = '\\balbum\\b|\\bep\\b';
 				const tr = '\\bsong\\b|\\bsingle\\b|\\binstrumental\\b';
@@ -518,20 +499,18 @@ class DldWikipedia {
 				data.forEach(v => {
 					const snippet = this.tidy(v.snippet);
 					const titlesnippet = this.tidy(v.titlesnippet);
-					if (this.includesArtist(snippet) && RegExp(disambig, 'i').test(snippet)) list.push({artist: this.artist, id: v.title, title: titlesnippet/*v.label*/});
+					if (this.includesArtist(snippet) && RegExp(disambig, 'i').test(snippet)) list.push({artist: this.artist, id: v.title, title: titlesnippet});
 					if (!this.wikidataFirst && RegExp(disambig, 'i').test(snippet))  {
 						this.wikidataFirst = v.title;
 					}
 				});
-				//console.log('list directSearch',list)
 				let i = server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 				if (i != -1) {
 					this.wikidata = list[i].id;
 					this.artistValidated = true;
 					return this.search(4);
-				} else if (this.wikidataFirst) { // try 1st disambigOnly match if no full match
+				} else if (this.wikidataFirst) { // check 1st disambigOnly match if no full match
 					this.wikidata = this.wikidataFirst;
-					console.log('this.wikidata wikidataFirst v.id',this.wikidata)
 					return this.search(4);
 				}
 				this.save();
@@ -541,10 +520,8 @@ class DldWikipedia {
 				const json = $.jsonParse(this.xmlhttp.responseText, {}, 'get', 'query.pages');
 				const key = Object.keys(json);
 				if (!key.length) {this.save(); break;}
-				console.log('source raw',$.getProp(json, `${key[0]}.revisions.0.slots.main.*`, ''))
 				let source = infobox.cleanText($.getProp(json, `${key[0]}.revisions.0.slots.main.*`, ''), this.site);
 				if (!source || /#REDIRECT/i.test(source)) {this.save(); break;}
-				//console.log('source cleaned ------------------------------------------------------',source)
 				this.info = infobox.getValues(this.type, source, this.site);
 				this.save();
 				break;
@@ -555,22 +532,16 @@ class DldWikipedia {
 	tidy(n) {
 		return n.replace(/<span([\s\S]+?)>/g, '').replace(/<\/span>/g, '');
 	}
-	
+
 	checkTypeOf() {
-		if (this.type < 3) {
-			this.info.genre = $.isArray(this.info.genre) ? this.info.genre.join('\u200b, ') : '';
-			this.genres = $.isArray(this.genres) ? this.genres.join('\u200b, ') : '';
-			if ($.isArray(this.info.composer)) this.info.composer = this.info.composer.join('\u200b, ');
-		} else {
-			if (typeof this.info.composer === 'string') this.info.composer = [this.info.composer];
-		}
+		if (this.type > 2) return;
+		this.info.genre = $.isArray(this.info.genre) ? this.info.genre.join('\u200b, ') : '';
+		this.genres = $.isArray(this.genres) ? this.genres.join('\u200b, ') : '';
 	}
 
 	doFallbackSearch() {
-		console.log('this.searchItem',this.searchItem,'doFallbackSearch---------------------------',this.type,this.user_mbid)
 		if (this.type && !this.fallBackDone && !this.user_mbid) {
 			this.fallBackDone = true;
-			console.log('CALL FALLBACK SEARCH________________________________________________________________________________')
 			this.search(7);
 			return true;
 		}
@@ -609,7 +580,6 @@ class DldWikipedia {
 	}
 
 	get(URL, force) {
-		console.log(window.ID,'this.type',this.type,'this.searchItem',this.searchItem,'URL--------------------------',URL)
 		this.func = this.analyse;
 		if (ppt.multiServer && !force && server.urlDone(md5.hashStr(this.artist + this.title + this.type + this.pth + cfg.partialMatch + URL))) return;
 		this.xmlhttp.open('GET', URL);
@@ -651,10 +621,8 @@ class DldWikipedia {
 	includesArtist(text) {
 		text = text.replace(/ and /gi, ' & ');
 		const altArtist = this.artist.length > 6 && !/^The The$/i.test(this.artist) ? this.artist.replace(/^The /i, '') : '';
-		const arr = [...new Set([this.artist, this.related_artist, this.alias, altArtist].map(v => v.replace(/ and /gi, ' & ')).filter(Boolean))]; // chain OK: seems fine
+		const arr = [...new Set([this.artist, this.related_artist, this.alias, altArtist, $.removeDiacritics(this.artist)].map(v => v.replace(/ and /gi, ' & ')).filter(Boolean))];
 		if (this.artist == 'Various Artists') arr.push('compilation');
-		console.log('this.artist', this.artist, 'this.related_artist', this.related_artist, 'this.alias', this.alias, 'altArtist',altArtist)
-		console.log('includesArtist arr', arr)
 		return arr.some(v => v && RegExp(`\\b${v}([\\s.,;:!?'"]|$)`, 'i').test(text)); // handle trailing accented etc
 	}
 
@@ -665,6 +633,17 @@ class DldWikipedia {
 
 		if (this.type == 0) {
 			this.wiki = txt.add([this.info.active, this.info.start, this.info.bornIn, this.info.end, this.info.foundedIn], this.wiki);
+			const value = $.jsonParse(txt.countryCodes, {}, 'file')[this.artist.toLowerCase()];
+			if (!value) {
+				let countryCode = '';
+				let locale = this.info.bornIn || this.info.foundedIn;
+				if (locale) {
+					locale = locale.split(',');
+					const isoCodes = {"afghanistan": "AF", "albania": "AL", "algeria": "DZ", "american samoa": "AS", "andorra": "AD", "angola": "AO", "anguilla": "AI", "antarctica": "AQ", "antigua and barbuda": "AG", "argentina": "AR", "armenia": "AM", "aruba": "AW", "australia": "AU", "austria": "AT", "azerbaijan": "AZ", "bahamas": "BS", "bahrain": "BH", "bangladesh": "BD", "barbados": "BB", "belarus": "BY", "belgium": "BE", "belize": "BZ", "benin": "BJ", "bermuda": "BM", "bhutan": "BT", "bolivia": "BO", "bosnia and herzegovina": "BA", "botswana": "BW", "bouvet island": "BV", "brazil": "BR", "british indian ocean territory": "IO", "brunei darussalam": "BN", "bulgaria": "BG", "burkina faso": "BF", "burundi": "BI", "cambodia": "KH", "cameroon": "CM", "canada": "CA", "cape verde": "CV", "cayman islands": "KY", "central african republic": "CF", "chad": "TD", "chile": "CL", "people's republic of china": "CN", "china": "CN", "christmas island": "CX", "cocos (keeling) islands": "CC", "colombia": "CO", "comoros": "KM", "republic of the congo": "CG", "congo": "CG", "democratic republic of the congo": "CD", "cook islands": "CK", "costa rica": "CR", "cote d'ivoire": "CI", "croatia": "HR", "cuba": "CU", "cyprus": "CY", "czech republic": "CZ", "denmark": "DK", "djibouti": "DJ", "dominica": "DM", "dominican republic": "DO", "ecuador": "EC", "egypt": "EG", "el salvador": "SV", "equatorial guinea": "GQ", "eritrea": "ER", "estonia": "EE", "ethiopia": "ET", "falkland islands (malvinas)": "FK", "faroe islands": "FO", "fiji": "FJ", "finland": "FI", "france": "FR", "french guiana": "GF", "french polynesia": "PF", "french southern territories": "TF", "gabon": "GA", "republic of the gambia": "GM", "the gambia": "GM", "gambia": "GM", "georgia": "GE", "germany": "DE", "ghana": "GH", "gibraltar": "GI", "greece": "GR", "greenland": "GL", "grenada": "GD", "guadeloupe": "GP", "guam": "GU", "guatemala": "GT", "guinea": "GN", "guinea-bissau": "GW", "guyana": "GY", "haiti": "HT", "heard island and mcdonald islands": "HM", "holy see (vatican city state)": "VA", "honduras": "HN", "hong kong": "HK", "hungary": "HU", "iceland": "IS", "india": "IN", "indonesia": "ID", "islamic republic of iran": "IR", "iran": "IR", "iraq": "IQ", "ireland": "IE", "israel": "IL", "italy": "IT", "jamaica": "JM", "japan": "JP", "jordan": "JO", "kazakhstan": "KZ", "kenya": "KE", "kiribati": "KI", "north korea": "KP", "south korea": "KR", "kuwait": "KW", "kyrgyzstan": "KG", "lao people's democratic republic": "LA", "latvia": "LV", "lebanon": "LB", "lesotho": "LS", "liberia": "LR", "libya": "LY", "liechtenstein": "LI", "lithuania": "LT", "luxembourg": "LU", "macao": "MO", "madagascar": "MG", "malawi": "MW", "malaysia": "MY", "maldives": "MV", "mali": "ML", "malta": "MT", "marshall islands": "MH", "martinique": "MQ", "mauritania": "MR", "mauritius": "MU", "mayotte": "YT", "mexico": "MX", "micronesia, federated states of": "FM", "moldova, republic of": "MD", "monaco": "MC", "mongolia": "MN", "montserrat": "MS", "morocco": "MA", "mozambique": "MZ", "myanmar": "MM", "namibia": "NA", "nauru": "NR", "nepal": "NP", "netherlands": "NL", "new caledonia": "NC", "new zealand": "NZ", "nicaragua": "NI", "niger": "NE", "nigeria": "NG", "niue": "NU", "norfolk island": "NF", "the republic of north macedonia": "MK", "north macedonia": "MK", "northern mariana islands": "MP", "norway": "NO", "oman": "OM", "pakistan": "PK", "palau": "PW", "state of palestine": "PS", "palestine": "PS", "panama": "PA", "papua new guinea": "PG", "paraguay": "PY", "peru": "PE", "philippines": "PH", "pitcairn": "PN", "poland": "PL", "portugal": "PT", "puerto rico": "PR", "qatar": "QA", "reunion": "RE", "romania": "RO", "russian federation": "RU", "russia": "RU", "rwanda": "RW", "saint helena": "SH", "saint kitts and nevis": "KN", "saint lucia": "LC", "saint pierre and miquelon": "PM", "saint vincent and the grenadines": "VC", "samoa": "WS", "san marino": "SM", "sao tome and principe": "ST", "saudi arabia": "SA", "senegal": "SN", "seychelles": "SC", "sierra leone": "SL", "singapore": "SG", "slovakia": "SK", "slovenia": "SI", "solomon islands": "SB", "somalia": "SO", "south africa": "ZA", "south georgia and the south sandwich islands": "GS", "spain": "ES", "sri lanka": "LK", "sudan": "SD", "suriname": "SR", "svalbard and jan mayen": "SJ", "eswatini": "SZ", "sweden": "SE", "switzerland": "CH", "syrian arab republic": "SY", "taiwan, province of china": "TW", "taiwan": "TW", "tajikistan": "TJ", "united republic of tanzania": "TZ", "tanzania": "TZ", "thailand": "TH", "timor-leste": "TL", "togo": "TG", "tokelau": "TK", "tonga": "TO", "trinidad and tobago": "TT", "tunisia": "TN", "turkey": "TR", "turkmenistan": "TM", "turks and caicos islands": "TC", "tuvalu": "TV", "uganda": "UG", "ukraine": "UA", "united arab emirates": "AE", "united kingdom": "GB", "uk": "GB", "u.k.": "GB", "great britain": "GB", "united states of america": "US", "united states": "US", "usa": "US", "u.s.a": "US", "u.s.": "US", "united states minor outlying islands": "UM", "uruguay": "UY", "uzbekistan": "UZ", "vanuatu": "VU", "venezuela": "VE", "vietnam": "VN", "virgin islands, british": "VG", "virgin islands, u.s.": "VI", "wallis and futuna": "WF", "western sahara": "EH", "yemen": "YE", "zambia": "ZM", "zimbabwe": "ZW", "åland islands": "AX", "bonaire, sint eustatius and saba": "BQ", "curaçao": "CW", "guernsey": "GG", "isle of man": "IM", "jersey": "JE", "montenegro": "ME", "saint barthélemy": "BL", "saint martin (french part)": "MF", "serbia": "RS", "sint maarten (dutch part)": "SX", "south sudan": "SS", "kosovo": "XK"}
+					countryCode = isoCodes[locale[locale.length - 1].trim().toLowerCase()];	
+					this.saveCountryCode(countryCode);
+				}
+			}
 		}
 
 		this.checkTypeOf();
@@ -717,11 +696,9 @@ class DldWikipedia {
 			if (genres.length || this.info.composer.length || this.info.released || this.info.length || this.wiki) server.res();
 			else $.trace('wikipedia: ' + this.name + ': not found', true);
 		}
-		//console.log('call res this.type', this.type)
 	}
 
 	saveCountryCode(code, force) {
-		//fb.ShowPopupMessage('saveCountryCode' + code)
 		if (!code) return;
 		const a = this.artist.toLowerCase();
 		const m = $.jsonParse(txt.countryCodes, {}, 'file');
@@ -733,12 +710,11 @@ class DldWikipedia {
 	}
 
 	tidyWiki(n, en) {
-		n = en ? n.replace(/\.\n+/g, '.\r\n\r\n') : n.replace(/\n+/g, '\r\n\r\n'); // ja etc may not use en fullstop
-		n = n.replace(/\(\)/g, '').replace(/\(;\s/g, '(')
-		.replace(/^thumb\r\n\r\n/i, '').replace(/\."([^\s"])/g, '. "$1').replace(/[.,]:\s\d+/g, '.')/*<sandie shaw fixes*/.replace(/Ph\.D\./g, 'PhD')
+		n = en ? n.replace(/\.\n+/g, '.\r\n\r\n') : n.replace(/\n+/g, '\r\n\r\n');
+		n = n.replace(/\(\)/g, '').replace(/\(;\s/g, '(').replace(/^thumb\r\n\r\n/i, '').replace(/\."([^\s"])/g, '. "$1').replace(/[.,]:\s\d+/g, '.').replace(/Ph\.D\./g, 'PhD')
 		const tidyFullStop = /([^A-Z.\s])\.([^a-z\s\d.'"\u201d,;/)[\]])/g;
-		if (en) n = n.replace(tidyFullStop, '$1.\r\n\r\n$2').replace(/t\.\r\n\r\nA.T.u./g, 't.A.T.u.'); // added t.A.T.u. exclusion
-		else n = n.replace(tidyFullStop, '$1. $2'); // if non-english use space as poss upperCase detection issue with unicode
+		if (en) n = n.replace(tidyFullStop, '$1.\r\n\r\n$2').replace(/t\.\r\n\r\nA.T.u./g, 't.A.T.u.');
+		else n = n.replace(tidyFullStop, '$1. $2');
 		return n.trim();		
 	}
 }
@@ -761,6 +737,7 @@ class Infobox {
 		.replace(/{{plain\s?list\|/i, '')
 		.replace(/{{ubl\|/i, '')
 		.replace(/{{unbulleted\s?list\|/i, '')
+		.replace(/{{flagicon\|([^}]+)}}/gi, '$1, ')
 		.replace(/\s*\*\s*/g, ', ')
 		.replace(/}}}{{/g, '}}, {{')
 		.replace(/{{start\s?date\|/gi, '')
@@ -772,11 +749,12 @@ class Infobox {
 	cleanStr(n) {
 		n = this.cleanLists(n)
 		.replace(/\]\]\s+\[\[/g, ']], [[')
-		.replace(/\[[^[]+?\|/g, '')
+		.replace(/\[\[[^\]]+?\|/g, '')
 		.replace(/[[\]]/g, '')
 		.replace(/{{-}}/g, '')
-		.replace(/[{}]/g, '')
-		console.log('cleanStr out', this.tidyPunctuation(n));
+		.replace(/{{ref\|a}}/g, '')
+		.replace(/\(see below\)/g, '')
+		.replace(/[{}]/g, '');
 		return this.tidyPunctuation(n);
 	}
 
@@ -822,11 +800,29 @@ class Infobox {
 		keys.forEach(v => {
 			if (list[v]) li.push(list[v])
 		})
-		console.log('keys',keys, 'li',li);
 		return li.length ? li : null;
 	}
 
-	getInstances(item, list, site) {
+	getComposer(item, list, site) {
+		let n = [];
+		let m = this.find(item, list, site);
+		if (!m) return n;
+		
+		m.forEach(v => {
+			const f = [];
+			const lc = v.toLowerCase();
+			['composer', 'lyricist', 'producer'].forEach(v => {
+				const ix = lc.indexOf(v);
+				if (ix != -1) f.push(ix);
+			});
+			const i = f.length ? Math.min(...f) : -1;
+			if (i != -1) v = v.slice(0, i).trim();
+			n.push(this.cleanStr(v).split(', '));
+		});
+		return [...new Set(n.flat().filter(Boolean))];
+	}
+
+	getGenre(item, list, site) {
 		let n = [];
 		let m = this.find(item, list, site);
 		if (!m) return n;
@@ -840,14 +836,14 @@ class Infobox {
 			w = w[1] || w[0];
 			n.push(item == 'genre' ? $.titlecase(w) : w);
 		});
-		console.log('default instances out',n)
-		n = n.filter(v => !/[{}]/.test(v)); // disallow unrecognised
-		return item == 'genre' ? n : n.length ? n : this.getStr(item, list);
+		if (!n.length) n = m[0].split(/\|/); // plain text
+		n = n.filter(v => !/[[\]{}]/.test(v)); // disallow unrecognised
+		return n;
 	}
 
 	getKeys(item, site) {
 		switch (item) {
-			case 'composer': return ['writer', 'composer'];
+			case 'composer': return ['writer', 'composer', 'lyricist'];
 			case 'genre': {
 				const genre = {
 					en: ['genre', 'genres'],
@@ -882,7 +878,7 @@ class Infobox {
 		while (/\|[^=]+=($|\}\})/.test(value)) { // remove empty: | recorded   =
 			value = value.replace(/\|[^=|]+=($|\}\})/, '');
 		}
-		
+
 		if (/\}\}$/.test(value)) { // handle infobox w/o wrapper
 			const leadingCount = value.split('{').length - 1;
 			const trailingCount = value.split('}').length - 1;
@@ -903,20 +899,18 @@ class Infobox {
 			n  = 
 			this.cleanLists(len[0])
 			.replace(duration.pattern, duration.replacer).replace(/^:/g, '').replace(/([^\d]):/g, '$1')
-			.replace(/\[[^[]+?\|/g, '').replace(/[[\]]/g, '').replace(/[{}]/g, '')
+			.replace(/\[\[[^\]]+?\|/g, '').replace(/[[\]]/g, '').replace(/[{}]/g, '')
 			.replace(/\|/g, ', ')
 			.replace(/^,/, '')
 			.replace(/,(?=\S)/g, ', ')
 			.replace(/:(\d([^\d]|$))/g, ':0$1').replace(/(^|[^\d])0(\d)(:\d\d$)/g, '$2$3')
-			.trim()
-			console.log('duration',n)
+			.trim();
 			if (this.isValidLength(n)) return this.tidyPunctuation(n);
 		}
 
 		n = [];
 		if (this.isValidLength(len[0])) {
-			console.log('len[0]',len[0])
-			let m = len[0].replace(/\[[^[]+?\|/g, '').replace(/[[\]]/g, '').replace(/\s*\*\s*/g, ', ');
+			let m = len[0].replace(/\[\[[^\]]+?\|/g, '').replace(/[[\]]/g, '').replace(/\s*\*\s*/g, ', ');
 			m = /{{([^}]+)}}/i.exec(m);
 			if (m) {
 				m[1].split('|').forEach(v => {
@@ -924,7 +918,6 @@ class Infobox {
 				});
 			}
 		}
-		console.log('n.length',n.length,'length join',n.join(', '))
 		if (n.length) return n.join(', ').replace(/^,/, '').trim();
 		return this.getStr(item, list);
 	}
@@ -955,7 +948,6 @@ class Infobox {
 
 			if (m) {
 				const count = m[0].match(birthDateGlobalPattern);
-				console.log('count',count)
 				if (count && count.length > 1) return {}; // N/A if > 1 artist				
 				const origin = m[0].replace(birthDateGlobalPattern, '').split('{{')[0].replace(/[[\]]/g, '').replace(/^,/, '').trim();
 				m = m[0].match(/(\d+)\s*\|(\d+)\s*\|(\d+)\s*/);
@@ -981,18 +973,15 @@ class Infobox {
 			const nextTwo = source.substr(i, 2);
 			if (nextTwo === '{{') {
 				lastOpen.push(i);
-				// Move forward, so don't count closures next to each other
 				i++;
 				continue;
 			}
 
 			if (nextTwo === '}}') {
-				/*const openAt = */lastOpen.pop(); // OK? esLint
+				lastOpen.pop();
 				if (lastOpen.length === 0) {
-					// Add 2 for the closure
 					return i + 2;
 				}
-				// Move forward, so don't count closures next to each other
 				i++;
 			}    
 		}
@@ -1004,14 +993,13 @@ class Infobox {
 
 		n = this.getStr(item, list);
 		n = this.checkDateFormat(n);
-		if (this.isFullDate(n)) return n; // return str if valid fullDate
+		if (this.isFullDate(n)) return n;
 
 		let m = this.find(item, list) || '';
 		let d = '';
 
 		if (/{{start\s?date\|/i.test(m[0])) {
 			let dates = m[0].match(/{{start\s?date\|([^}]+?)\}\}/gi);
-			console.log('dates',dates);
 			if (dates) {
 				const map = dates.map(v => {
 					const d1 = v.replace(/}/g, '').split('|').filter(v => /\d/.test(v));
@@ -1028,7 +1016,6 @@ class Infobox {
 				dates.forEach((v, i) => {
 					d = d.replace(/{{start\s?date\|[^}]+\}\}/i, map[i].d)
 				});
-				console.log('start date method d',d)
 				d = d.replace(/\s*\*\s*/g, ', ');
 				d = this.cleanStr(this.checkDateFormat(d));
 			}
@@ -1038,7 +1025,6 @@ class Infobox {
 
 	getStr(item, list) {
 		let n = this.find(item, list);
-		if (n) console.log(item, 'default str n',n)
 		if (!n) return '';
 		let str = this.cleanStr(n[0]);
 		if (item == 'length' && !this.isValidLength(str)) str = '';
@@ -1049,7 +1035,6 @@ class Infobox {
 		source = this.extractInfoboxes(source)
 		if (!source) return;
 		const list = this.keyValue(source);
-		//console.log('list', JSON.stringify(list, null, 3));
 
 		const o = {
 			active: '',
@@ -1057,7 +1042,7 @@ class Infobox {
 			composer: [],
 			end: '',
 			foundedIn: '',
-			genre: this.getInstances('genre', list, site),
+			genre: this.getGenre('genre', list, site),
 			length: '',
 			released: '',
 			start: ''
@@ -1068,7 +1053,6 @@ class Infobox {
 		if (type == 0) {
 			const bornIn = this.getStr('birth_place', list);
 			const date = this.getLifespan(list);
-			console.log('getLifespan',date)
 			const prefix = date.born ? 'Born In: ' : 'Founded In: ';
 			
 			let foundedIn = '';
@@ -1093,7 +1077,7 @@ class Infobox {
 			if (type < 3 && o.length) o.length = `Length: ${o.length}`;
 		}
 
-		if (type > 2) o.composer = this.getInstances('composer', list);
+		if (type > 2) o.composer = this.getComposer('composer', list);
 
 		if (type == 1 || type == 3 || type == 4) {
 			o.released = this.getReleased('released', list);
@@ -1107,7 +1091,6 @@ class Infobox {
 		let n = this.find(item, list);
 		if (!n) return '';
 		n = n[0];
-		console.log('years_active out',this.cleanStr(this.isList(n) ? this.cleanLists(n) : n.split('|')[0]));
 		return this.cleanStr(this.isList(n) ? this.cleanLists(n) : n.split('|')[0]);
 	}
 
@@ -1166,6 +1149,20 @@ class Infobox {
 	}
 
 	tidyPunctuation(n) {
-		return n.replace(/;/g, ',').replace(/^,/, '').replace(/\|,?/g, ', ').replace(/,+/g, ', ').replace(/ ?,(?=\S)/g, ', ').replace(/[,.]$/, '').replace(/:,/g, ':').replace(/(\w)\(/g, '$1 (').replace(/\)(?=\w)/g, ') ').replace(/ {2,}/g,' ').trim() || '';
+		return n
+		.replace(/;/g, ',')
+		.replace(/^,/, '')
+		.replace(/\|,?/g, ', ')
+		.replace(/, ,?/g, ',')
+		.replace(/,+/g, ', ')
+		.replace(/ , /g, ', ')
+		.replace(/ ?,(?=\S)/g, ', ')
+		.replace(/([^A-Z])\.$/, '$1')
+		.replace(/:,/g, ':')
+		.replace(/(\w)\(/g, '$1 (')
+		.replace(/\)(?=\w)/g, ') ')
+		.replace(/ {2,}/g,' ')
+		.trim()
+		.replace(/,$/, '') || '';
 	}
 }

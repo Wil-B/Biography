@@ -361,7 +361,6 @@ function on_notify_data(name, info) {
 			timer.image()
 			break;
 		case 'bio_refresh':
-			fb.ShowPopupMessage('bio_refresh' + window.ID);
 			window.Reload();
 			break;
 		case 'bio_reload':
@@ -389,12 +388,13 @@ function on_notify_data(name, info) {
 			break;
 		case 'bio_webRequest':
 			clone = String(info);
-			server.urlRequested[info] = Date.now(); // if multiServer enabled, limit requests for same URL to one: requires that notifications are synchronous
+			server.urlRequested[info] = Date.now(); // if multiServer enabled, limit requests for same URL to one
 			break;
 	}
 }
 
 function on_paint(gr) {
+	if (ui.pss.checkOnSize) on_size();
 	ui.draw(gr);
 	if (!ppt.panelActive) {
 		panel.draw(gr);
@@ -484,6 +484,11 @@ function on_size() {
 	txt.repaint = false;
 	panel.w = window.Width;
 	panel.h = window.Height;
+	if (!window.IsVisible && ui.pss.installed) {
+		ui.pss.checkOnSize = true;
+		return;
+	}
+	ui.pss.checkOnSize = false;
 	if (!panel.w || !panel.h) return;
 	ui.getFont();
 	panel.getLogo();

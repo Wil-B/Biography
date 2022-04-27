@@ -55,8 +55,8 @@ class Lyrics {
 			const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
 			const transition_factor_out = $.clamp(transition_factor_in * 3, 0, 1);
 			const alpha = Math.min(255 * transition_factor * 4 / 3, 255);
-			const blendIn = ui.getBlend(this.col.text_h, this.col.text, transition_factor_in);
-			const blendOut = ui.getBlend(this.col.text, this.col.text_h, transition_factor_out);
+			const blendIn = this.type.synced ? ui.getBlend(this.col.text_h, this.col.text, transition_factor_in) : this.col.text;
+			const blendOut = this.type.synced ? ui.getBlend(this.col.text, this.col.text_h, transition_factor_out) : this.col.text;
 			const y = this.y + this.scroll;
 			
 			let col = this.col.text;
@@ -84,33 +84,38 @@ class Lyrics {
 					gr.DrawString(lyric.content, ui.font.lyrics, col, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
 				}
 			});
-			if (this.type.synced && this.userOffset && this.showOffset) {
+			if (this.showOffset) {
 				gr.DrawString(`Offset: ${this.userOffset / 1000}s`, ui.font.main, this.col.text_h, this.x, this.top, this.w, this.lineHeight + 1, this.alignRight);
 			}
 		}
 	}
 
-	format(lyrics) {
+	format(lyrics, isSynced) {
 		if (lyrics.length && this.w > 10) {
+			if (isSynced && lyrics[0].content && lyrics[0].timestamp > this.durationScroll) lyrics.unshift({timestamp: 0, content: ''});
 			$.gr(1, 1, false, g => {
 				for (let i = 0; i < lyrics.length; i++) {
-					const l = g.EstimateLineWrap(lyrics[i].content, ui.font.lyrics, this.w - 10); // actual amount need to fix example was this.w - 3: using 10 for leeway good enough to fix method diff???? Paul Mccartney And Michael Jackson - Say Say Say (right full panel)
-					//console.log('l.length',l.length)
-					//if (l.length > 1) {
-					if (l.length > 2) { // surely 2???
+					const l = g.EstimateLineWrap(lyrics[i].content, ui.font.lyrics, this.w - 10);
+					if (l.length > 2) {
 						const numLines = l.length / 2;
 						let maxScrollTime = this.durationScroll;
 						if (lyrics[i + 1]) {
 							maxScrollTime = Math.min(maxScrollTime * numLines, (lyrics[i + 1].timestamp - lyrics[i].timestamp) / numLines);
 						}
 						for (let j = 0; j < l.length; j += 2) {
-							this.lyrics.push({content: l[j].trim(), timestamp: lyrics[i].timestamp + maxScrollTime * j / 2, id: i, multiLine: true});
+							this.lyrics.push({content: l[j].trim(), timestamp: lyrics[i].timestamp + maxScrollTime * j / 2, id: i, multiLine: j ? true : false});
 						}
 					} else this.lyrics.push({content: lyrics[i].content.trim(), timestamp: lyrics[i].timestamp, id: i});
 				}
 			});
 		}
-		//console.log('this.lyrics',this.lyrics)
+		const incr = Math.min(500, this.durationScroll);
+		this.lyrics.forEach((v, i, arr) => {
+			const t1 = this.getTimestamp(i - 1);
+			const t2 = this.getTimestamp(i);
+			const t3 = this.getTimestamp(i + 1);
+			if (!v.content && t3 && t2 && t1 && t3 - t2 < incr) v.timestamp = Math.max((t2 - t1) / 2 + t1, t2 - incr);
+		});
 		this.repaintRect();
 	}
 
@@ -127,12 +132,29 @@ class Lyrics {
 		let durationScroll = this.durationScroll;
 		const t1 = this.getTimestamp(this.locus - 1);
 		const t2 = this.getTimestamp(this.locus);
-		if (t1 && t2) {
-			durationScroll = $.clamp(t2 - t1, 16, this.durationScroll);
+		const t3 = this.getTimestamp(this.locus + 1);
+		if (t1 && t2 && t2 - t1 > 0) {
+			durationScroll = $.clamp(t2 - t1, this.minDurationScroll, this.durationScroll);
+			if (t3 && t3 - t2 > 0 && t3 - t2 < this.durationScroll) durationScroll = $.clamp(t3 - t2, this.minDurationScroll, this.durationScroll);
 		}
-		this.delta = this.lineHeight * 24 / durationScroll; // allow for timer lag
-	//	this.delta = this.lineHeight * 32 / durationScroll; // allow for timer lag // try 32: may be better than 24: 32 seems too fast
-		this.transitionOffset = durationScroll / 2; // divisor controls line synchronisation: default matches lyrics show 3
+
+		const variSpeed = !ppt.lyricsScrollMaxMethod ? 10 * 500 : 0;
+		if (variSpeed) {
+			let diff1 = 0;
+			let diff2 = 0;
+			if (t1 && t2) {
+				diff1 = t2 - t1;
+				diff1 = diff1 > this.durationScroll ? diff1 * this.durationScroll / variSpeed : 0;
+			}
+			if (t2 && t3) {
+				diff2 = t3 - t2;
+				diff2 = diff2 > this.durationScroll ? diff2 * this.durationScroll / variSpeed : 0;
+			}
+			durationScroll += Math.min(diff1, diff2);
+		}
+
+		this.delta = this.lineHeight * this.factor / durationScroll;
+		this.transitionOffset = durationScroll / 2;
 	}
 
 	getTimestamp(v) {
@@ -149,25 +171,30 @@ class Lyrics {
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
 		this.lineHeight = ui.font.lyrics_h + 4 * $.scale + ppt.textPad;
-		this.durationScroll = ppt.lyricsTxtReaderSpeed;
-		this.delta = this.lineHeight * 24 / this.durationScroll; // allow for timer lag to improve smoothness
-	//	this.delta = this.lineHeight * 32 / this.durationScroll; // allow for timer lag to improve smoothness // try 32: may be better than 24: 32 seems too fast
+		ppt.lyricsScrollTimeMax = $.clamp(Math.round(ppt.lyricsScrollTimeMax), 0, 3000);
+		ppt.lyricsScrollTimeAvg = $.clamp(Math.round(ppt.lyricsScrollTimeAvg), 0, 3000);
+		this.durationScroll = ppt.lyricsScrollMaxMethod ? ppt.lyricsScrollTimeMax : Math.round(ppt.lyricsScrollTimeAvg * 2 / 3);
+		this.factor = this.durationScroll < 1500 ? 20 : 24;
+		this.delta = this.lineHeight * this.factor / this.durationScroll;
 		this.locus = -1;
 		this.lyrics = [];
 		this.lyricsOffset = 0;
+		this.minDurationScroll = Math.min(this.durationScroll, 250); 
 		this.newHighlighted = false;
 		this.scroll = 0;
 		this.setCol();
 		this.showOffsetTimer = null;
 		this.timer = null;
-		this.trackLength = parseInt(this.tfLength.Eval());
+		this.trackLength = parseInt(this.tfLength.Eval(true));
 		this.transitionOffset = this.durationScroll / 2;
 		this.transBot = {}
 		this.transTop = {}
+		ppt.lyricsFadeHeight = $.clamp(ppt.lyricsFadeHeight, -1, 2)
+		const fadeHeight = this.lineHeight * ppt.lyricsFadeHeight;
 		this.x = panel.text.l;
-		this.y = panel.text.t - this.lineHeight;
+		this.y = panel.text.t - this.lineHeight + fadeHeight;
 		this.w = panel.text.w;
-		this.h = panel.lines_drawn * ui.font.main_h + this.lineHeight * 2;
+		this.h = panel.lines_drawn * ui.font.main_h + this.lineHeight * 2 - fadeHeight * 2;
 	
 		const linesDrawn = Math.floor(this.h / this.lineHeight);
 		const oddNumLines = linesDrawn % 2;
@@ -191,7 +218,7 @@ class Lyrics {
 		this.stepTime = Date.now();
 		if (Math.sign(origOffset) != Math.sign(this.userOffset)) this.userOffset = 0;
 		else this.userOffset += 1000 * -step;
-		this.showOffset = this.userOffset != 0;
+		this.showOffset = this.type.synced && this.userOffset != 0;
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
 			this.showOffset = false;
@@ -216,45 +243,49 @@ class Lyrics {
 			else this.type.unsynced = true;
 		}
 
-		let lyrics = [{timestamp: 0, content: this.type.none ? lyr[0] : ''}];
 		switch (true) {
 			case this.type.synced: {
 				let lyrOffset = null;
 				lyr.some(line => lyrOffset = line.match(/^\s*\[offset\s*:(.*)\]\s*$/));
 				if (lyrOffset && lyrOffset.length > 0) this.lyricsOffset = parseInt(lyrOffset[1]);
 				if (isNaN(this.lyricsOffset)) this.lyricsOffset = 0;
-				lyr.forEach(line => {
-					const content = this.tidy(line);
-					const matches = line.match(this.leadingTimestamps);
-					if (matches) {
-						const all = matches[0].split('][');
-						all.forEach(m => {
-							lyrics.push({timestamp: this.getMilliseconds(m), content: content});
-						});
-					}
-				});
-				this.format(lyrics.sort((a, b) => a.timestamp - b.timestamp));
+				this.format(this.parseSyncLyrics(lyr, this.type.none), this.type.synced);
 				break;
 			}
 			case this.type.unsynced: {
-				while (lyr.length) {
-					const last = lyr[lyr.length - 1].trim();
-					if (last.length) {
-						break;
-					}
-					--lyr.length;
-				}
-				lyr.forEach(line => {
-					lyrics.push({timestamp: 0, content: this.tidy(line)});
-				});
-				this.format(lyrics);
-				const ratio = this.trackLength / this.lyrics.length * 1000;
+				this.format(this.parseUnsyncedLyrics(lyr, this.type.none));
+				const ratio = !panel.isRadio() ? this.trackLength / this.lyrics.length * 1000 : 2000;
 				this.lyrics.forEach((line, i) => line.timestamp = ratio * i);
 				break;
 			}
 		}
 		this.seek();
 		this.start();
+	}
+
+	parseSyncLyrics(lyr, isNone) {
+		let lyrics = [];
+		if (isNone) lyrics.push({timestamp: 0, content: lyr[0]});
+		lyr.forEach(line => {
+			const content = this.tidy(line);
+			const matches = line.match(this.leadingTimestamps);
+			if (matches) {
+				const all = matches[0].split('][');
+				all.forEach(m => {
+					lyrics.push({timestamp: this.getMilliseconds(m), content: content});
+				});
+			}
+		});
+		return lyrics.sort((a, b) => a.timestamp - b.timestamp)	
+	}
+
+	parseUnsyncedLyrics(lyr, isNone) {
+		let lyrics = [];
+		if (isNone) lyrics.push({timestamp: 0, content: lyr[0]});
+		lyr.forEach(line => {
+			lyrics.push({timestamp: 0, content: this.tidy(line)});
+		});
+		return lyrics;
 	}
 
 	playbackTime() {
@@ -310,7 +341,7 @@ class Lyrics {
 
 	start() {
 		if (this.timer || !fb.IsPlaying || fb.IsPaused) return;
-		this.timer = setInterval(() => { 
+		this.timer = setInterval(() => {
 			if (!this.init) this.smoothScroll();
 			else this.init = false;
 		}, 16);

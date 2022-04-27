@@ -117,9 +117,13 @@ class Helpers {
 
 	getClipboardData() {
 		try {
-			return doc.parentWindow.clipboardData.getData('Text');
-		} catch (e) {
-			return null;
+			return utils.GetClipboardText();
+		} catch(e) {
+			try {
+				return doc.parentWindow.clipboardData.getData('Text');
+			} catch (e) {
+				return null;
+			}
 		}
 	}
 

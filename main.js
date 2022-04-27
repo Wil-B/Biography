@@ -18,7 +18,6 @@ const files = [
 	'settings.js',
 	'interface.js',
 	'panel.js',
-	//'web.js',
 	'server.js',
 	'allmusic.js',
 	'lastfm.js',
@@ -28,7 +27,7 @@ const files = [
 	'buttons.js',
 	'menu.js',
 	'text.js',
-	'lyrics.js',//////////////////////////////////////////////////////////
+	'lyrics.js',
 	'tagger.js',
 	'resize.js',
 	'library.js',
@@ -37,8 +36,7 @@ const files = [
 	'timers.js',
 	'popupbox.js',
 	'initialise.js',
-	'callbacks.js',
-	'tests.js' // comment out to disable
+	'callbacks.js'
 ];
 
 if (loadAsync) {

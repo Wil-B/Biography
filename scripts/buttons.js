@@ -119,7 +119,6 @@ class Buttons {
 	check(refresh) {
 		if (!refresh) {
 			(ppt.sbarShow != 1 || !this.scr.init) && !txt.lyricsDisplayed() ? this.setScrollBtnsHide() : this.setScrollBtnsHide(true, 'both');
-			//this.setSrcBtnHide();
 		}
 		if (!this.btns.heading || !ppt.heading) return;
 		this.rating.show = ui.stars == 1 && !ppt.artistView && (txt.rev.loaded.am && txt.rating.am != -1 || txt.rev.loaded.lfm && txt.rating.lfm != -1);
@@ -393,16 +392,6 @@ class Buttons {
 	on_script_unload() {
 		this.tt('');
 	}
-	
-	setLookUpPos() {
-		this.lookUp.pos = ppt.hdLine == 2 && ppt.hdPos == 2 ? 0 : ui.sbar.type < panel.sbar.style || !ppt.text_only ? panel.id.lookUp : 0;
-		this.lookUp.x = [0, 1 * $.scale, (!ppt.heading || ppt.img_only ? panel.w - 1 * $.scale - this.lookUp.sz - 1 : panel.heading.x + panel.heading.w - this.lookUp.sz) - 9 * $.scale][this.lookUp.pos];
-		this.lookUp.y = [0, 0, !ppt.heading || ppt.img_only ? 0 : panel.text.t - ui.heading.h + (ui.font.heading_h - this.lookUp.sz) / 2][this.lookUp.pos];
-		this.lookUp.w = [12, this.lookUp.sz * 1.5, panel.w - this.lookUp.x][this.lookUp.pos];
-		this.lookUp.h = [12, this.lookUp.sz * 1.5, Math.max(ui.font.heading_h, this.lookUp.sz)][this.lookUp.pos];
-		this.lookUp.p1 = [12, this.lookUp.sz + 1, this.lookUp.sz + 1 + 9 * $.scale][this.lookUp.pos];
-		this.lookUp.p2 = this.lookUp.sz + 1;
-	}
 
 	refresh(upd) {
 		if (upd) {
@@ -448,12 +437,9 @@ class Buttons {
 				w: Math.round(ui.font.heading_h * 0.9)
 			}
 			this.flag.h = Math.round(this.flag.w * 0.6);
-			//this.flag.h = Math.round(ui.font.heading.Size * 0.79) - 2;
-			//this.flag.w = Math.round(this.flag.h * 1.5);
-			//fb.ShowPopupMessage('ui.font.heading_h' + ui.font.heading_h);
 			this.flag.y = panel.text.t - ui.heading.h + Math.round((ui.font.heading_h - this.flag.h) / 2);
-			if (ui.font.heading_h >= 28 && ui.font.heading_h % 2 == 0) this.flag.y++; // try
-			this.flag.sp = Math.round(this.flag.w * 1.42); // was 1.4 gives extra pixel
+			if (ui.font.heading_h >= 28 && ui.font.heading_h % 2 == 0) this.flag.y++;
+			this.flag.sp = Math.round(this.flag.w * 1.42);
 		} else delete this.btns.heading;
 		if (panel.id.lookUp) {
 			this.btns.lookUp = new Btn(this.lookUp.x, this.lookUp.y, this.lookUp.w, this.lookUp.h, 7, this.lookUp.p1, this.lookUp.p2, '', {
@@ -520,11 +506,21 @@ class Buttons {
 	}
 
 	scrollAlb() {
-		return ppt.sbarShow && !ppt.artistView && !ppt.img_only && txt.rev.text && alb_scrollbar.scrollable_lines > 0 && alb_scrollbar.active && !alb_scrollbar.narrow.show;
+		return ppt.sbarShow && !ppt.artistView && !ppt.img_only && txt.rev.text && alb_scrollbar.scrollable_lines > 0 && alb_scrollbar.active && !alb_scrollbar.narrow.show && !txt.lyricsDisplayed();
 	}
 
 	scrollArt() {
 		return ppt.sbarShow && ppt.artistView && !ppt.img_only && txt.bio.text && art_scrollbar.scrollable_lines > 0 && art_scrollbar.active && !art_scrollbar.narrow.show && !txt.lyricsDisplayed();
+	}
+
+	setLookUpPos() {
+		this.lookUp.pos = ppt.hdLine == 2 && ppt.hdPos == 2 ? 0 : ui.sbar.type < panel.sbar.style || !ppt.text_only ? panel.id.lookUp : 0;
+		this.lookUp.x = [0, 1 * $.scale, (!ppt.heading || ppt.img_only ? panel.w - 1 * $.scale - this.lookUp.sz - 1 : panel.heading.x + panel.heading.w - this.lookUp.sz) - 9 * $.scale][this.lookUp.pos];
+		this.lookUp.y = [0, 0, !ppt.heading || ppt.img_only ? 0 : panel.text.t - ui.heading.h + (ui.font.heading_h - this.lookUp.sz) / 2][this.lookUp.pos];
+		this.lookUp.w = [12, this.lookUp.sz * 1.5, panel.w - this.lookUp.x][this.lookUp.pos];
+		this.lookUp.h = [12, this.lookUp.sz * 1.5, Math.max(ui.font.heading_h, this.lookUp.sz)][this.lookUp.pos];
+		this.lookUp.p1 = [12, this.lookUp.sz + 1, this.lookUp.sz + 1 + 9 * $.scale][this.lookUp.pos];
+		this.lookUp.p2 = this.lookUp.sz + 1;
 	}
 
 	setRatingImages(w, h, onCol, offCol, borCol, lfm) {
@@ -796,7 +792,6 @@ class Btn {
 			case 1: {
 				let iconFont = false;
 				const b = ppt.artistView ? 'Bio' : 'Rev';
-				//const n = b.toLowerCase();
 				if (!ppt[`lock${b}`]) iconFont = txt[n].loaded.ix == 1 || txt[n].loaded.ix == 2;
 				else iconFont = ppt[`source${n}`] == 1 || ppt[`source${n}`] == 2;
 				gr.GdiDrawText(but.src.name, !iconFont ? but.src.font : but.src.iconFont, col, dx2, this.p1 + (!iconFont ? 0 : but.src.y), but.src.w, but.src.h, !but.rating.show ? txt.cc : txt.c[0]);

@@ -267,7 +267,7 @@ class MenuItems {
 			},
 			checkRadio: !i && !ppt.inclTrackRev || i == 1 && ppt.inclTrackRev == 2 || i == 2 && ppt.inclTrackRev == 1,
 			separator: i == 2,
-			hide: ppt.artistView || ppt.img_only || this.revLookUp() || txt.isCompositionLoaded()
+			hide: ppt.artistView || ppt.img_only || txt.rev.loaded.txt && this.isNextAvail || this.revLookUp() || txt.isCompositionLoaded()
 		}));
 		
 		if (!ppt.artistView && !ppt.img_only && (this.revLookUp() || txt.isCompositionLoaded())) {
@@ -286,7 +286,7 @@ class MenuItems {
 			menuName: 'Display',
 			str: () => this.display.str[i],
 			func: () => this.setDisplay(i),
-			flags: i == 1 && ppt.autoEnlarge || i == 8 && panel.id.lyricsSource ? MF_GRAYED : MF_STRING,
+			flags: i == 1 && ppt.autoEnlarge || i == 9 && panel.id.lyricsSource ? MF_GRAYED : MF_STRING,
 			checkItem: (i > 2 && i < 6) && this.display.check[i],
 			checkRadio: (i < 3 || i > 5 && i < 8 || i > 7) && this.display.check[i],
 			separator: i == 2 || i == 5 || i == 7
@@ -421,7 +421,6 @@ class MenuItems {
 				ppt[prop] = i;
 				txt.refresh(0);
 			},
-			checkItem: (ppt.loadCovAllFb || i > 4) && [img.cov.selection[0] != -1, img.cov.selection[1] != -1, img.cov.selection[2] != -1, img.cov.selection[3] != -1, img.cov.selection[4] != -1, ppt.loadCovAllFb, ppt.loadCovFolder][i],
 			checkRadio: () => {
 				const CheckIndex = ppt.sameStyle ? ppt.style : ppt.artistView ? ppt.bioStyle : ppt.revStyle;
 				return CheckIndex <= style_arr.length - 1 && i == CheckIndex;
@@ -688,7 +687,7 @@ class MenuItems {
 	}
 
 	fresh() {
-		if (panel.block() || !ppt.cycItem || panel.zoom()) return;
+		if (panel.block() || !ppt.cycItem || panel.zoom() || panel.id.lyricsSource && lyrics.scroll) return;
 		if (ppt.artistView) {
 			this.counter.bio++;
 			if (this.counter.bio < ppt.cycTimeItem) return;
@@ -729,7 +728,7 @@ class MenuItems {
 	getDisplayStr() {
 		const m = ppt.artistView ? ppt.bioMode : ppt.revMode;
 		this.display.check = [ppt.sameStyle ? !ppt.img_only && !ppt.text_only : m == 0, ppt.sameStyle ? ppt.img_only : m == 1, ppt.sameStyle ? ppt.text_only : m == 2, ppt.showFilmStrip, ppt.heading, ppt.summaryShow, ppt.artistView, !ppt.artistView, !panel.id.focus, panel.id.focus];
-		const n = ['Image+text', 'Image', 'Text', 'Filmstrip', 'Heading', 'Summary', 'Artist view', 'Album view', 'Prefer nowplaying', !panel.id.lyricsSource ? 'Follow selected track (playlist)' : 'Follow selected track: N/A lyric source enabled'];
+		const n = ['Image+text', 'Image', 'Text', 'Filmstrip', 'Heading', 'Summary', 'Artist view', 'Album view', 'Prefer nowplaying', !panel.id.lyricsSource ? 'Follow selected track (playlist)' : 'Follow selected track: N/A lyrics source enabled'];
 		const click = [!this.display.check[0] ? '\tMiddle click' : '', !this.display.check[1] && !ppt.text_only && !ppt.img_only ? '\tMiddle click' : '', !this.display.check[2] && !ppt.img_only ? '\tMiddle click' : '', '\tALT+Middle click', '', '', !ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', '', ''];
 		this.display.str = n.map((v, i) => v + click[i])
 	}
@@ -752,7 +751,7 @@ class MenuItems {
 
 	isNextSourceAvailable() {
 		let n = ppt.artistView ? 'Bio' : 'Rev';
-		if (ppt[`lock${n}`]) return this.isNextAvail = true; // added sort bio vs rev ilk
+		if (ppt[`lock${n}`]) return this.isNextAvail = true;
 		n = ppt.artistView ? 'bio' : 'rev';
 		const types = txt[n].reader ? ['am', 'lfm', 'wiki', 'txt'] : ['am', 'lfm', 'wiki'];
 		this.isNextAvail = false;
@@ -1141,14 +1140,7 @@ class MenuItems {
 				break;
 			case 5:
 				ppt.toggle('summaryShow');
-				panel.summary = {
-					date: ppt.summaryShow && ppt.summaryDate,
-					genre: ppt.summaryShow && ppt.summaryGenre,
-					locale: ppt.summaryShow && ppt.summaryLocale,
-					other: ppt.summaryShow && ppt.summaryOther,
-					popLatest: ppt.summaryShow && ppt.summaryPopLatest,
-					show: ppt.summaryShow
-				}
+				panel.setSummary();
 				txt.refresh(1);
 				break;
 			case 6:
@@ -1272,7 +1264,7 @@ class MenuItems {
 
 	tagsEnabled() {
 		this.tags = false;
-		for (let i = 0; i < 11; i++)
+		for (let i = 0; i < 13; i++)
 			if (cfg[`tagEnabled${i}`]) {
 				this.tags = true;
 				break;

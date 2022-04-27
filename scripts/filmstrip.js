@@ -20,7 +20,7 @@ class FilmStrip {
 		this.w = 0;
 
 		ppt.thumbNailGap = Math.max(ppt.thumbNailGap, 0);
-		ppt.filmStripSize = $.clamp(ppt.filmStripSize, 0.02, 0.98);
+		ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, 0.98);
 
 		this.blocks = {
 			bor: [null, null, null],
@@ -82,7 +82,7 @@ class FilmStrip {
 	// Methods
 
 	cacheIt(image, key, style) {
-		try { // regress
+		try {
 			if (image) {
 				if (img.filter.size && ppt.artistView && (!ppt.imgFilterBothPx ? image.Width < img.filter.minPx && image.Height < img.filter.minPx : image.Width < img.filter.minPx || image.Height < img.filter.minPx) && img.art.images.length > img.filter.minNo) {
 					const image_path = key.replace(/^\d+/, '');
