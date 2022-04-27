@@ -16,7 +16,7 @@ Choice of summary items (display tab) -->
 - Per panel server settings option (advanced tab)†
 - Assets\licences for other software used by biography
 
-† these items should be regarded as beta & might require optimisation in response to user feedback
+† this item should be regarded as beta & might require optimisation in response to user feedback
 
 ### Changed
 - Summary
