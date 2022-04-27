@@ -316,7 +316,6 @@ class MenuItems {
 				txt.refresh(1);
 				}
 			},
-			flags: !i || !ppt.artistView ? MF_STRING : MF_GRAYED,
 			checkItem: !i && ppt.lockBio || i && ppt.classicalMusicMode,
 			separator: !i && cfg.classicalModeEnable,
 			hide: i && !cfg.classicalModeEnable
