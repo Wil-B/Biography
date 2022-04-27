@@ -39,7 +39,7 @@ Choice of summary items (display tab) -->
 
 ### Fix
 - Wine stabilisation: biography should no longer give errors in Wine, but some limitations remain:
-    - paste from clipboard may not work. It can be fixed by installing this version of Spider Monkey Panel (v1.6.2-dev+7c0928bf) which includes marc2k3's utils.GetClipboardText/utils.SetClipboardText (thx to marc2k3)
+    - paste from clipboard may not work. It can be fixed by installing [this version of Spider Monkey Panel (v1.6.2-dev+7c0928bf)](https://github.com/Wil-B/Find-and-Play/files/8575143/foo_spider_monkey_panel.zip) which includes marc2k3's utils.GetClipboardText/utils.SetClipboardText (thx to marc2k3)
     - recycler may not work. It's rarely used. If used, the console gives an alternative
     - options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
 - Blocked unnecessary on_size calls from Panel Stack Splitter with certain of its layout methods
