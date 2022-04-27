@@ -20,7 +20,6 @@ Wikipedia + lyrics + flags
 ### Changed
 - Summary
 	- new items
-	- choice of items
 	- choose from genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
 - Custom colours and font styles
 	- made more flexible
