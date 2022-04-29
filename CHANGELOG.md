@@ -8,22 +8,18 @@ Wikipedia + lyrics + flags
 	- Textreader
 	- More track review sites
 	- Classical music extension (title format tab)†
-- Flags option (artist country: headings tab)
+- Country flags option (headings tab)
 - More colour highlight choices, _e.g. summary on with heading and line off works well_ (display tab)
+- More custom colours and font styles
+- More summary items with choice of genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
 - Auto-managed cache with configurable storage time†: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)
 - Per panel server settings option (advanced tab)†
 - Assets\licences for other software used by biography
 
-###### † this item should be regarded as beta
+###### † these items should be regarded as beta
 
 ### Changed
-- Summary
-	- new items
-	- choose from genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
-- Custom colours and font styles
-	- made more flexible
-	- heading*, summary and text can now all be independently set (custom, display & headings tabs). *Usually highlight colour
 - Tagger: various improvements (tagger tab + see release notes below)
 - Image seeker
 	- reinstated bar method
