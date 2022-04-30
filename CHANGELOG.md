@@ -17,7 +17,7 @@ Wikipedia + lyrics + flags
 - Per panel server settings option (advanced tab)†
 - Assets\licences for other software used by biography
 
-###### † these items should be regarded as beta
+###### † these new features should be regarded as beta
 
 ### Changed
 - Tagger: various improvements (tagger tab + see release notes below)
