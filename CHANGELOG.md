@@ -18,7 +18,7 @@ Wikipedia + lyrics + flags
 - Per panel server settings option (advanced tab)†
 - Assets\licences for other software used by biography
 
-###### † new beta features
+###### † new beta feature
 
 ### Changed
 - Filmstrip can now overlay the image area (enable: menu\layout\filmstrip): might work best with image auto-fill depending on the layout
