@@ -12,7 +12,7 @@ Wikipedia + lyrics + flags
 - More colour highlight choices, _e.g. summary on with heading and line off works well_ (display tab)
 - More custom colours and font styles
 - More summary items with choice of genre, dates, locale, popular/latest, other [mood, members, composers, last.fm listeners, lengths] - depending on source (display tab)
-- New random theme that uses a randomly generated colour
+- New random colour theme
 - Auto-managed cache with configurable storage time†: (requires use of default cache: download tab)
 - Configurable partial match level (miscellaneous tab)
 - Per panel server settings option (advanced tab)†
