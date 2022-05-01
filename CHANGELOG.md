@@ -21,7 +21,7 @@ Wikipedia + lyrics + flags
 ###### † new beta features
 
 ### Changed
-- Filmstrip can now overlay the image area: might work best with image auto-fill depending on the layout
+- Filmstrip can now overlay the image area (enable: menu\layout\filmstrip): might work best with image auto-fill depending on the layout
 - Tagger: various improvements (tagger tab + see release notes below)
 - Image seeker
 	- reinstated bar method
