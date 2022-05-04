@@ -38,6 +38,7 @@ Wikipedia + lyrics + flags
     - recycler may not work. It's rarely used. If used, the console gives an alternative
     - options dialog may not load: menu now indicates there was a problem & console explains what can be done instead
 - Blocked unnecessary on_size calls from Panel Stack Splitter with certain of its layout methods
+- Miscellaneous fixes
 
 ### Release notes
 #### Tagger
