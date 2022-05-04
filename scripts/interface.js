@@ -14,9 +14,13 @@ class UserInterface {
 		}
 
 		this.col = {
+			headingBtn: '',
+			headingText: '',
+			line: '',
+			stars: '',
+			summary: '',
 			txt: '',
-			txt_h: '',
-			summary: ''
+			txt_h: ''
 		}
 
 		this.font = {
@@ -107,9 +111,13 @@ class UserInterface {
 	// Methods
 
 	assignColours() {
-		const prop = ['text', 'text_h', 'summary', 'rectOv', 'rectOvBor', 'bg', 'frame', 'bgTrans'];
+		const prop = ['text', 'text_h', 'headingBtn', 'headingText', 'stars', 'summary', 'rectOv', 'rectOvBor', 'line', 'bg', 'frame', 'bgTrans'];
 		this.col.txt = '';
 		this.col.txt_h = '';
+		this.col.headingBtn = '';
+		this.col.headingText = '';
+		this.col.line = '';
+		this.col.stars = '';
 		this.col.summary = '';
 		this.style.bg = false;
 		this.style.trans = false;
@@ -144,7 +152,7 @@ class UserInterface {
 		}
 
 		prop.forEach((v, i) => {
-			this.col[v] = set(ppt[v + 'Use'] ? ppt[v] : '', i < 5 ? 0 : 1);
+			this.col[v] = set(ppt[v + 'Use'] ? ppt[v] : '', i < 8 ? 0 : 1);
 		});
 	}
 
@@ -202,7 +210,7 @@ class UserInterface {
 			alpha: $.clamp(ppt.blurAlpha, 0, 100) / 30,
 			blend: ppt.theme == 2,
 			blendAlpha: $.clamp($.clamp(ppt.blurAlpha, 0, 100) * 105 / 30, 0, 255),
-			dark: ppt.theme == 1,
+			dark: ppt.theme == 1 || ppt.theme == 4,
 			level: ppt.theme == 2 ? 91.05 - $.clamp(ppt.blurTemp, 1.05, 90) : $.clamp(ppt.blurTemp * 2, 0, 254),
 			light: ppt.theme == 3
 		}
@@ -302,7 +310,7 @@ class UserInterface {
 		let customColText = false;
 		let customColText_h = false;
 
-		if (this.col.text === '') this.col.txt = this.blur.blend ? this.setBrightness(this.col.txt, lightBg ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? RGB(0, 0, 0) : this.col.txt;
+		if (this.col.text === '') this.col.txt = this.blur.blend ? this.setBrightness(this.col.txt, lightBg ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? RGB(50, 50, 50) : this.col.txt;
 		else {
 			this.col.txt = this.col.text;
 			customColText = true;
@@ -321,7 +329,7 @@ class UserInterface {
 		if (this.id.local) {
 			this.style.trans = c_trans;
 			this.col.bg = c_backcol;
-			this.col.txt = this.blur.blend ? this.setBrightness(c_textcol, this.getSelCol(c_backcol == 0 ? 0xff000000 : c_backcol, true) == 50 ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? RGB(0, 0, 0) : c_textcol;
+			this.col.txt = this.blur.blend ? this.setBrightness(c_textcol, this.getSelCol(c_backcol == 0 ? 0xff000000 : c_backcol, true) == 50 ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? RGB(50, 50, 50) : c_textcol;
 			this.col.txt_h = this.blur.blend ? this.setBrightness(c_textcol_h, this.getSelCol(c_backcol == 0 ? 0xff000000 : c_backcol, true) == 50 ? -10 : 10) : this.blur.dark || !this.style.bg && this.style.trans && !this.blur.light ? RGB(255, 255, 255) : this.blur.light ? RGB(71, 129, 183) : c_textcol_h;
 		}
 
@@ -334,15 +342,14 @@ class UserInterface {
 
 		if (!customColText || ppt.swapCol) this.col.text = !ppt.highlightText ? this.col.txt : this.col.txt_h;
 		if (!customColText_h || ppt.swapCol) this.col.text_h = !ppt.highlightText ? this.col.txt_h : this.col.txt;
-		this.col.btn = ppt.highlightHdBtn ? this.col.txt_h : this.col.txt;
 		this.col.shadow = this.getSelCol(this.col.text_h, false);
 		if (this.col.summary === '') this.col.summary = !ppt.highlightSummary ? this.col.txt : this.col.txt_h;
 		this.col.t = this.style.bg ? this.getSelCol(this.col.bg, true) : 200;
 
 		if (this.stars) {
 			['starOn', 'starOff', 'starBor'].forEach((v, i) => {
-				this.col[v] = i < 2 ? (this.stars == 2 ? this.RGBtoRGBA(ppt.highlightStars ? this.col.txt : this.col.txt_h, !i ? 232 : 60) :
-					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? this.RGBtoRGBA(ppt.highlightStars ? this.col.txt_h : this.col.txt, !i ? 232 : 60) : RGBA(255, 255, 255, !i ? 232 : 60)) : RGBA(0, 0, 0, 0);
+				this.col[v] = i < 2 ? (this.stars == 2 ? this.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt : this.col.txt_h : this.col.stars, !i ? 232 : 60) :
+					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? this.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt_h : this.col.txt : this.col.stars, !i ? 232 : 60) : (this.col.stars === '' ? RGBA(255, 255, 255, !i ? 232 : 60) : this.RGBtoRGBA(this.col.stars, !i ? 232 : 60))) : RGBA(0, 0, 0, 0);
 			});
 		}
 
@@ -364,15 +371,20 @@ class UserInterface {
 		}
 
 		if (!ppt.heading) return;
-		this.col.head = ppt.highlightHdText ? this.col.txt_h : this.col.txt;
+		this.col.headBtn = this.col.headingBtn === '' ? !ppt.highlightHdBtn ? this.col.txt : this.col.txt_h : this.col.headingBtn;
+		if (this.col.headingText === '') this.col.headingText = !ppt.highlightHdText ? this.col.txt : this.col.txt_h;
 		['blend1', 'blend2', 'blend3'].forEach((v, i) => {
-			this.col[v] = this.blur.blend ? this.col.btn & RGBA(255, 255, 255, i == 2 ? 40 : 12) : this.blur.dark || !this.style.bg && this.style.trans && !this.blur.light ? (i == 2 ? RGBA(255, 255, 255, 50) : RGBA(0, 0, 0, 40)) : this.blur.light ? RGBA(0, 0, 0, i == 2 ? 40 : 15) : this.getBlend(this.col.bg == 0 ? 0xff000000 : this.col.bg, this.col.btn, !i ? 0.9 : i == 2 ? 0.87 : (this.style.isBlur ? 0.75 : 0.82));
+			this.col[v] = 
+			this.blur.blend ? this.col.headBtn & RGBA(255, 255, 255, i == 2 ? 40 : 12) : 
+			this.blur.dark || !this.style.bg && this.style.trans && !this.blur.light ? (i == 2 ? RGBA(255, 255, 255, 50) : RGBA(0, 0, 0, 40)) : 
+			this.blur.light ? RGBA(50, 50, 50, i == 2 ? 40 : 15) : 
+			this.getBlend(this.col.bg == 0 ? 0xff000000 : this.col.bg, this.col.headBtn, !i ? 0.9 : i == 2 ? 0.87 : (this.style.isBlur ? 0.75 : 0.82));
 		});
 		this.col.blend4 = this.toRGBA(this.col.blend1);
 	}
 
 	getLineCol(type) {
-		return this.getBlend(this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg == 0 ? 0xff000000 : this.col.bg, ppt.highlightHdLine ? this.col.txt_h : this.col.txt, type == 'bottom' || this.style.isBlur ? 0.25 : 0.5);
+		return this.col.line === '' ? this.getBlend(this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg == 0 ? 0xff000000 : this.col.bg, ppt.highlightHdLine ? this.col.txt_h : this.col.txt, type == 'bottom' || this.style.isBlur ? 0.25 : 0.5) : this.col.line;
 	}
 
 	getSelCol(c, n, bypass) {
@@ -390,13 +402,13 @@ class UserInterface {
 		switch (this.dui) {
 			case 0:
 				if (this.col.bg === '') this.col.bg = window.GetColourCUI(3);
-				this.col.bgSel = this.blur.dark ? RGBA(255, 255, 255, 36) : this.blur.light ? RGBA(0, 0, 0, 36) : window.GetColourCUI(4);
+				this.col.bgSel = this.blur.dark ? RGBA(255, 255, 255, 36) : this.blur.light ? RGBA(50, 50, 50, 36) : window.GetColourCUI(4);
 				this.col.txt = window.GetColourCUI(0);
 				this.col.txt_h = window.GetColourCUI(2);
 				break;
 			case 1:
 				if (this.col.bg === '') this.col.bg = window.GetColourDUI(1);
-				this.col.bgSel = this.blur.dark ? RGBA(255, 255, 255, 36) : this.blur.light ? RGBA(0, 0, 0, 36) : window.GetColourDUI(3);
+				this.col.bgSel = this.blur.dark ? RGBA(255, 255, 255, 36) : this.blur.light ? RGBA(50, 50, 50, 36) : window.GetColourDUI(3);
 				this.col.txt = window.GetColourDUI(0);
 				this.col.txt_h = window.GetColourDUI(2);
 				break;
@@ -533,6 +545,7 @@ class UserInterface {
 		panel.checkNumServers();
 
 		if (ppt.showFilmStrip && ppt.autoFilm) txt.getScrollPos();
+		if (ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
 		if (ppt.text_only && !ui.style.isBlur) txt.paint();
 	}
 

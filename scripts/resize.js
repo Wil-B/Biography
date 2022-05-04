@@ -395,6 +395,7 @@ class ResizeHandler {
 
 	sizes(bypass) {
 		panel.setStyle(bypass);
+		if (ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
 		but.check();
 		txt.paint();
 	}

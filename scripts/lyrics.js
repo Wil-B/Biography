@@ -110,7 +110,7 @@ class Lyrics {
 			});
 		}
 		const incr = Math.min(500, this.durationScroll);
-		this.lyrics.forEach((v, i, arr) => {
+		this.lyrics.forEach((v, i) => {
 			const t1 = this.getTimestamp(i - 1);
 			const t2 = this.getTimestamp(i);
 			const t3 = this.getTimestamp(i + 1);

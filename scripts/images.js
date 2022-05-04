@@ -304,9 +304,16 @@ class Images {
 					g.DrawImage(iFull, 0 - offset, 0 - offset, panel.w + offset * 2, panel.h + offset * 2, 0, 0, iFull.Width, iFull.Height, 0, ui.blur.blendAlpha);
 				} else g.DrawImage(image, 0, 0, panel.w, panel.h, 0, 0, image.Width, image.Height, 0, ui.blur.blendAlpha); // no blur
 			} else {
-				g.DrawImage(image, 0, 0, panel.w, panel.h, 0, 0, image.Width, image.Height);
-				if (ui.blur.level > 1) gi.StackBlur(ui.blur.level);
-				g.FillSolidRect(0, 0, panel.w, panel.h, this.isImageDark(gi) ? ui.col.bg_light : ui.col.bg_dark);
+				if (ppt.theme == 1 || ppt.theme == 3) {
+					g.DrawImage(image, 0, 0, panel.w, panel.h, 0, 0, image.Width, image.Height);
+					if (ui.blur.level > 1) gi.StackBlur(ui.blur.level);
+					g.FillSolidRect(0, 0, panel.w, panel.h, this.isImageLight(gi) ? ui.col.bg_light : ui.col.bg_dark);
+				}
+				if (ppt.theme == 4) {
+					g.FillSolidRect(0, 0, panel.w, panel.h, this.getRandomCol());
+					g.DrawImage(image, 0, 0, panel.w, panel.h, 0, 0, image.Width, image.Height, 0, this.getImgAlpha(image));
+					if (ui.blur.level > 1) gi.StackBlur(ui.blur.level);
+				}
 			}
 		});
 		return i;
@@ -591,10 +598,29 @@ class Images {
 			this.changeCov(1);
 		}
 	}
+
 	filmOK(newArr) {
 		return newArr && this.art.list.length && ppt.showFilmStrip && filmStrip.scroll.pos.art[this.artist] && filmStrip.scroll.pos.art[this.artist].arr && filmStrip.scroll.pos.art[this.artist].arr.length;
 		
 	}
+
+	getImgAlpha(image) {
+		const colorSchemeArray = JSON.parse(image.GetColourSchemeJSON(15));
+		let rTot = 0;
+		let gTot = 0;
+		let bTot = 0;
+		let freqTot = 0;
+		colorSchemeArray.forEach(v => {
+			const col = $.toRGB(v.col);
+			rTot += col[0] ** 2 * v.freq;
+			gTot += col[1] ** 2 * v.freq;
+			bTot += col[2] ** 2 * v.freq;
+			freqTot += v.freq;
+		});
+		const avgCol = ($.clamp(Math.round(Math.sqrt(rTot / freqTot)), 0, 255) + $.clamp(Math.round(Math.sqrt(gTot / freqTot)), 0, 255) + $.clamp(Math.round(Math.sqrt(bTot / freqTot)), 0, 255)) / 3;
+		return $.clamp(avgCol * -0.32 +  128, 64, 128);
+	}
+
 	getArtImages() {
 		let allFiles = this.art.folder ? utils.Glob(this.art.folder + '*') : [];
 		if (!allFiles.length && this.art.folderSup) allFiles = utils.Glob(this.art.folderSup + '*');
@@ -839,7 +865,7 @@ class Images {
 		this.style.horizontal = (ppt.style == 0 || ppt.style == 2 || ppt.style > 3) && !ppt.img_only;
 		this.style.vertical = (ppt.style == 1 || ppt.style == 3 || ppt.style > 3 && !ppt.alignAuto) && !ppt.img_only;
 		this.style.circular = this.isType('Circ');
-		this.style.reflection = this.isType('Refl'); // try only here
+		this.style.reflection = this.isType('Refl');
 	}
 
 	getOverlayMetrics(image) {
@@ -855,6 +881,15 @@ class Images {
 		}
 	}
 
+	getRandomCol() {
+		const rc = () => {
+			return Math.floor(Math.random() * 256);
+		};
+		let c = [rc(), rc(), rc()];
+		while (!this.isColOk(c)) c = [rc(), rc(), rc()];
+		return $.RGBAtoRGB(RGBA(c[0], c[1], c[2], Math.min(80 / ui.blur.alpha, 255)), RGB(0, 0, 0));
+	}
+
 	grab(force) {
 		if (panel.block()) return this.get = true;
 		this.getArtImg(true);
@@ -865,6 +900,15 @@ class Images {
 		if (!$.file(v)) return false;
 		const fileSize = utils.GetFileSize(v);
 		return (name.isLfmImg(fso.GetFileName(v), this.artist) || !ppt.imgFilterLfm && /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v)) && !/ - /.test(fso.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
+	}
+
+	isColOk(c) {
+		const hsp = Math.sqrt(
+			0.299 * (c[0] * c[0]) +
+			0.587 * (c[1] * c[1]) +
+			0.114 * (c[2] * c[2])
+		);
+		return hsp > 55;
 	}
 
 	isEmbedded(type, ix) { // also identifies yt etc
@@ -879,7 +923,7 @@ class Images {
 		}
 	}
 
-	isImageDark(image) {
+	isImageLight(image) {
 		const colorSchemeArray = JSON.parse(image.GetColourSchemeJSON(15));
 		let rTot = 0;
 		let gTot = 0;
@@ -985,7 +1029,7 @@ class Images {
 	loadCycCov(handle, art_id, image, image_path) { // stndAlb
 		if (!this.cov.cycle) return false;
 		if (this.blackListed(image_path)) image_path = '';
-		if ($.file(image_path)) { //want this filter
+		if ($.file(image_path)) {
 			const fileSize = utils.GetFileSize(image_path);
 			if (this.exclArr.includes(fileSize)) image_path = '';
 		}
@@ -1407,21 +1451,21 @@ class Images {
 				panel.img.r = panel.w - panel.heading.x - panel.heading.w;
 			}
 			if (ppt.style == 2) {
-				panel.img.l = !panel.style.fullWidthHeading ? panel.heading.x : panel.heading.x + panel.filmStripSize.l;
-				panel.img.r = !panel.style.fullWidthHeading ? panel.w - panel.heading.x - panel.heading.w : panel.w - panel.img.l - panel.heading.w + panel.filmStripSize.r;
+				panel.img.l = !panel.style.fullWidthHeading ? panel.heading.x : panel.heading.x + (!ppt.filmStripOverlay ? panel.filmStripSize.l : 0);
+				panel.img.r = !panel.style.fullWidthHeading ? panel.w - panel.heading.x - panel.heading.w : panel.w - panel.img.l - panel.heading.w + (!ppt.filmStripOverlay ? panel.filmStripSize.r : 0);
 			}
 			if ((ppt.style == 1 || ppt.style == 3)) {
-				panel.img.t = !panel.style.fullWidthHeading ? ppt.textT + panel.filmStripSize.t : panel.text.t;
-				panel.img.b = !panel.style.fullWidthHeading ? ppt.textB + panel.filmStripSize.b : panel.h - panel.text.t - panel.text.h;
+				panel.img.t = !panel.style.fullWidthHeading ? ppt.textT + (!ppt.filmStripOverlay ? panel.filmStripSize.t : 0) : panel.text.t;
+				panel.img.b = !panel.style.fullWidthHeading ? ppt.textB + (!ppt.filmStripOverlay ? panel.filmStripSize.b : 0) : panel.h - panel.text.t - panel.text.h;
 			}
 		}
 		if (!ppt.img_only && ppt.style == 0 && panel.style.fullWidthHeading) {
-			if (panel.filmStripSize.l) panel.img.l = panel.bor.l;
-			if (panel.filmStripSize.r) panel.img.r = panel.bor.r;
+			if (panel.filmStripSize.l && !ppt.filmStripOverlay) panel.img.l = panel.bor.l;
+			if (panel.filmStripSize.r && !ppt.filmStripOverlay) panel.img.r = panel.bor.r;
 		}
 
 		$.key.forEach(v => {
-			this.im[v] = ppt.img_only ? panel.bor[v] + (!this.style.crop ? panel.filmStripSize[v] : 0) : panel.img[v]
+			this.im[v] = ppt.img_only ? panel.bor[v] + (!this.style.crop ? (!ppt.filmStripOverlay ? panel.filmStripSize[v] : 0) : 0) : panel.img[v]
 		});
 
 		this.nw = !ppt.img_only && (!ppt.style || ppt.style == 2 || ppt.style > 3) ? panel.w - panel.img.l - panel.img.r : !ppt.img_only ? panel.style.imgSize : panel.w - this.im.l - this.im.r;
@@ -1776,7 +1820,7 @@ class Seeker {
 	}
 
 	metrics(circular, crop, horizontal, reflection, vertical) {
-		ppt.imgSeekerDisabled = ppt.style > 3 && !ppt.img_only && !panel.clip && this.intersectRect();
+		ppt.imgSeekerDisabled = ppt.style > 3 && !ppt.img_only && !panel.clip && this.intersectRect() || ppt.filmStripOverlay;
 		this.imgSeeker = !ppt.imgSeekerDisabled ? ((!ppt.imgSeeker && !ppt.imgCounter) ? 0 : ppt.imgSeekerShow) : 0;
 		if (!this.imgSeeker) {
 			this.show = false;

@@ -248,10 +248,6 @@ class Helpers {
 		return l;
 	}
 
-	RGBtoRGBA(rgb, a) {
-		return a << 24 | rgb & 0x00FFFFFF;
-	}
-
 	regexEscape(n) {
 		return n.replace(/([*+\-?^!:&"~${}()|[\]/\\])/g, '\\$1');
 	}
@@ -270,6 +266,29 @@ class Helpers {
 
 	replaceAt(str, pos, chr) {
 		return str.substring(0, pos) + chr + str.substring(pos + 1);
+	}
+
+	RGBAtoRGB(c, bg) {
+		c = this.toRGBA(c);
+		bg = this.toRGB(bg);
+		const r = c[0] / 255;
+		const g = c[1] / 255;
+		const b = c[2] / 255;
+		const a = c[3] / 255;
+		const bgr = bg[0] / 255;
+		const bgg = bg[1] / 255;
+		const bgb = bg[2] / 255;
+		let nR = ((1 - a) * bgr) + (a * r);
+		let nG = ((1 - a) * bgg) + (a * g);
+		let nB = ((1 - a) * bgb) + (a * b);
+		nR = this.clamp(Math.round(nR * 255), 0, 255);
+		nG = this.clamp(Math.round(nG * 255), 0, 255);
+		nB = this.clamp(Math.round(nB * 255), 0, 255);
+		return RGB(nR, nG, nB);
+	}
+
+	RGBtoRGBA(rgb, a) {
+		return a << 24 | rgb & 0x00FFFFFF;
 	}
 
 	run(c, w) {
@@ -358,6 +377,10 @@ class Helpers {
 
 	toRGB(c) {
 		return [c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff];
+	}
+
+	toRGBA(c) {
+		return [c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff, c >> 24 & 0xff];
 	}
 
 	trace(message, n) {

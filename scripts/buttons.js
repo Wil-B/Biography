@@ -427,10 +427,10 @@ class Buttons {
 				this.check(true);
 				if (ui.style.isBlur) window.Repaint();
 			}, () => this.srcTiptext(), true, 'heading');
-			const n = ppt.artistView ? 'bio' : 'rev'
+			const n = ppt.artistView ? 'bio' : 'rev';
 			this.src.col = {
-				normal: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light ? ui.col.btn : RGB(255, 255, 255) : RGB(225, 225, 245),
-				hover: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light ? ui.col.text_h : RGB(255, 255, 255) : RGB(225, 225, 245)
+				normal: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light || ui.col.headingBtn !== '' ? ui.col.headBtn : RGB(255, 255, 255) : RGB(225, 225, 245),
+				hover: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light || ui.col.headingBtn !== '' ? ui.col.text_h : RGB(255, 255, 255) : RGB(225, 225, 245)
 			};
 			this.flag = {
 				x: panel.heading.x,
@@ -767,8 +767,8 @@ class Btn {
 			gr.DrawImage(flag, but.flag.x, but.flag.y, but.flag.w, but.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
 			gr.DrawRect(but.flag.x + o, but.flag.y + o, but.flag.w - w, but.flag.h - w + 1, w, ui.col.imgBor);
 			gr.SetInterpolationMode(0);
-			gr.GdiDrawText(dh, ui.font.heading, ui.col.head,(ppt.hdPos != 2 ? dx1 : this.x) + but.flag.sp, this.y, (ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer) - but.flag.sp, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
-		} else gr.GdiDrawText(dh, ui.font.heading, ui.col.head, (ppt.hdPos != 2 ? dx1 : this.x), this.y, ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
+			gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText,(ppt.hdPos != 2 ? dx1 : this.x) + but.flag.sp, this.y, (ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer) - but.flag.sp, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
+		} else gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText, (ppt.hdPos != 2 ? dx1 : this.x), this.y, ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
 		if (!but.src.visible) return;
 		let col;
 		if (ui.show.btnBg) {

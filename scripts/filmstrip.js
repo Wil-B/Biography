@@ -555,7 +555,7 @@ class FilmStrip {
 			case 3:
 				ppt.filmStripPos = i;
 				break;
-			case 4: {
+			case 5: {
 				const continue_confirmation = (status, confirmed) => {
 					if (confirmed) ppt.filmStripSize = 0.15;
 				}
@@ -580,6 +580,7 @@ class FilmStrip {
 		this.style.fit = ppt.filmStripAutofit;
 		this.style.gap = ppt.thumbNailGap;
 		this.style.image = ppt.artistView ? ppt.filmPhotoStyle : ppt.filmCoverStyle;
+		const filmStripOverlay = ppt.filmStripOverlay && !ppt.text_only;
 		const spacer = Math.round((!this.style.gap ? 2 : this.style.gap < 3 ? 1 : 0) * $.scale);
 		let max_h = panel.h;
 		let max_w = panel.w;
@@ -587,10 +588,10 @@ class FilmStrip {
 		this.text_y = !panel.style.fullWidthHeading || ppt.img_only ? 0 : panel.text.t;
 		switch (ppt.filmStripPos) {
 			case 0: // top
-				this.y = ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 4 ? ppt.textT : spacer;
-				max_h = panel.h - this.y;
-				this.x = ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textL : spacer;
-				this.w = panel.w - this.x - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borR : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textR : spacer);
+				this.y = !filmStripOverlay ? (ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 4 ? ppt.textT : spacer) : panel.img.t;
+				max_h = !filmStripOverlay ? panel.h - this.y : ppt.style == 0 || ppt.style == 2 ? panel.style.imgSize : panel.h - panel.img.t - panel.img.b;
+				this.x = !filmStripOverlay ? (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textL : spacer) : panel.img.l;
+				this.w = !filmStripOverlay ? (panel.w - this.x - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borR : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textR : spacer)) : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 || ppt.img_only ? panel.w - panel.img.l - panel.img.r : panel.style.imgSize;
 				this.max_sz = Math.min(max_h - 5, this.w);
 				this.blockSize = Math.round(ppt.filmStripSize * panel.h);
 				if (this.style.fit) {
@@ -612,9 +613,9 @@ class FilmStrip {
 
 			case 1: { // right
 				const pad_r = ppt.filmStripMargin == 2 ? ppt.borR : ppt.filmStripMargin == 4 ? ppt.textR : spacer;
-				max_w = panel.w - pad_r;
-				this.y = this.text_y || (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textT : spacer);
-				this.h = panel.h - this.y - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borB : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textB : spacer);
+				max_w = !filmStripOverlay ? panel.w - pad_r : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 ? panel.w - panel.img.l - panel.img.r : panel.style.imgSize;
+				this.y = !filmStripOverlay ? (this.text_y || (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textT : spacer)) : panel.img.t;
+				this.h = !filmStripOverlay ? (panel.h - this.y - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borB : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textB : spacer)) : ppt.style == 0 || ppt.style == 2 ? panel.style.imgSize : ppt.style > 3 ? (panel.clip ? panel.style.imgSize - ppt.borT : panel.h - panel.img.t - panel.img.b) : panel.h - panel.img.t - panel.img.b;
 				this.max_sz = Math.min(max_w - 5, this.h)
 				this.blockSize = Math.round(ppt.filmStripSize * panel.w);
 				if (this.style.fit) {
@@ -625,7 +626,7 @@ class FilmStrip {
 					this.blockSize = Math.min(this.blockSize, this.max_sz);
 					this.w = this.blockSize;
 				}
-				this.x = panel.w - this.w - pad_r;
+				this.x = !filmStripOverlay ? panel.w - this.w - pad_r : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 || ppt.img_only ? panel.w - this.w - panel.img.r : panel.img.l + panel.style.imgSize - this.w;
 				this.style.horizontal = false;
 				this.repaint = {
 					x: this.x - 2,
@@ -638,9 +639,9 @@ class FilmStrip {
 
 			case 2: { // bottom
 				const pad_b = ppt.filmStripMargin == 2 ? ppt.borB : ppt.filmStripMargin == 4 ? ppt.textB : spacer
-				max_h = panel.h - pad_b;
-				this.x = ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textL : spacer;
-				this.w = panel.w - this.x - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borR : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textR : spacer);
+				max_h = !filmStripOverlay ? panel.h - pad_b : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 ? panel.style.imgSize : panel.h - panel.img.t - panel.img.b;
+				this.x = !filmStripOverlay ? (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textL : spacer) : panel.img.l;
+				this.w = !filmStripOverlay ? (panel.w - this.x - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borR : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textR : spacer)) : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 || ppt.img_only ? panel.w - panel.img.l - panel.img.r : panel.style.imgSize;
 				this.max_sz = Math.min(max_h - 5, this.w);
 				this.blockSize = Math.round(ppt.filmStripSize * panel.h);
 				if (this.style.fit) {
@@ -651,7 +652,7 @@ class FilmStrip {
 					this.blockSize = Math.min(this.blockSize, this.max_sz);
 					this.h = this.blockSize;
 				}
-				this.y = panel.h - this.h - pad_b;
+				this.y = !filmStripOverlay ? panel.h - this.h - pad_b : ppt.style == 0 || ppt.style == 2 ? panel.img.t + panel.style.imgSize - this.h : ppt.style > 3 ? (panel.clip ? panel.ibox.t + panel.style.imgSize - this.h: panel.h - panel.img.b - this.h) : panel.h - panel.img.b - this.h;
 				this.style.horizontal = true;
 				this.repaint = {
 					x: 0,
@@ -663,10 +664,10 @@ class FilmStrip {
 			}
 
 			case 3: // left
-				this.x = ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 4 ? ppt.textL : spacer;
-				max_w = panel.w - this.x;
-				this.y = this.text_y || (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textT : spacer);
-				this.h = panel.h - this.y - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borB : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textB : spacer);
+				this.x = !filmStripOverlay ? (ppt.filmStripMargin == 2 ? ppt.borL : ppt.filmStripMargin == 4 ? ppt.textL : spacer) : panel.img.l;
+				max_w = !filmStripOverlay ? panel.w - this.x : ppt.style == 0 || ppt.style == 2 || ppt.style > 3 ? panel.w - panel.img.l - panel.img.r : panel.style.imgSize;
+				this.y = !filmStripOverlay ? (this.text_y || (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borT : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textT : spacer)) : panel.img.t;
+				this.h = !filmStripOverlay ? (panel.h - this.y - (ppt.filmStripMargin == 1 || ppt.filmStripMargin == 2 ? ppt.borB : ppt.filmStripMargin == 3 || ppt.filmStripMargin == 4 ? ppt.textB : spacer)) : ppt.style == 0 || ppt.style == 2 ? panel.style.imgSize : ppt.style > 3 ? (panel.clip ? panel.style.imgSize - ppt.borT : panel.h - panel.img.t - panel.img.b) : panel.h - panel.img.t - panel.img.b;
 				this.max_sz = Math.min(max_w - 5, this.h);
 				this.blockSize = Math.round(ppt.filmStripSize * panel.w);
 				if (this.style.fit) {
@@ -713,7 +714,7 @@ class FilmStrip {
 
 	trace(x, y) {
 		if (!panel.style.showFilmStrip) return false;
-		return [y < this.y + this.h, x > this.x, y > this.y, x < this.x + this.w][ppt.filmStripPos];
+		return [y > this.y && y < this.y + this.h, x > this.x && x < this.x + this.w, y > this.y && y < this.y + this.h, x > this.x && x < this.x + this.w][ppt.filmStripPos];
 	}
 
 	trimCache(image_path, key) {

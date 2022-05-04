@@ -419,6 +419,7 @@ class MenuItems {
 				const prop = ppt.sameStyle ? 'style' : ppt.artistView ? 'bioStyle' : 'revStyle';
 				ppt[prop] = i;
 				txt.refresh(0);
+				if (ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
 			},
 			checkRadio: () => {
 				const CheckIndex = ppt.sameStyle ? ppt.style : ppt.artistView ? ppt.bioStyle : ppt.revStyle;
@@ -450,12 +451,16 @@ class MenuItems {
 			appendTo: 'Layout'
 		});
 
-		['Top', 'Right', 'Bottom', 'Left', 'Reset to default size...'].forEach((v, i) => menu.newItem({
+		['Top', 'Right', 'Bottom', 'Left', 'Overlay image area', 'Reset to default size...'].forEach((v, i) => menu.newItem({
 			menuName: 'Filmstrip',
 			str: v,
-			func: () => filmStrip.set(i),
+			func: () => {
+				if (i == 4) ppt.toggle('filmStripOverlay');
+				filmStrip.set(i == 4 ? ppt.filmStripPos : i)
+			},
+			checkItem: i == 4 && ppt.filmStripOverlay,
 			checkRadio: i < 4 && i == ppt.filmStripPos,
-			separator: i == 3
+			separator: i == 3 || i == 4
 		}));
 
 		menu.newItem({

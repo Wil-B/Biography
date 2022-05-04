@@ -752,7 +752,7 @@ class Text {
 				break;
 			}
 			case 'amRev':
-				items = ['Album Moods: ', 'Album Themes: ', 'Composers: ', 'Track Moods: ', 'Track Themes: '];
+				items = ['Album Genres: ', 'Album Moods: ', 'Album Themes: ', 'Composers: ', 'Track Moods: ', 'Track Themes: '];
 				if (this.rev.amAlb || !panel.summary.genre) items.unshift('Track Genres: ');
 				break;
 			case 'lfmRev':
@@ -1845,7 +1845,6 @@ class Text {
 		let latest = '';
 
 		if (this.bio.wiki && panel.summary.show) {
-			//if (panel.summary.popLatest) {
 			if (panel.summary.latest) {
 				const latestRelease = tag.getTag(bioLfm, this.bio.latestRelease, true);
 				if (latestRelease.tag) latest = latestRelease.label + latestRelease.tag;

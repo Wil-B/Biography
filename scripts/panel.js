@@ -382,7 +382,8 @@ class Panel {
 		filmStrip.logScrollPos();
 		ppt.toggle('artistView');
 		img.resetTimestamps();
-		if (!this.sameStyle()) this.setStyle();
+		const sameStyle = this.sameStyle();
+		if (!sameStyle) this.setStyle();
 		txt.na = '';
 		timer.clear(timer.source);
 		if (this.calc) this.calc = ppt.artistView ? 1 : 2;
@@ -406,7 +407,8 @@ class Panel {
 				break;
 		}
 		if (ppt.img_only) img.setCrop(true);
-		this.sameStyle() && !ui.show.btnRedLastfm ? but.check() : but.refresh(true);
+		sameStyle & !ui.show.btnRedLastfm ? but.check() : but.refresh(true);
+		if (!sameStyle && ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
 		if (!ppt.artistView) img.setCheckArr(null);
 		this.move(x, y, true);
 		txt.getScrollPos();
@@ -1098,6 +1100,7 @@ class Panel {
 		}
 		this.calcText = false;
 		if (ppt.text_only) seeker.upd(true);
+		if (ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
 		but.refresh(true);
 	}
 
@@ -1277,13 +1280,13 @@ class Panel {
 		}
 
 		const sp1 = 10 * $.scale;
-		const sp2 = sp1 + (this.filmStripSize.r ? 9 * $.scale : 0);
+		const sp2 = sp1 + (this.filmStripSize.r && !ppt.filmStripOverlay ? 9 * $.scale : 0);
 
 		switch (true) {
 			case ppt.img_only: { // img_only
 				$.key.forEach(v => this.img[v] = this.bor[v]);
 				const autoFill = ppt.artistView && ppt.artStyleImgOnly == 1 || !ppt.artistView && ppt.covStyleImgOnly == 1;
-				if (!autoFill) {
+				if (!autoFill && !ppt.filmStripOverlay) {
 					const v = $.key[ppt.filmStripPos];
 					this.img[v] += this.filmStripSize[v];
 					this.style.imgSize = $.clamp(this.h - this.img.t - this.img.b, 10, this.w - this.img.l - this.img.r);
@@ -1311,44 +1314,45 @@ class Panel {
 				break;
 
 			case ppt.style == 0: { // top
-				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'b' ? this.filmStripSize[v] : 0));
-				let txt_h = Math.round((this.h - this.img.t - ppt.textB - this.filmStripSize.b) * (1 - ppt.rel_imgs));
+				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'b' ? (!ppt.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				let txt_h = Math.round((this.h - this.img.t - ppt.textB - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - ppt.rel_imgs));
 				this.lines_drawn = Math.max(Math.floor((txt_h - ui.heading.h) / ui.font.main_h), 0);
 				txt_h = this.lines_drawn * ui.font.main_h + this.style.gap;
-				this.style.imgSize = Math.max(this.h - txt_h - this.img.t - this.filmStripSize.b - ppt.textB - ui.heading.h, 10);
-				this.text.l = ppt.textL + this.filmStripSize.l;
-				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + this.filmStripSize.r;
+				this.style.imgSize = Math.max(this.h - txt_h - this.img.t - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0) - ppt.textB - ui.heading.h, 10);
+				this.text.l = ppt.textL + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0);
+				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
 				this.text.t = this.img.t + this.style.imgSize + this.style.gap + ui.heading.h;
 				this.text.w = this.w - this.text.l - this.text.r;
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : ppt.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : panel.w - ppt.textL - ppt.textR;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - this.filmStripSize.r - ui.sbar.sp;
+					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
 					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 2 ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
 					this.sbar.h = (ui.sbar.type < this.sbar.style || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - this.filmStripSize.r, this.repaint.h = this.h - this.repaint.y - this.filmStripSize.b;
+				this.repaint.w = this.w - this.repaint.x - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				this.repaint.h = this.h - this.repaint.y - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				break;
 			}
 			case ppt.style == 1: { // right
-				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'l' ? this.filmStripSize[v] : 0));
-				let txt_sp = Math.round((this.w - ppt.textL - this.filmStripSize.l - this.img.r) * (1 - ppt.rel_imgs));
-				let txt_h = this.h - ppt.textT - ppt.textB - this.filmStripSize.t - this.filmStripSize.b;
+				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'l' ? (!ppt.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				let txt_sp = Math.round((this.w - ppt.textL - (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) - this.img.r) * (1 - ppt.rel_imgs));
+				let txt_h = this.h - ppt.textT - ppt.textB - (!ppt.filmStripOverlay ? this.filmStripSize.t : 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.lines_drawn = Math.max(Math.floor((txt_h - ui.heading.h) / ui.font.main_h), 0);
-				this.style.imgSize = Math.max(this.w - txt_sp - this.img.r - ppt.textL - this.filmStripSize.l - this.style.gap, 10);
+				this.style.imgSize = Math.max(this.w - txt_sp - this.img.r - ppt.textL - (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) - this.style.gap, 10);
 				if (ppt.sbarShow) txt_sp -= (ui.sbar.sp + sp1);
-				this.text.l = ppt.textL + this.filmStripSize.l;
-				this.text.r = ppt.sbarShow ? Math.max(ppt.textR + this.filmStripSize.r, ui.sbar.sp + sp1) : ppt.textR + this.filmStripSize.r;
-				this.text.t = !ppt.topAlign ? ppt.textT + (this.h - ppt.textT - ppt.textB + this.filmStripSize.t - this.filmStripSize.b - this.lines_drawn * ui.font.main_h + ui.heading.h) / 2 : ppt.textT + ui.heading.h + this.filmStripSize.t;
+				this.text.l = ppt.textL + (!ppt.filmStripOverlay ? (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) : 0);
+				this.text.r = ppt.sbarShow ? Math.max(ppt.textR + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0), ui.sbar.sp + sp1) : ppt.textR + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				this.text.t = !ppt.topAlign ? ppt.textT + (this.h - ppt.textT - ppt.textB + (!ppt.filmStripOverlay ? this.filmStripSize.t: 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * ui.font.main_h + ui.heading.h) / 2 : ppt.textT + ui.heading.h + (!ppt.filmStripOverlay ? this.filmStripSize.t : 0);
 				this.text.w = txt_sp;
 				this.text.h = this.lines_drawn * ui.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : ppt.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - this.bor.r;
 				if (this.style.fullWidthHeading) this.img.t = this.text.t;
-				this.img.l = ppt.textL + txt_sp + this.filmStripSize.l + this.style.gap + (ppt.sbarShow ? ui.sbar.sp + sp1 : 0);
+				this.img.l = ppt.textL + txt_sp + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (ppt.sbarShow ? ui.sbar.sp + sp1 : 0);
 				if (ppt.sbarShow) {
 					this.sbar.x = this.text.l + this.text.w + sp1;
 					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? this.text.t : 0) + this.sbar.top_corr;
@@ -1356,58 +1360,61 @@ class Panel {
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.img.l - this.repaint.x - this.style.gap, this.repaint.h = this.h - this.repaint.y - this.filmStripSize.b;
+				this.repaint.w = this.img.l - this.repaint.x - this.style.gap;
+				this.repaint.h = this.h - this.repaint.y - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				break;
 			}
 
 			case ppt.style == 2: { // bottom
-				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 't' && v != 'b' ? this.filmStripSize[v] : 0));
-				let txt_h = Math.round((this.h - ppt.textT - this.img.b - this.filmStripSize.t - this.filmStripSize.b) * (1 - ppt.rel_imgs));
+				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 't' && v != 'b' ? (!ppt.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				let txt_h = Math.round((this.h - ppt.textT - this.img.b - (!ppt.filmStripOverlay ? this.filmStripSize.t : 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - ppt.rel_imgs));
 				this.lines_drawn = Math.max(Math.floor((txt_h - ui.heading.h) / ui.font.main_h), 0);
 				txt_h = this.lines_drawn * ui.font.main_h + this.style.gap;
-				this.style.imgSize = Math.max(this.h - txt_h - ppt.textT - this.img.b - this.filmStripSize.t - this.filmStripSize.b - ui.heading.h, 10);
-				this.img.t = this.h - this.bor.b - this.style.imgSize - this.filmStripSize.b;
-				this.text.l = ppt.textL + this.filmStripSize.l;
-				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + this.filmStripSize.r;
+				this.style.imgSize = Math.max(this.h - txt_h - ppt.textT - this.img.b - (!ppt.filmStripOverlay ? this.filmStripSize.t : 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0) - ui.heading.h, 10);
+				this.img.t = this.h - this.bor.b - this.style.imgSize - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
+				this.text.l = ppt.textL + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0);
+				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
 				this.text.t = this.img.t - txt_h;
 				this.text.w = this.w - this.text.l - this.text.r;
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : ppt.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : panel.w - ppt.textL - ppt.textR;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - this.filmStripSize.r - ui.sbar.sp;
+					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
 					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading ? this.text.t : 0) + this.sbar.top_corr;
 					this.sbar.h = ui.sbar.type < this.sbar.style ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.img.t - this.sbar.y + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - this.filmStripSize.r, this.repaint.h = this.img.t - this.repaint.y;
+				this.repaint.w = this.w - this.repaint.x - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				this.repaint.h = this.img.t - this.repaint.y;
 				break;
 			}
 
 			case ppt.style == 3: { // left
-				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'r' ? this.filmStripSize[v] : 0));
-				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + this.filmStripSize.r;
+				$.key.forEach(v => this.img[v] = this.bor[v] + (v != 'r' ? (!ppt.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				this.text.r = (ppt.sbarShow ? Math.max(ppt.textR, ui.sbar.sp + sp2) : ppt.textR) + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
 				const txt_sp = Math.round((this.w - this.img.l - this.text.r) * (1 - ppt.rel_imgs));
-				let txt_h = this.h - ppt.textT - ppt.textB - this.filmStripSize.t - this.filmStripSize.b;
+				let txt_h = this.h - ppt.textT - ppt.textB - (!ppt.filmStripOverlay ? this.filmStripSize.t : 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.lines_drawn = Math.max(Math.floor((txt_h - ui.heading.h) / ui.font.main_h), 0);
 				this.style.imgSize = Math.max(this.w - txt_sp - this.img.l - this.text.r - this.style.gap, 10);
 				this.text.l = this.img.l + this.style.imgSize + this.style.gap;
-				this.text.t = !ppt.topAlign ? ppt.textT + (this.h - ppt.textT - ppt.textB + this.filmStripSize.t - this.filmStripSize.b - this.lines_drawn * ui.font.main_h + ui.heading.h) / 2 : ppt.textT + ui.heading.h + this.filmStripSize.t;
+				this.text.t = !ppt.topAlign ? ppt.textT + (this.h - ppt.textT - ppt.textB + (!ppt.filmStripOverlay ? this.filmStripSize.t : 0) - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * ui.font.main_h + ui.heading.h) / 2 : ppt.textT + ui.heading.h + (!ppt.filmStripOverlay ? this.filmStripSize.t : 0);
 				this.text.w = txt_sp;
 				this.text.h = this.lines_drawn * ui.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : this.bor.l;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - ppt.textR;
 				if (this.style.fullWidthHeading) this.img.t = this.text.t;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - this.filmStripSize.r - ui.sbar.sp;
+					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
 					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? this.text.t : 0) + this.sbar.top_corr;
 					this.sbar.h = ui.sbar.type < this.sbar.style || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - this.filmStripSize.r, this.repaint.h = this.h - this.repaint.y - this.filmStripSize.b;
+				this.repaint.w = this.w - this.repaint.x - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				this.repaint.h = this.h - this.repaint.y - (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				break;
 			}
 
@@ -1424,14 +1431,14 @@ class Panel {
 					this.tx.t = $.clamp(obj.txT, 0, 1);
 					this.tx.b = $.clamp(obj.txB, 0, 1);
 				}
-				const imL = Math.round(this.im.l * this.w) + this.filmStripSize.l;
-				const imR = Math.round(this.im.r * this.w) + this.filmStripSize.r;
-				const imT = Math.round(this.im.t * this.h) + this.filmStripSize.t;
-				const imB = Math.round(this.im.b * this.h) + this.filmStripSize.b;
-				const txL = Math.round(this.tx.l * this.w) + this.filmStripSize.l;
-				const txR = Math.round(this.tx.r * this.w) + this.filmStripSize.r;
-				const txT = Math.round(this.tx.t * this.h) + this.filmStripSize.t;
-				const txB = Math.round(this.tx.b * this.h) + this.filmStripSize.b;
+				const imL = Math.round(this.im.l * this.w) + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0);
+				const imR = Math.round(this.im.r * this.w) + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				const imT = Math.round(this.im.t * this.h) + (!ppt.filmStripOverlay ? this.filmStripSize.t : 0);
+				const imB = Math.round(this.im.b * this.h) + (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
+				const txL = Math.round(this.tx.l * this.w) + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0);
+				const txR = Math.round(this.tx.r * this.w) + (!ppt.filmStripOverlay ? this.filmStripSize.r : 0);
+				const txT = Math.round(this.tx.t * this.h) + (!ppt.filmStripOverlay ? this.filmStripSize.t : 0);
+				const txB = Math.round(this.tx.b * this.h) + (!ppt.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.ibox.l = Math.max(imL, 0);
 				this.ibox.t = Math.max(imT, 0);
 				this.ibox.w = this.w - imL - imR;
@@ -1456,8 +1463,8 @@ class Panel {
 				this.text.r = txR + (ppt.sbarShow ? Math.max(t_r, ui.sbar.sp + sp1) : t_r);
 				this.text.t = txT + ui.heading.h + t_t;
 				this.text.w = this.w - this.text.l - this.text.r;
-				this.heading.x = !this.style.fullWidthHeading ? this.text.l : Math.min(this.img.l, this.text.l, this.filmStripSize.l ? filmStrip.x : this.w);
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - Math.min(this.img.r, this.text.r, this.filmStripSize.r ? this.w - filmStrip.x - filmStrip.w : this.w);
+				this.heading.x = !this.style.fullWidthHeading ? this.text.l : Math.min(this.img.l, this.text.l, (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) ? filmStrip.x : this.w);
+				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - Math.min(this.img.r, this.text.r, (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) ? this.w - filmStrip.x - filmStrip.w : this.w);
 				this.tbox.l = Math.max(txL, 0);
 				this.tbox.t = Math.max(txT, 0);
 				this.tbox.w = this.w - Math.max(txL, 0) - Math.max(txR, 0);
@@ -1474,7 +1481,8 @@ class Panel {
 				}
 				this.repaint.x = this.tbox.l;
 				this.repaint.y = this.tbox.t;
-				this.repaint.w = this.tbox.w, this.repaint.h = this.tbox.h;
+				this.repaint.w = this.tbox.w;
+				this.repaint.h = this.tbox.h;
 				break;
 			}
 		}

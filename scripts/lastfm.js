@@ -506,7 +506,7 @@ class LfmAlbum {
 			} else this.tags = '';
 
 			if (rd_n && rd && /\d\d\d\d/.test(rd)) this.stats += ('\r\n\r\n' + rd_n + ': ' + rd + (tr ? ' | ' + tr : ''));
-			if (length_n && length && /\d+:\d+/.test(length)) this.stats += ('\r\n\r\n' + length_n + ': ' + length); //added length
+			if (length_n && length && /\d+:\d+/.test(length)) this.stats += ('\r\n\r\n' + length_n + ': ' + length);
 			if (scrobbles[1].length && counts[1].length || scrobbles[0].length && counts[0].length) this.stats += ('\r\n\r\nLast.fm: ' + (counts[1].length ? scrobbles[1] + ' ' + counts[1] + '; ' : '') + (counts[1].length ? scrobbles[0] + ' ' + counts[0] : ''));
 			if (scrobbles[2] && counts[2] && scrobbles[2] != scrobbles[0] && scrobbles[1] != scrobbles[0]) this.stats += ('\r\n\r\n' + 'Rating: ' + scrobbles[2] + ': ' + counts[2]);
 
