@@ -3,7 +3,7 @@
 - Wildcard support to textreader & lyric source patterns (filename & extension)
 - Amalgamate sources option for text (biography or reviews) (menu > sources > text)
 	- lyrics are included as plain text if that source is enabled
-	- the "auto-optimise if multiple items shown" option is enabled by default (display tab)
+	- uses "auto-optimise if multiple items shown" option by default (display tab)
 		- it shortens long Wikipedia biographies & reviews, making navigation easier
 		- it removes duplicated types like genres & moods if album + track are both shown
 - Alternative load folder for artist photos (set in photo tab [or in biography.cfg: foCycPhoto])
