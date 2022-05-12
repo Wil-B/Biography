@@ -1,3 +1,37 @@
+# v1.3.1 [unreleased uncommitted]
+### Added
+- Wildcard support to textreader & lyric source patterns (filename & extension)
+- Amalgamate sources option for text (biography or reviews) (menu > sources > text)
+	- lyrics are included as plain text if that source is enabled
+	- the "auto-optimise if multiple items shown" option is enabled by default (display tab)
+		- it shortens long Wikipedia biographies & reviews, making navigation easier
+		- it removes duplicated types like genres & moods if album + track are both shown
+- Alternative load folder for artist photos (set in photo tab [or in biography.cfg: foCycPhoto])
+- Tooltip to show clipped heading text
+- Tagger: option to disable confirmation popup (options\tagger tab)
+- Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
+
+### Changed
+- look-up button is now available with text reader
+- Source switching:
+	- reworked so more informative: context menu now has "Switch to' which shows names rather than next / previous
+	- heading still allows quick change with single click
+
+### Fixed
+- Rare error on options callback
+- Bug in per panel server creation
+- utils.ReadTextFile error on locked items
+- Flags draw issue
+- Resize when filmStrip overlays image area
+- Text reader properties (missing default values and poorly named items):
+	- <b>this fix will reset most textreader & lyrics settings to default</b>
+	- <b>export panel properties, before updating, if you need a record</b>
+
+### Amalgamate sources screenshot:
+![Amalgamate sources](https://user-images.githubusercontent.com/35600752/168072333-9f18c21f-ce03-4103-affa-b67018e91a51.png)
+
+<br />
+
 # v1.3.0
 ### Release highlights
 Wikipedia + lyrics + flags
