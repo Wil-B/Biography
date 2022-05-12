@@ -8,7 +8,8 @@
 		- it removes duplicated types like genres & moods if album + track are both shown
 - Alternative load folder for artist photos (set in photo tab [or in biography.cfg: foCycPhoto])
 - Tooltip to show clipped heading text
-- Tagger: option to disable confirmation popup (options\tagger tab)
+- Tagger: option to disable confirmation popup (tagger tab)
+- Option to show Spider Monkey Panel configure menu (enable in behaviour tab or in panel properties: Menu Show Configure (hide-0 requireShift-1 Show-2)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
 
 ### Changed
