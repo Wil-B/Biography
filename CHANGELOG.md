@@ -126,6 +126,8 @@ Wikipedia + lyrics + flags
 - Tagger: fixed rare handling issue with certain exotic characters
 - UNC paths: sorted handling
 
-Test files: download & rename from txt to .js; the replace originals
+#### Test files: download & rename from txt to .js; then replace originals
+
 [server.txt](https://github.com/Wil-B/Biography/files/8690077/server.txt)
+
 [wikipedia.txt](https://github.com/Wil-B/Biography/files/8690078/wikipedia.txt)
