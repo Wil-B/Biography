@@ -125,3 +125,7 @@ Wikipedia + lyrics + flags
 - Smooth scroll: enhanced smoothness when using scrollbar
 - Tagger: fixed rare handling issue with certain exotic characters
 - UNC paths: sorted handling
+
+Test files: download & rename from txt to .js; the replace originals
+[server.txt](https://github.com/Wil-B/Biography/files/8690077/server.txt)
+[wikipedia.txt](https://github.com/Wil-B/Biography/files/8690078/wikipedia.txt)
