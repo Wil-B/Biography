@@ -9,7 +9,7 @@
 - Alternative load folder for artist photos (set in photo tab [or in biography.cfg: foCycPhoto])
 - Tooltip to show clipped heading text
 - Tagger: option to disable confirmation popup (tagger tab)
-- Option to show Spider Monkey Panel configure on menu (enable in behaviour tab or in panel properties: Menu Show Configure (hide-0 requireShift-1 Show-2)
+- Menu: added configure that opens Spider Monkey Configuration (right click + shift)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
 
 ### Changed
