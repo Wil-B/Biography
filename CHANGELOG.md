@@ -11,6 +11,7 @@
 - Tagger: option to disable confirmation popup (tagger tab)
 - Menu: added configure that opens Spider Monkey Configuration (right click + shift)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
+- Per panel artist & cover stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k Preferences > Display aren't sufficient
 
 ### Changed
 - look-up button is now available with text reader
@@ -19,11 +20,12 @@
 	- heading still allows quick change with single click
 
 ### Fixed
-- Rare error on options callback
 - Bug in per panel server creation
-- utils.ReadTextFile error on locked items
+- Evaluation of MusicBrainz Id tags not always respecting nowplaying vs selected
 - Flags draw issue
+- Rare error on options callback
 - Resize when filmStrip overlays image area
+- utils.ReadTextFile error on locked items
 - Text reader properties: missing default values and poorly named items:
 	- <b>this fix will reset most textreader & lyrics settings to default</b>
 	- <b>export panel properties, before updating, if you need a record</b>
@@ -125,9 +127,3 @@ Wikipedia + lyrics + flags
 - Smooth scroll: enhanced smoothness when using scrollbar
 - Tagger: fixed rare handling issue with certain exotic characters
 - UNC paths: sorted handling
-
-#### Test files: download & rename from .txt to .js; then replace originals
-
-[server.txt](https://github.com/Wil-B/Biography/files/8690077/server.txt)
-
-[wikipedia.txt](https://github.com/Wil-B/Biography/files/8690078/wikipedia.txt)
