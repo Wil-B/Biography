@@ -14,7 +14,7 @@
 - Configure to menu that opens Spider Monkey Configuration (right click + shift)
 
 ### Changed
-- look-up button is now available with text reader
+- Look-up button is now available with text reader
 - Source switching:
 	- reworked so more informative: context menu now shows names rather than next / previous
 	- heading still allows quick change with single click
