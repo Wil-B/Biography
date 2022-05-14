@@ -11,7 +11,7 @@
 - Tagger: option to disable confirmation popup (tagger tab)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
 - Per panel artist & cover stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k preferences > display aren't sufficient
-- Configure to menu that opens Spider Monkey Configuration (right click + shift)
+- Menu configure: opens Spider Monkey Panel configuration (right click + shift)
 
 ### Changed
 - Look-up button is now available with text reader
@@ -21,7 +21,7 @@
 
 ### Fixed
 - Bug in per panel server creation
-- Evaluation of MusicBrainz Id tags not always respecting nowplaying vs selected
+- Evaluation of MusicBrainz Id tags not always respecting selection mode
 - Flags draw issue
 - Rare error on options callback
 - Resize when filmStrip overlays image area
