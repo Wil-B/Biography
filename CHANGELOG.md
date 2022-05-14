@@ -11,7 +11,7 @@
 - Tagger: option to disable confirmation popup (tagger tab)
 - Menu: added configure that opens Spider Monkey Configuration (right click + shift)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
-- Per panel artist & cover stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k Preferences > Display aren't sufficient
+- Per panel artist & cover stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k preferences > display aren't sufficient
 
 ### Changed
 - look-up button is now available with text reader
