@@ -10,7 +10,7 @@
 - Tooltip to show clipped heading text
 - Tagger: option to disable confirmation popup (tagger tab)
 - Checks to test if ShowHtmlDialog is supported, with fallback to an alternative where possible (thx to regor)
-- Per panel artist & cover stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k preferences > display aren't sufficient
+- Per panel stub images (panel properties: "Stub..."). Only needed if stubs set in fb2k preferences > display aren't sufficient
 - Menu configure that opens Spider Monkey Panel configuration (right click + shift)
 
 ### Changed
