@@ -18,6 +18,7 @@
 - Source switching:
 	- reworked so more informative: context menu now shows names rather than next / previous
 	- heading still allows quick change with single click
+- Made lyric scrolling smoother, especially when overlayed over large images
 
 ### Fixed
 - Bug in per panel server creation
