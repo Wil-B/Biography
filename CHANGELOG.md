@@ -22,17 +22,17 @@
 
 ### Fixed
 - Bug in per panel server creation
-- Evaluation of MusicBrainz Id tags not always respecting selection mode
 - Flags draw issue
+- Issues with Wikipedia
 - Resize when filmStrip overlays image area
 - utils.ReadTextFile error on locked items
-- Text reader properties: missing default values and changed to better names:
+- Text reader properties: missing default values + changed to better names:
 	- <b>this fix will reset most textreader & lyrics settings to default</b>
 	- <b>export panel properties, before updating, if you need a record</b>
 - Miscellaneous fixes
 
 ### Amalgamate sources screenshot:
-![Amalgamate sources](https://user-images.githubusercontent.com/35600752/168072333-9f18c21f-ce03-4103-affa-b67018e91a51.png)
+![Amalgamate sources](https://user-images.githubusercontent.com/35600752/168882992-4e19d259-6782-4a41-be6a-5cdb8a3d0ffb.png)
 
 <br />
 
