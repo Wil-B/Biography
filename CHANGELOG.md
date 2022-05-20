@@ -14,11 +14,11 @@
 - Menu configure that opens Spider Monkey Panel configuration (right click + shift)
 
 ### Changed
-- Look-up button is now available with text reader
 - Source switching:
-	- reworked so more informative: context menu now shows names rather than next / previous
-	- heading still allows quick change with single click
+	- reworked so more informative: context menu now shows names, with unavailable sources grayed, rather than next / previous
+	- heading still allows quick change with a single click and offers simple cycling through sources
 - Made lyric scrolling smoother, especially when overlayed over large images
+- Look-up button is now available with text reader
 
 ### Fixed
 - Bug in per panel server creation
