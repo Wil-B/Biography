@@ -15,7 +15,7 @@
 
 ### Changed
 - Source switching:
-	- reworked so more informative: context menu now shows names, with unavailable sources grayed, rather than next / previous
+	- reworked so more informative: context menu now shows names, with unavailable grayed, rather than next / previous
 	- heading still allows quick change with a single click and offers simple cycling through sources
 - Made lyric scrolling smoother, especially when overlayed over large images
 - Look-up button is now available with text reader
@@ -32,7 +32,7 @@
 - Miscellaneous fixes
 
 ### Amalgamate sources screenshot:
-![Amalgamate sources](https://user-images.githubusercontent.com/35600752/168882992-4e19d259-6782-4a41-be6a-5cdb8a3d0ffb.png)
+![Amalgamate sources](https://user-images.githubusercontent.com/35600752/170026842-d256c1a2-2a56-43b0-9738-42e0d8f19f26.png)
 
 <br />
 
