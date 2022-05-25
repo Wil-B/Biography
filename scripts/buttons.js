@@ -73,8 +73,6 @@ class Buttons {
 				wikiBio: 30,
 				wikiRev: 30
 			},
-			lfmamBio: '',
-			lfmamRev: '',
 			lfmBio: '',
 			lfmRev: '',
 			pxShift: false,
@@ -94,8 +92,11 @@ class Buttons {
 
 		this.tooltip = {
 			heading: '',
+			name: false,
 			show: true,
-			start: Date.now() - 2000
+			start: Date.now() - 2000,
+			x: 0,
+			w: 100
 		}
 
 		this.lookUp.zoomSize = Math.max(Math.round(this.lookUp.baseSize * ppt.zoomLookUpBtn / 100), 7);
@@ -120,7 +121,6 @@ class Buttons {
 		if (!refresh) {
 			(ppt.sbarShow != 1 || !this.scr.init) && !txt.lyricsDisplayed() ? this.setScrollBtnsHide() : this.setScrollBtnsHide(true, 'both');
 		}
-		if (!this.btns.heading || !ppt.heading) return;
 		this.rating.show = ui.stars == 1 && !ppt.artistView && (txt.rev.loaded.am && txt.rating.am != -1 || txt.rev.loaded.lfm && txt.rating.lfm != -1);
 		this.src.name = ui.show.btnBg ? ' ' : '';
 		switch (true) {
@@ -136,7 +136,8 @@ class Buttons {
 			}
 		}
 		this.src.name += ui.show.btnBg || this.rating.show ? ' ' : '';
-		this.src.text = this.src.icon || this.src.name.trim().length ? true : false;
+		this.src.text = ppt.heading && this.btns.heading && ppt.hdBtnShow && (this.src.icon || this.src.name.trim().length ? true : false);
+		if (!this.btns.heading || !ppt.heading) return;
 		this.src.visible = ppt.hdBtnShow && (this.rating.show || this.src.text) && ppt.hdPos != 2;
 		if (!this.src.visible) this.src.w = 0;
 		else {
@@ -151,7 +152,7 @@ class Buttons {
 				case this.src.text:
 					switch (true) {
 						case !ppt.artistView: {
-							const ix = txt.rev.loaded.ix == -1 ? ppt.sourcerev : txt.rev.loaded.ix; 
+							const ix = txt.rev.loaded.ix == -1 ? ppt.sourcerev : txt.rev.loaded.ix;
 							this.src.w = [this.src.item_w.amRev, this.src.item_w.lfmRev, this.src.item_w.wikiRev, this.src.item_w.txtRev][ix];
 							break;
 						}
@@ -241,14 +242,14 @@ class Buttons {
 		});
 		switch (this.src.icon) {
 			case 0:
-				this.src.amBio = ppt.amBioBtn;
-				this.src.amRev = ppt.amRevBtn;
-				this.src.lfmBio = ppt.lfmBioBtn;
-				this.src.lfmRev = ppt.lfmRevBtn;
-				this.src.wikiBio = ppt.wikiBioBtn;
-				this.src.wikiRev = ppt.wikiRevBtn;
-				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase();
-				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase();
+				this.src.amBio = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.lfmBio = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.lfmRev = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.wikiBio = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.wikiRev = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
 				if (!ui.show.btnLabel) {
 					this.src.amBio = '';
 					this.src.amRev = '';
@@ -262,11 +263,11 @@ class Buttons {
 				});
 				break;
 			case 1: {
-				this.src.amBio = this.src.amRev = 'allmusic';
-				this.src.lfmBio = this.src.lfmRev = '\uF202';
-				this.src.wikiBio = this.src.wikiRev = '\uF266';
-				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase();
-				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase();
+				this.src.amBio = this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.lfmBio = this.src.lfmRev = '\uF202' + (!ppt.sourceAll ? '' : '... ');
+				this.src.wikiBio = this.src.wikiRev = '\uF266' + (!ppt.sourceAll ? '' : '... ');
+				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
 				this.src.font = gdi.Font(this.src.bahnInstalled ? this.src.bahn : 'Segoe UI Semibold', this.src.fontSize, 0);
 				this.src.iconFont = gdi.Font('FontAwesome', Math.round(this.src.fontSize * (this.src.bahnInstalled ? 1.09 : 1.16)), 0);
 				const alt_w = [];
@@ -317,9 +318,22 @@ class Buttons {
 		});
 		gr.DrawImage(img, x, y, out_radius, out_radius, 0, 0, out_radius, out_radius);
 	}
+	
+	isNextSourceAvailable() {
+		let n = ppt.artistView ? 'Bio' : 'Rev';
+		if (ppt[`lock${n}`] && !ppt.sourceAll) return true;
+		n = ppt.artistView ? 'bio' : 'rev';
+		//const types = txt[n].reader ? $.source.amLfmWikiTxt : $.source.amLfmWiki;
+		const types = txt[n].reader && panel.stndItem() ? $.source.amLfmWikiTxt : $.source.amLfmWiki;
+		let found = 0;
+		return types.some(type => {
+			if (txt[n][type]) found++;
+			if (found == 2) return true;
+		});
+	}
 
 	lbtn_dn(x, y) {
-		this.move(x, y);
+		this.move(x, y, true);
 		if (!this.cur || this.cur.hide) {
 			this.Dn = false;
 			return false
@@ -349,7 +363,7 @@ class Buttons {
 		this.cur = null;
 	}
 
-	move(x, y) {
+	move(x, y, lDn) {
 		const hover_btn = Object.values(this.btns).find(v => {
 			if (!this.Dn || this.Dn == v.name) return v.trace(x, y);
 		});
@@ -370,7 +384,7 @@ class Buttons {
 			if (this.cur && this.cur.name == 'heading') {
 				const new_tt = hover_btn.tiptext();
 				if (this.tooltip.heading != new_tt) {
-					if (this.tooltip.show && hover_btn.tiptext) hover_btn.tt.show(new_tt);
+					if (this.tooltip.show && hover_btn.tiptext && !lDn) hover_btn.tt.show(new_tt);
 					this.tooltip.heading = new_tt;
 				}
 			}
@@ -382,7 +396,7 @@ class Buttons {
 		} // return prev btn to normal state
 		if (hover_btn && !(hover_btn.down && hover_btn.type < 6)) {
 			hover_btn.cs('hover');
-			if (this.tooltip.show && hover_btn.tiptext) hover_btn.tt.show(hover_btn.tiptext());
+			if (this.tooltip.show && hover_btn.tiptext && !lDn) hover_btn.tt.show(hover_btn.tiptext());
 			this.transition.start();
 		}
 		this.cur = hover_btn;
@@ -406,11 +420,10 @@ class Buttons {
 			}
 			this.setLookUpPos();
 		}
+		this.check();
 		if (ppt.heading) {
-			this.check();
-			this.btns.heading = new Btn(panel.heading.x, panel.text.t - ui.heading.h, panel.heading.w - (this.lookUp.pos == 2 ? this.lookUp.sz + (ppt.hdPos != 2 ? this.lookUp.gap : 10) * $.scale : 0), ui.font.heading_h, 6, $.clamp(Math.round(panel.text.t - ui.heading.h + (ui.font.heading_h - this.src.h) / 2 + ppt.hdBtnPad), panel.text.t - ui.heading.h, panel.text.t - ui.heading.h + ui.font.heading_h - this.src.h), '', '', '', !ppt.heading || ppt.img_only, '', () => {	
-				men.isNextSourceAvailable();
-				if (men.isNextAvail) {
+			this.btns.heading = new Btn(panel.heading.x, panel.text.t - ui.heading.h, panel.heading.w - (this.lookUp.pos == 2 ? this.lookUp.sz + (ppt.hdPos != 2 ? this.lookUp.gap : 10) * $.scale : 0), ui.font.heading_h, 6, $.clamp(Math.round(panel.text.t - ui.heading.h + (ui.font.heading_h - this.src.h) / 2 + ppt.hdBtnPad), panel.text.t - ui.heading.h, panel.text.t - ui.heading.h + ui.font.heading_h - this.src.h), '', '', '', !ppt.heading || ppt.img_only, '', () => {
+				if (this.isNextSourceAvailable()) {
 					txt.na = '';
 					men.toggle('', ppt.artistView ? 'Bio' : 'Rev', '', panel.m.x > panel.heading.x + panel.heading.w / 2 ? 1 : -1);
 				} else {
@@ -423,7 +436,6 @@ class Buttons {
 						timer.source.id = null;
 					}, 5000);
 				}
-
 				this.check(true);
 				if (ui.style.isBlur) window.Repaint();
 			}, () => this.srcTiptext(), true, 'heading');
@@ -432,20 +444,22 @@ class Buttons {
 				normal: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light || ui.col.headingBtn !== '' ? ui.col.headBtn : RGB(255, 255, 255) : RGB(225, 225, 245),
 				hover: txt[n].loaded.ix != 1 || !ui.show.btnRedLastfm ? ui.style.bg || !ui.style.bg && !ui.style.trans || ui.blur.dark || ui.blur.light || ui.col.headingBtn !== '' ? ui.col.text_h : RGB(255, 255, 255) : RGB(225, 225, 245)
 			};
-			this.flag = {
-				x: panel.heading.x,
-				w: Math.round(ui.font.heading_h * 0.9)
-			}
-			this.flag.h = Math.round(this.flag.w * 0.6);
-			this.flag.y = panel.text.t - ui.heading.h + Math.round((ui.font.heading_h - this.flag.h) / 2);
-			if (ui.font.heading_h >= 28 && ui.font.heading_h % 2 == 0) this.flag.y++;
-			this.flag.sp = Math.round(this.flag.w * 1.42);
+			if (!ppt.hdPos) {
+				this.flag = {
+					x: panel.heading.x,
+					w: Math.round(ui.font.heading_h * 0.9)
+				}
+				this.flag.h = Math.round(this.flag.w * 0.6);
+				this.flag.y = panel.text.t - ui.heading.h + Math.round((ui.font.heading_h - this.flag.h) / 2);
+				if (ui.font.heading_h >= 28 && ui.font.heading_h % 2 == 0) this.flag.y++;
+				this.flag.sp = Math.round(this.flag.w * 1.42);
+			} else this.flag.sp = 0;
 		} else delete this.btns.heading;
 		if (panel.id.lookUp) {
 			this.btns.lookUp = new Btn(this.lookUp.x, this.lookUp.y, this.lookUp.w, this.lookUp.h, 7, this.lookUp.p1, this.lookUp.p2, '', {
 				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
 				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
-			}, !panel.id.lookUp, '', () => men.buttonMenu(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\nMiddle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...', true, 'lookUp');
+			}, !panel.id.lookUp, '', () => men.buttonMenu(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
 		} else delete this.btns.lookUp;
 		if (ppt.sbarShow) {
 			switch (ui.sbar.type) {
@@ -629,8 +643,9 @@ class Buttons {
 	}
 	
 	srcTiptext() {
+		const suffix = this.isNextSourceAvailable() ? 'text' : 'N/A';
 		const type = panel.m.x > panel.heading.x + panel.heading.w / 2 ? 'Next ' : 'Previous ';
-		return `${type}text`;
+		return this.src.visible && this.trace_src(panel.m.x, panel.m.y) || !but.tooltip.name ? `${type}${suffix}` : but.tooltip.name;
 	}
 
 	trace(btn, x, y) {
@@ -762,13 +777,27 @@ class Btn {
 		const flag = txt[n].flag;
 		if (flag) {
 			gr.SetInterpolationMode(7);
-			let w = ui.style.l_w;
-			let o = Math.floor(w / 2);
-			gr.DrawImage(flag, but.flag.x, but.flag.y, but.flag.w, but.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
-			gr.DrawRect(but.flag.x + o, but.flag.y + o, but.flag.w - w, but.flag.h - w + 1, w, ui.col.imgBor);
+			if (!ppt.hdPos) {
+				const w = ui.style.l_w;
+				const o = Math.floor(w / 2);
+				gr.DrawImage(flag, but.flag.x, but.flag.y, but.flag.w, but.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
+				gr.DrawRect(but.flag.x + o, but.flag.y + o, but.flag.w - w, but.flag.h - w + 1, w, ui.col.imgBor);
+			}
 			gr.SetInterpolationMode(0);
-			gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText,(ppt.hdPos != 2 ? dx1 : this.x) + but.flag.sp, this.y, (ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer) - but.flag.sp, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
-		} else gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText, (ppt.hdPos != 2 ? dx1 : this.x), this.y, ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
+			const h_x = (ppt.hdPos != 2 ? dx1 : this.x) + but.flag.sp;
+			const h_w = (ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer) - but.flag.sp;
+			gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText, h_x, this.y, h_w, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
+			but.tooltip.name = gr.CalcTextWidth(dh, ui.font.heading) > h_w ? dh : '';
+			but.tooltip.x = h_x;
+			but.tooltip.w = h_w;
+		} else {
+			const h_x = (ppt.hdPos != 2 ? dx1 : this.x);
+			const h_w = ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer;
+			gr.GdiDrawText(dh, ui.font.heading, ui.col.headingText, (ppt.hdPos != 2 ? dx1 : this.x), this.y, ppt.hdPos != 2 ? this.w - spacer - but.src.w - (!ppt.hdPos ? 10 : 0) : this.w - spacer, this.h, ppt.hdPos != 2 ? txt.c[ppt.hdPos] : txt.cc);
+			but.tooltip.name = gr.CalcTextWidth(dh, ui.font.heading) > h_w ? dh : '';
+			but.tooltip.x = h_x;
+			but.tooltip.w = h_w;
+		}
 		if (!but.src.visible) return;
 		let col;
 		if (ui.show.btnBg) {

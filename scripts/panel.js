@@ -96,7 +96,7 @@ class Panel {
 			}
 		}
 
-		this.id.lookUp = !this.id.lyricsSource ? ppt.lookUp : 0;
+		this.id.lookUp = ppt.lookUp;
 
 		this.im = {
 			t: 0,
@@ -424,7 +424,7 @@ class Panel {
 		}
 		const caption = 'Create New Freestyle Layout';
 		const prompt = 'Enter new style name\n\nFreestyle layouts offer drag style positioning of image & text boxes + text overlay\n\nContinue?';
-		const fallback = popUpBox.input(caption, prompt, ok_callback, '', 'My Style');
+		const fallback = soFeatures.gecko && soFeatures.clipboard ? popUpBox.input(caption, prompt, ok_callback, '', 'My Style') : true;
 		if (fallback) {
 			try {
 				ns = utils.InputBox(0, prompt, caption, 'My Style', true);
@@ -562,7 +562,7 @@ class Panel {
 		}
 		const caption = 'Delete Current Style';
 		const prompt = 'Delete: ' + this.style.name[n] + '\n\nStyle will be set to top';
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 
@@ -607,7 +607,7 @@ class Panel {
 		}
 		const caption = 'Export Current Style To Other Biography Panels';
 		const prompt = 'Export: ' + this.style.name[n];
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 
@@ -1013,9 +1013,13 @@ class Panel {
 		ppt.artistHistory = JSON.stringify(this.art.history);
 	}
 
-	mbtn_up(x, y, menuLock) {
-		if (x < 0 || y < 0 || x > this.w || y > this.h) return;
-		if (this.id.lookUp && (but.btns['lookUp'].trace(x, y) || menuLock)) {
+	mbtn_up(x, y, menuLock, bypass) {
+		if ((x < 0 || y < 0 || x > this.w || y > this.h) && !bypass) return; // added bypass
+		if (this.id.lookUp && (but.btns['lookUp'].trace(x, y) || menuLock || bypass)) {// added bypass
+			if (panel.id.lyricsSource) {
+				this.lock = 0;
+				return;
+			}
 			let mArtist = ppt.artistView && this.art.ix;
 			if (!this.lock && !mArtist) img.artistReset();
 			if (!this.lock) {
@@ -1025,7 +1029,7 @@ class Panel {
 				img.setAlbID();
 				img.cov.folder = panel.cleanPth(cfg.albCovFolder, panel.id.focus);
 			}
-			this.lock = this.lock == 0 || menuLock ? 1 : 0;
+			if (!bypass) this.lock = this.lock == 0 || menuLock ? 1 : 0; // added bypass
 			txt.curHeadingID = this.lock ? txt.headingID() : '';
 			if (!this.lock && (ppt.artistView && this.id.lockArt != $.eval(this.art.fields, panel.id.focus) || !ppt.artistView && this.id.lockAlb != name.albID(panel.id.focus, 'full') + (this.style.inclTrackRev ? name.trackID(panel.id.focus) : ''))) {
 				txt.on_playback_new_track(true);
@@ -1171,7 +1175,7 @@ class Panel {
 		}
 		const caption = 'Rename Current Style';
 		const prompt = 'Rename style: ' + this.style.name[n] + '\n\nEnter new name\n\nContinue?';
-		const fallback = popUpBox.input(caption, prompt, ok_callback, '', this.style.name[n]);
+		const fallback = soFeatures.gecko && soFeatures.clipboard ? popUpBox.input(caption, prompt, ok_callback, '', this.style.name[n]) : true;
 		if (fallback) {
 			let ns = '';
 			let status = 'ok'
@@ -1224,7 +1228,7 @@ class Panel {
 		}
 		const caption = 'Reset Current Style';
 		const prompt = 'Reset to Default ' + (ppt.style < 4 ? this.style.name[n] : 'Overlay') + ' Style.\n\nContinue?'
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 

@@ -375,7 +375,11 @@ class Settings {
 			displaySaveFolders: false
 		}));
 		if (!panel.id.numServersChecked) panel.checkNumServers();
-		popUpBox.config(JSON.stringify(ppt), JSON.stringify(cfg), dialogWindow, ok_callback, this.lang.ix, $.folder(cfg.photoRecycler));
+		if (soFeatures.gecko && soFeatures.clipboard) popUpBox.config(JSON.stringify(ppt), JSON.stringify(cfg), dialogWindow, ok_callback, this.lang.ix, $.folder(cfg.photoRecycler));
+		else {
+			popUpBox.ok = false;
+			$.trace('options dialog isn\'t available with current operating system. All settings in options are available elsewhere: 1) panel settings are in panel properties; 2) server settings that apply to all panels are in the cfg file - default settings should be fine for most users, but can be changed by careful editing in a text editor. Common settings are on the menu.');	
+		}
 	}
 
 	parse() {
@@ -431,6 +435,7 @@ class Settings {
 		}
 
 		this.albCovFolder = this.substituteTf(this.foCycCov.replace(/%profile%\\/i, fb.ProfilePath));
+		this.artCusImgFolder = this.substituteTf(this.foCycPhoto.replace(/%profile%\\/i, fb.ProfilePath));
 		this.exp = Math.max(this.exp, 28);
 		this.getLangIndex();
 		if (!this.lang.ok) this.language = 'EN';
@@ -519,7 +524,14 @@ class Settings {
 			n = n.replace(/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi, '%BIO_ARTIST%');
 		}
 		tfNames.forEach((v, i) => n = n.replace(RegExp(v, 'gi'), tf[i]));
-		return panel.cleanPth(n, false);
+
+		const wildCard = /[*?]/.test(n);
+		if (!wildCard) return panel.cleanPth(n, false);
+		
+		let p = panel.cleanPth(n.replace(/\*/g, '@!@').replace(/\?/g, '!@!'), false).slice(0, -1);
+		p = p.replace(/@!@/g, '*').replace(/!@!/g, '?');
+		const arr = utils.Glob(p);
+		return arr.length ? arr[0] + ' ' : '';	
 	}
 
 	move(n) {
@@ -550,15 +562,15 @@ class Settings {
 			this.language = this.lang.arr[this.lang.ix];
 		} else this.toggle('languageFallback');
 		txt.bio.subhead = {
-			am: [`AllMusic`, `AllMusic ${txt.bio.lang[this.lang.ix]}`],
-			lfm: [`Last.fm`, `Last.fm ${txt.bio.lang[this.lang.ix]}`],
-			wiki: [`Wikipedia`, `Wikipedia ${txt.bio.lang[this.lang.ix]}`],
+			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
+			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
+			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
 			txt: ['', '']
 		}
 		txt.rev.subhead = {
-			am: [`AllMusic`, `AllMusic ${txt.rev.lang[this.lang.ix]}`],
-			lfm: [`Last.fm`, `Last.fm ${txt.rev.lang[this.lang.ix]}`],
-			wiki: [`Wikipedia`, `Wikipedia ${txt.rev.lang[this.lang.ix]}`],
+			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
+			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
+			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
 			txt: ['', '']
 		}
 		txt.artistReset(true);
@@ -619,6 +631,11 @@ class Settings {
 				break;
 			}
 			case i == 15: {
+				if (!this.taggerConfirm) {
+					if (this.tagEnabled10 && this.tagEnabled13 < 7) tag.check(handles);
+					else tag.write(handles);
+					break;
+				}			
 				const continue_confirmation = (status, confirmed) => {
 					if (confirmed) {
 						if (this.tagEnabled10 && this.tagEnabled13 < 7) tag.check(handles);
@@ -627,7 +644,7 @@ class Settings {
 				}
 				const caption = 'Tag Files:';
 				const prompt = handles.Count < 2000 ? `Update ${handles.Count} ${handles.Count > 1 ? 'tracks' : 'track'}.\n\nContinue?` : `Update ${handles.Count} tracks.\n\nADVISORY: This operation analyses a lot of data.\n\nContinue?`;
-				const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+				const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 				break;
 			}
@@ -687,7 +704,8 @@ let settings = [
 	['Auto-Save Folder', '$directory_path(%path%)', 'text', 'foImgCov'],
 	['Auto-Save File Name', 'cover', 'text', 'fnImgCov'],
 
-	['Folder', '%profile%\\yttm\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foCycCov'],
+	['Folder', '%profile%\\foo_spider_monkey_panel\\package_data\\{BA9557CE-7B4B-4E0E-9373-99F511E81252}\\biography-cache\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foCycCov'],
+	['Folder', '%profile%\\foo_spider_monkey_panel\\package_data\\{BA9557CE-7B4B-4E0E-9373-99F511E81252}\\biography-cache\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foCycPhoto'],
 	['Album Name Auto-Clean', false, 'boolean', 'albStrip'],
 	['Cache Expiry (days: minimum 28)', 28, 'num', 'exp'],
 
@@ -698,6 +716,10 @@ let settings = [
 	['Search: Fuzzy Match Level Composition', 66, 'num',  'fuzzyMatchComposition'],
 	['Similar Artists: Number to Display(0-10)', 6, 'num', 'menuSimilarNum'],
 	['Various Artists', 'Various Artists', 'text', 'va'],
+
+	['Site Display Name AllMusic', 'AllMusic', 'text', 'amDisplayName'],
+	['Site Display Name Last.fm', 'Last.fm', 'text', 'lfmDisplayName'],
+	['Site Display Name Wikipedia', 'Wikipedia', 'text', 'wikiDisplayName'],
 
 	['Write Tag: Album Genre AllMusic', true, 'boolean', 'tagEnabled0'],
 	['Write Tag: Album Mood AllMusic', true, 'boolean', 'tagEnabled1'],
@@ -730,6 +752,7 @@ let settings = [
 	['Tag Name: Album Genre Wikipedia', 'Album Genre Wikipedia', 'text', 'tagName11'],
 	['Tag Name: Artist Genre Wikipedia', 'Artist Genre Wikipedia', 'text', 'tagName12'],
 
+	['Tagger Show Confirm PopUp Box', true, 'boolean', 'taggerConfirm'],
 	['Tagger Last.fm Genre Custom Genres', '', 'text', 'customGenres'],
 	['Tagger Last.fm Genre Translate', 'alt country>alternative country, canterbury>canterbury scene, chanson francaise>chanson fran\u00e7aise, christmas>christmas music, christmas songs>christmas music, eletronica>electronica, motown soul>motown, musicals>musical, neoclassical>neoclassicism, orchestra>orchestral, popular>pop, prog>progressive, rnb>r&b, rhythm and blues>r&b, rb>r&b, relaxing>relaxation, relax>relaxation, rock & roll>rock and roll, rock n roll>rock and roll, tropicalia>tropic\u00e1lia, xmas>christmas music, ye ye>y\u00e9-y\u00e9', 'text', 'translate'],
 

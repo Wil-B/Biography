@@ -23,11 +23,11 @@ class FilmStrip {
 		ppt.filmStripSize = $.clamp(parseFloat(ppt.filmStripSize.toFixed(15)), 0.02, 0.98);
 
 		this.blocks = {
-			bor: [null, null, null],
 			drawn: 6,
 			end: 1,
 			length: 0,
-			start: 0
+			start: 0,
+			style: [{bor: [null, null, null]}, {bor: [null, null, null]}, {bor: [null, null, null]}]
 		}
 
 		this.cachesize = {
@@ -59,7 +59,7 @@ class FilmStrip {
 			fit: true,
 			gap: 0,
 			horizontal: false,
-			image: 2
+			image: [ppt.filmCoverStyle, ppt.filmPhotoStyle]
 		}
 
 		this.imageDebounce = $.debounce(() => {
@@ -111,14 +111,11 @@ class FilmStrip {
 				}
 			} else if (!image) image = img.stub.default[!key.includes('noitem') ? ppt.artistView ? 1 : 0 : 2];
 			if (image) {
-				if (!style) {
-					const o = this.cache[key];
-					if (o && o.style) style = o.style;
-				}
 				image = img.format(image, 1, ['default', 'crop', 'circular'][style], this.im_w, this.im_w, 'filmStrip');
 				this.checkCache();
 				this.cache[key] = {
 					img: image,
+					style: style,
 					accessed: ++this.accessed
 				}
 			}
@@ -145,9 +142,6 @@ class FilmStrip {
 	}
 
 	check(n) {
-		const cur_style = this.style.image;
-		this.style.image = ppt.artistView ? ppt.filmPhotoStyle : ppt.filmCoverStyle;
-		if (this.style.image != cur_style) this.createBorder();
 		const y_text = !panel.style.fullWidthHeading || ppt.img_only ? 0 : panel.text.t;
 		if (this.text_y != y_text) this.setSize();
 		panel.style.showFilmStrip = false;
@@ -221,29 +215,29 @@ class FilmStrip {
 	createBorder() {
 		if (!ppt.showFilmStrip) return;
 		const sp = Math.round((this.blockSize - this.im_w) / 2);
-		for (let i = 0; i < 3; i++) {
-			const col = i < 2 ? ui.col.imgBor : ui.col.frame;
-			const w = i < 2 ? ui.style.l_w : ui.style.l_w * 3;
-			const floor = Math.floor(w / 2);
-			const w1 = !this.style.horizontal || i == 2 ? w : i == 1 ? -100 : w;
-			const w2 = this.style.horizontal || i == 2 ? w : i == 1 ? -100 : w;
-			this.blocks.bor[i] = $.gr(this.blockSize, this.blockSize, true, g => { // 0 circ|rect; 1 circ|rect_no_trailing; 2 sel circ|rect
-				switch (this.style.image) {
-					case 2:
-						g.SetSmoothingMode(2);
-						g.DrawEllipse(sp + floor, sp + floor, this.im_w - w, this.im_w - w, w, col);
-						g.SetSmoothingMode(0);
-						break;
-					default:
-						g.DrawRect(sp + floor, sp + floor, this.im_w - w1, this.im_w - w2, w, col);
-						break;
-				}
-			});
+		for (let j = 0; j < 3; j++) {
+			for (let i = 0; i < 3; i++) {
+				const col = i < 2 ? ui.col.imgBor : ui.col.frame;
+				const w = i < 2 ? ui.style.l_w : ui.style.l_w * 3;
+				const floor = Math.floor(w / 2);
+				const w1 = !this.style.horizontal || i == 2 ? w : i == 1 ? -100 : w;
+				const w2 = this.style.horizontal || i == 2 ? w : i == 1 ? -100 : w;
+				this.blocks.style[j].bor[i] = $.gr(this.blockSize, this.blockSize, true, g => { // 0 circ|rect; 1 circ|rect_no_trailing; 2 sel circ|rect
+						if (j == 2) {
+							g.SetSmoothingMode(2);
+							g.DrawEllipse(sp + floor, sp + floor, this.im_w - w, this.im_w - w, w, col);
+							g.SetSmoothingMode(0);
+						} else {
+							g.DrawRect(sp + floor, sp + floor, this.im_w - w1, this.im_w - w2, w, col);
+						}
+				});
+			}
 		}
 	}
 
 	draw(gr) {
 		if (!panel.style.showFilmStrip || panel.block()) return;
+		const imgStyle = this.style.image[Number(ppt.artistView)];
 		let box_x, box_y, iw, ih;
 		this.getItemsToDraw();
 		for (let i = this.blocks.start; i < this.blocks.end; i++) {
@@ -256,15 +250,15 @@ class FilmStrip {
 				const sel = (!ppt.text_only || ui.style.isBlur) && this.blocks.length > 1 && this.images[i] == img.cur_pth();
 				const x = box_x + Math.round((this.blockSize - iw) / 2);
 				const y = box_y + Math.round((this.blockSize - ih) / 2);
-				let bor = !sel ? this.blocks.bor[1] : this.blocks.bor[2];
-				if (this.style.image != 2 && !sel && (this.style.gap || this.style.fit && i == this.blocks.end - 2 && i != this.blocks.length - 2 || i == this.blocks.length - 1)) bor = this.blocks.bor[0];
-				!this.style.horizontal ? this.drawVerticalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw) : this.drawhorizontalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw);
-			} else this.noIm(gr, box_x, box_y);
+				let bor = !sel ? this.blocks.style[imgStyle].bor[1] : this.blocks.style[imgStyle].bor[2];
+				if (imgStyle != 2 && !sel && (this.style.gap || this.style.fit && i == this.blocks.end - 2 && i != this.blocks.length - 2 || i == this.blocks.length - 1)) bor = this.blocks.style[imgStyle].bor[0];
+				!this.style.horizontal ? this.drawVerticalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw, imgStyle) : this.drawhorizontalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw, imgStyle);
+			} else this.noIm(gr, box_x, box_y, imgStyle);
 		}
 	}
 
-	drawhorizontalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw) {
-		const c = this.style.image == 2 ? 1 : 0;
+	drawhorizontalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw, imgStyle) {
+		const c = imgStyle == 2 ? 1 : 0;
 		let x_offset = 0;
 		if (x - this.x < 0) { // first
 			x_offset = Math.abs(x - this.x);
@@ -282,8 +276,8 @@ class FilmStrip {
 		}
 	}
 
-	drawVerticalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw) {
-		const c = this.style.image == 2 ? 1 : 0;
+	drawVerticalStrip(gr, im, bor, box_x, box_y, x, y, ih, iw, imgStyle) {
+		const c = imgStyle == 2 ? 1 : 0;
 		let y_offset = 0;
 		if (y - this.y < 0) { // first
 			y_offset = Math.abs(y - this.y);
@@ -340,12 +334,12 @@ class FilmStrip {
 						if (!embeddedImg) {
 							this.cache[key] = {
 								img: 'called',
-								style: this.style.image,
+								style: this.style.image[Number(ppt.artistView)],
 								accessed: ++this.accessed
 							}
 							gdi.LoadImageAsync(0, v.key);
 						} else {
-							this.cacheIt(embeddedImg, key, this.style.image);
+							this.cacheIt(embeddedImg, key, this.style.image[Number(ppt.artistView)]);
 						}
 					}
 					this.items.shift();
@@ -370,13 +364,13 @@ class FilmStrip {
 	}
 	
 	getKey(pth) {
-		return this.im_w + this.style.image + pth;
+		return (this.im_w * 100 + this.style.image[Number(ppt.artistView)] + pth);
 	}
 
 	getLoadKey(pth) {
 		let key = '';
-		[ppt.filmPhotoStyle, ppt.filmCoverStyle].some(v => {
-			key = this.im_w + v + pth;
+		this.style.image.some(v => {
+			key = this.im_w * 100 + v + pth; // * 100 to fix occasional auto-fit clashes
 			const o = this.cache[key];
 			return o && o.img == 'called';
 		});
@@ -505,17 +499,18 @@ class FilmStrip {
 		this.hand = this.m_i == -1 ? false : true;
 	}
 
-	noIm(gr, box_x, box_y) {
+	noIm(gr, box_x, box_y, imgStyle) {
 		if ((!this.style.horizontal && box_y >= this.y && box_y <= this.y + this.h - this.blockSize) || (this.style.horizontal && box_x >= this.x && box_x <= this.x + this.w - this.blockSize)) {
-			if (this.style.image != 2) gr.FillSolidRect(box_x + this.noimg.xy, box_y + this.noimg.xy, this.noimg.wh, this.noimg.wh, ui.col.bg1);
+			if (imgStyle != 2) gr.FillSolidRect(box_x + this.noimg.xy, box_y + this.noimg.xy, this.noimg.wh, this.noimg.wh, ui.col.bg1);
 			else gr.FillEllipse(box_x + this.noimg.xy, box_y + this.noimg.xy, this.noimg.wh, this.noimg.wh, ui.col.bg1);
 		}
 	}
 
 	on_load_image_done(image, image_path) {
+		if (!panel.style.showFilmStrip) return;
 		const key = this.getLoadKey(image_path);
 		const o = this.cache[key];
-		if (o && o.img == 'called') this.cacheIt(image, key);
+		if (o && o.img == 'called') this.cacheIt(image, key, o.style);
 	}
 
 	on_size() {
@@ -561,7 +556,7 @@ class FilmStrip {
 				}
 				const caption = 'Reset Filmstrip To Default Size';
 				const prompt = 'Continue?';
-				const wsh = popUpBox.confirm(caption, prompt, 'Yes', 'No', continue_confirmation);
+				const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'Yes', 'No', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 				break;
 			}
@@ -579,7 +574,6 @@ class FilmStrip {
 		this.style.auto = ppt.autoFilm;
 		this.style.fit = ppt.filmStripAutofit;
 		this.style.gap = ppt.thumbNailGap;
-		this.style.image = ppt.artistView ? ppt.filmPhotoStyle : ppt.filmCoverStyle;
 		const filmStripOverlay = ppt.filmStripOverlay && !ppt.text_only;
 		const spacer = Math.round((!this.style.gap ? 2 : this.style.gap < 3 ? 1 : 0) * $.scale);
 		let max_h = panel.h;
@@ -698,7 +692,6 @@ class FilmStrip {
 
 		if (this.scrollerType().scroll > this.scrollerType().max_scroll) this.scrollerType().checkScroll(this.scrollerType().max_scroll);
 		this.createBorder();
-
 	}
 
 	showImage(i) {

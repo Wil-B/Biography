@@ -388,7 +388,7 @@ function on_notify_data(name, info) {
 			break;
 		case 'bio_webRequest':
 			clone = String(info);
-			server.urlRequested[info] = Date.now(); // if multiServer enabled, limit requests for same URL to one
+			server.urlRequested[info] = Date.now(); // if multiServer enabled, limit URL requests for same item to one
 			break;
 	}
 }
@@ -402,9 +402,9 @@ function on_paint(gr) {
 	}
 	img.draw(gr);
 	seeker.draw(gr);
-	filmStrip.draw(gr);
 	txt.draw(gr);
 	if (panel.id.lyricsSource) lyrics.draw(gr);
+	filmStrip.draw(gr);
 	but.draw(gr);
 	resize.drawEd(gr);
 	ui.lines(gr);

@@ -29,6 +29,7 @@ class Images {
 			images: [],
 			ix: 0,
 			list: [],
+			cusPhotoLocation: false,
 			validate: []
 		}
 
@@ -113,6 +114,30 @@ class Images {
 		}
 
 		this.stub = {
+			0: {
+				panel: false,
+				path: '',
+				user: null
+			},
+			1: {
+				panel: false,
+				path: '',
+				user: null
+			},
+			2: {
+				path: '',
+				user: null
+			},
+			3: {
+				panel: false,
+				path: '',
+				user: null
+			},
+			4: {
+				panel: false,
+				path: '',
+				user: null
+			},
 			art: {
 				file: `${cfg.storageFolder}artist_stub_user.png`,
 				folder: `${cfg.storageFolder}artist_stub_user`,
@@ -165,21 +190,27 @@ class Images {
 			return /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v));
 		}
 
-		this.ext.some(v => {
-			this.stub.art.path = this.stub.art.folder + v;
-			if ($.file(this.stub.art.path)) {
-				this.stub.art.user = gdi.Image(this.stub.art.path);
-				return true;
+		['Front', 'Back', 'Disc', 'Icon', 'Art'].forEach((v, i) => {
+			const f = ppt[`panel${v}Stub`].replace(/%profile%\\/i, fb.ProfilePath);
+			if ($.file(f)) {
+				this.stub[i].panel = true;
+				this.stub[i].path = f;
+				this.stub[i].user = gdi.Image(this.stub[i].path);
 			}
 		});
 
-		this.ext.some(v => {
-			this.stub.cov.path = this.stub.cov.folder + v;
-			if ($.file(this.stub.cov.path)) {
-				this.stub.cov.user = gdi.Image(this.stub.cov.path);
-				return true;
+		for (let i = 0; i < 5; i++) {
+			if (!this.stub[i].user) {
+				const pth = i != 4 ? 'cov' : 'art';
+				this.ext.some(v => {
+					this.stub[i].path = this.stub[pth].folder + v;
+					if ($.file(this.stub[i].path)) {
+						this.stub[i].user = gdi.Image(this.stub[i].path);
+						return true;
+					}
+				});
 			}
-		});
+		}
 
 		this.setCov = $.debounce(() => {
 			filmStrip.logScrollPos();
@@ -222,7 +253,17 @@ class Images {
 		const new_artist = this.artist && this.artist != this.cur_artist || !this.artist || ppt.covBlur && ui.style.isBlur && this.id.blur != this.id.curBlur || force;
 		if (new_artist) {
 			this.art.folderSup = '';
-			this.art.folder = panel.cleanPth(cfg.pth.foImgArt, panel.id.focus);
+			let files = [];
+			if (ppt.cycPhotoLocation == 1) {
+				this.art.folder = panel.cleanPth(cfg.artCusImgFolder, panel.id.focus);
+				files = utils.Glob(this.art.folder + '*');
+			}
+			if (files.length && files.some(v => /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v)))) {
+				this.art.cusPhotoLocation = true;
+			} else {
+				this.art.folder = panel.cleanPth(cfg.pth.foImgArt, panel.id.focus);
+				this.art.cusPhotoLocation = false;
+			}
 			this.clearArtCache(true);
 			if (ppt.cycPhoto) this.art.done = false;
 			if (!this.art.images.length) {
@@ -384,22 +425,22 @@ class Images {
 	checkUserStub(type, handle) {
 		switch (type) {
 			case 'art': {
-				if (this.stub.art.user) break;
+				if (this.stub[4].user) break;
 				const stubArtUser = utils.GetAlbumArtV2(handle, 4);
 				if (stubArtUser) stubArtUser.SaveAs(this.stub.art.file);
 				if ($.file(this.stub.art.file)) {
-					this.stub.art.user = gdi.Image(this.stub.art.file);
-					this.stub.art.path = this.stub.art.file;
+					this.stub[4].user = gdi.Image(this.stub.art.file);
+					this.stub[4].path = this.stub.art.file;
 				}
 				break;
 			}
 			case 'cov': {
-				if (this.stub.cov.user) break;
+				if (this.stub[0].user) break;
 				const stubCovUser = utils.GetAlbumArtV2(handle, 0);
 				if (stubCovUser) stubCovUser.SaveAs(this.stub.cov.file);
 				if ($.file(this.stub.cov.file)) {
-					this.stub.cov.user = gdi.Image(this.stub.cov.file);
-					this.stub.cov.path = this.stub.cov.file;
+					this.stub[0].user = gdi.Image(this.stub.cov.file);
+					this.stub[0].path = this.stub.cov.file;
 				}
 				break;
 			}
@@ -737,7 +778,7 @@ class Images {
 			}
 			if (ppt.loadCovAllFb) {
 				const handle = $.handle(panel.id.focus);
-				if (handle) img.cov.selFiltered.forEach(v => this.getImg(handle, v, false));
+				if (handle) this.cov.selFiltered.forEach(v => this.getImg(handle, v, false));
 				else if (!ppt.loadCovFolder || !this.cov.images.length) return false;
 			}
 		}
@@ -772,7 +813,7 @@ class Images {
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}
-				this.setStub(cov, this.stub.cov.path, false, 0, this.stub.cov.user);
+				this.setStub(cov, this.stub[0].path, false, 0, this.stub[0].user);
 				return;
 			}
 		}
@@ -785,13 +826,24 @@ class Images {
 				this.getImg(a_handle, 4, false);
 				return;
 			}
-			this.setStub(art, this.stub.art.path, false, 1, this.stub.art.user);
+			this.setStub(art, this.stub[4].path, false, 1, this.stub[4].user);
 			return;
 		}
 		// stndAlb
 		const handle = $.handle(panel.id.focus);
 		if (handle) {
-			if (!ppt.loadCovAllFb || ppt.artistView) this.getImg(handle, ppt.artistView ? 4 : ppt.covType, !ppt.covType || ppt.artistView ? false : true);
+			let id = ppt.artistView ? 4 : ppt.covType;
+			if (!ppt.loadCovAllFb || ppt.artistView) this.getImg(handle, id, this.stub[id].panel ? false : !ppt.covType || ppt.artistView ? false : true);
+			else {
+				id = this.cov.selFiltered[0];
+				let image = null;
+				if (cov.cacheHit(this.stub[id].path)) return;
+				if (this.stub[id].user) {
+					image = this.stub[id].user;
+					if (image) this.cache().cacheIt(image, this.stub[id].path);
+				}
+				if (!image) this.setStub(this.cache(), 'cover', true, 0);
+			}
 			return;
 		}
 		if (fb.IsPlaying && handle) return;
@@ -898,6 +950,7 @@ class Images {
 
 	images(v) {
 		if (!$.file(v)) return false;
+		if (this.art.cusPhotoLocation) return /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v));
 		const fileSize = utils.GetFileSize(v);
 		return (name.isLfmImg(fso.GetFileName(v), this.artist) || !ppt.imgFilterLfm && /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v)) && !/ - /.test(fso.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
 	}
@@ -1015,7 +1068,7 @@ class Images {
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}
-				this.setStub(cov, this.stub.cov.path, false, 0, this.stub.cov.user);
+				this.setStub(cov, this.stub[0].path, false, 0, this.stub[0].user);
 				return;
 			}
 		}
@@ -1098,18 +1151,19 @@ class Images {
 		}
 		if (!image) {
 			if (ppt.artistView) {
-				if (art.cacheHit(this.stub.art.path)) return;
+				if (art.cacheHit(this.stub[art_id].path)) return;
 				this.checkUserStub('art', handle);
-				if (this.stub.art.user) {
-					image = this.stub.art.user;
-					image_path = this.stub.art.path;
-				} // chk/save/load stubArtUser
+				if (this.stub[art_id].user) {
+					image = this.stub[art_id].user;
+					image_path = this.stub[art_id].path;
+				}
 			} else {
-				if (cov.cacheHit(this.stub.cov.path)) return;
+				if (ppt.loadCovAllFb) art_id = this.cov.selFiltered[0];
+				if (cov.cacheHit(this.stub[art_id].path)) return;
 				this.checkUserStub('cov', handle);
-				if (this.stub.cov.user) {
-					image = this.stub.cov.user;
-					image_path = this.stub.cov.path;
+				if (this.stub[art_id].user) {
+					image = this.stub[art_id].user;
+					image_path = this.stub[art_id].path;
 				}
 			}
 		}
@@ -1157,11 +1211,12 @@ class Images {
 		if (!this.cur_handle || !this.cur_handle.Compare(handle) || image && this.cache().cacheHit(image_path + (!embedded ? '' : art_id))) return;
 		if (this.loadCycCov(handle, art_id, image, image_path)) return;
 		if (panel.alb.ix && panel.alb.ix < panel.alb.list.length && !image && !ppt.artistView) return this.loadAltCov(handle, 1);
-		if (!image && !ppt.artistView && !art_id && !panel.alb.ix) {
+		if (!image && !ppt.artistView && !art_id && !panel.alb.ix && ppt.loadCovAllFb) {
 			if (this.loadAltCov(handle, 0)) return;
-			if (this.stub.cov.user) {
-				image = this.stub.cov.user;
-				image_path = this.stub.cov.path;
+			if (ppt.loadCovAllFb) art_id = this.cov.selFiltered[0];
+			if (this.stub[art_id].user) {
+				image = this.stub[art_id].user;
+				image_path = this.stub[art_id].path;
 			}
 		}
 		this.loadStndCov(handle, art_id, image, image_path, embedded);

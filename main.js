@@ -13,6 +13,7 @@ async function readFiles(files) {
 }
 
 const files = [
+	'so.js',
 	'helpers.js',
 	'properties.js',
 	'settings.js',

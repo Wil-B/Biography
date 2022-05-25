@@ -439,8 +439,8 @@ class UserInterface {
 			}
 		}
 		if (!lyrics && panel.id.lyricsSource) lyrics = new Lyrics;
-		panel.id.lookUp = !panel.id.lyricsSource ? ppt.lookUp : 0;
-		if (txt.bio.reader || txt.rev.reader) panel.lock = 0;
+		panel.id.lookUp = ppt.lookUp;
+
 		this.show = {
 			btnBg: ppt.hdShowBtnBg,
 			btnLabel: ppt.hdShowBtnLabel,
@@ -498,6 +498,7 @@ class UserInterface {
 		ppt.thumbNailGap = Math.max(ppt.thumbNailGap, 0);
 		img.createImages();
 		filmStrip.set('clear');
+		filmStrip.style.image = [ppt.filmCoverStyle, ppt.filmPhotoStyle];
 		filmStrip.createBorder();
 		img.setCrop(true);
 		panel.alb.ix = 0;
@@ -530,7 +531,6 @@ class UserInterface {
 
 		txt.bio.fallback = ppt.bioFallbackText.split('|');
 		txt.rev.fallback = ppt.revFallbackText.split('|');
-
 		txt.loadReader();
 		txt.getText(true);
 		but.refresh(true);
@@ -539,6 +539,13 @@ class UserInterface {
 		img.art.allFilesLength = 0;
 		img.updImages();
 		seeker.upd();
+
+		const origLock = panel.lock;
+		if (txt.bio.reader || txt.rev.reader) {
+			panel.lock = 0;
+			if (origLock != panel.lock) panel.mbtn_up(0, 0, false, true)
+		}
+
 		if (!panel.lock) panel.getList(true, true);
 
 		men.playlists_changed();
@@ -629,11 +636,15 @@ class UserInterface {
 	}
 
 	updateProp(prop, value) {
+		const serverName = ppt.serverName;
 		Object.entries(prop).forEach(v => {
 			ppt[v[0].replace('_internal', '')] = v[1][value]
 		});
-
 		this.refreshProp();
+		if (serverName != ppt.serverName) {
+			window.Reload();
+			window.NotifyOthers('bio_refresh', 'bio_refresh');
+		}
 	}
 
 	wheel(step) {

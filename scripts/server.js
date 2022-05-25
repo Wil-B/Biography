@@ -250,7 +250,7 @@ class Server {
 
 						if (this.expired(wiki_bio.pth, this.exp, '', text, 2) && !custBio || force == 2 && !custBio || force == 1) {
 							const dl_wiki_bio = new DldWikipedia(() => dl_wiki_bio.onStateChange());
-							dl_wiki_bio.search(0, this.artist, '', album, title, stndBio ? 0 : '!stndBio', wiki_bio.fo, wiki_bio.pth, force);
+							dl_wiki_bio.search(0, this.artist, '', album, title, stndBio ? 0 : '!stndBio', wiki_bio.fo, wiki_bio.pth, art.focus, force);
 						}
 					}
 				}
@@ -270,7 +270,7 @@ class Server {
 					} else timer.decelerating();
 
 					if (cfg.lfmSim && stndBio) {
-						const fo_sim = panel.cleanPth(cfg.pth.foLfmSim, panel.id.focus, 'server');
+						const fo_sim = panel.cleanPth(cfg.pth.foLfmSim, art.focus, 'server');
 						const pth_sim = fo_sim + $.clean(this.artist) + ' And Similar Artists.json';
 						let len = 0;
 						let valid = false;
@@ -470,24 +470,31 @@ class Server {
 				const wiki_rev = panel.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $.clean(this.albumArtist), $.clean(this.albumArtist), $.clean(this.album), 'foWikiRev', true, true);
 				const wikiRev = $.open(wiki_rev.pth);
 				const custRev = wikiRev.includes('Custom Review');
+				const wikiAlbum = this.album;
+				const wikiAlbumArtist = this.albumArtist;
+				const wikiTitle = name.title(alb.focus, true);
 
 				if (this.expired(wiki_rev.pth, this.exp, '', wikiRev, 2) && !custRev || force == 2 && !custRev || force == 1) {
 					setTimeout(() => {
 						const wiki_alb = new DldWikipedia(() => wiki_alb.onStateChange());
-						wiki_alb.search(0, this.albumArtist.toLowerCase() != cfg.va.toLowerCase() ? this.albumArtist : 'Various Artists', this.album, this.album, name.title(alb.focus, true), 1, wiki_rev.fo, wiki_rev.pth, force);
+						wiki_alb.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiAlbum, wikiAlbum, wikiTitle, 1, wiki_rev.fo, wiki_rev.pth, alb.focus, force);
 					}, 1200); // wait for mbid & Qid
 				}
 			}
 
 			if (this.composition) {
 				const wiki_comp = panel.getPth('rev', alb.focus, this.albumArtist, this.composition, stndAlb, supCache, $.clean(this.albumArtist), $.clean(this.albumArtist), $.clean(this.composition), 'foWikiRev', true, true);
+				const wikiAlbum = name.album(alb.focus, true);
+				const wikiAlbumArtist = this.albumArtist;
 				const wikiComp = $.open(wiki_comp.pth);
+				const wikiTitle = name.title(alb.focus, true);
+				const wikiWork = this.composition;
 				const custRev = wikiComp.includes('Custom Review');
 
 				if ((!this.expired(wiki_comp.pth, this.exp, '', wikiComp, 2) || custRev) && !force || custRev && force == 2) return;
 				setTimeout(() => {
 					const wk_comp = new DldWikipedia(() => wk_comp.onStateChange());
-					wk_comp.search(0, this.albumArtist.toLowerCase() != cfg.va.toLowerCase() ? this.albumArtist : 'Various Artists', this.composition, name.album(alb.focus, true), name.title(alb.focus, true), 2, wiki_comp.fo, wiki_comp.pth, force)
+					wk_comp.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiWork, wikiAlbum, wikiTitle, 2, wiki_comp.fo, wiki_comp.pth, alb.focus, force);
 				}, 3600); // wait for mbid & Qid & limit call frequency
 			}
 		}
@@ -546,13 +553,12 @@ class Server {
 		const trk = tr.title.toLowerCase();
 
 		if (cfg.dlAmRev) {
-			const amTracks = panel.getPth('track', panel.id.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foAmRev', true, true);
-			const am_bio = panel.getPth('bio', panel.id.focus, tr.artist, '', true, cfg.supCache && !lib.inLibrary(0, tr.artist), $.clean(tr.artist), '', '', 'foAmBio', true, true);
+			const amTracks = panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foAmRev', true, true);
+			const am_bio = panel.getPth('bio', tr.focus, tr.artist, '', true, cfg.supCache && !lib.inLibrary(0, tr.artist), $.clean(tr.artist), '', '', 'foAmBio', true, true);
 			const amText = $.jsonParse(amTracks.pth, false, 'file');
 
 			let track_upd = !this.done('Rev ' + cfg.partialMatch + ' ' + amTracks.pth + ' ' + trk + ' ' + tr.artist, this.exp * 6);
 			track_upd = track_upd && (!amText || !amText[trk] || !amText[trk].wiki && amText[trk].update < Date.now() - this.exp * 6) || tr.force;
-
 			if (track_upd) {
 				const dl_am_trk = new DldAllmusicRev(() => dl_am_trk.onStateChange());
 				dl_am_trk.search(0, server.url.am + 'songs/' + encodeURIComponent(trk + ' ' + tr.artist), trk, tr.artist, tr.artist, false, 'track', amTracks.fo, amTracks.pth, am_bio.fo, am_bio.pth, [], tr.force);
@@ -560,7 +566,7 @@ class Server {
 		}
 
 		if (cfg.dlLfmRev) {
-			const lfmTracks = panel.getPth('track', panel.id.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foLfmRev', true, true);
+			const lfmTracks = panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foLfmRev', true, true);
 			const lfmText = $.jsonParse(lfmTracks.pth, false, 'file');
 
 			if (!lfmText || !lfmText[trk] || lfmText[trk].update < Date.now() - this.exp || lfmText[trk].lang != cfg.language || tr.force) {
@@ -570,13 +576,16 @@ class Server {
 		}
 
 		if (cfg.dlWikiRev) {
-			let wikiTracks = panel.getPth('track', panel.id.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foWikiRev', true, true);
-			let wikiText = $.jsonParse(wikiTracks.pth, false, 'file');
+			const wikiTracks = panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $.clean(tr.artist), '', 'Track Reviews', 'foWikiRev', true, true);
+			const wikiText = $.jsonParse(wikiTracks.pth, false, 'file');
+			const wikiAlbum = name.album(tr.focus, true);
+			const wikiArtist = tr.artist;
+			const wikiTrk = trk;
 
-			if (!wikiText || !wikiText[trk] || wikiText[trk].update < Date.now() - this.exp * 6 || wikiText[trk].lang != cfg.language || tr.force) {
+			if (!wikiText || !wikiText[wikiTrk] || wikiText[wikiTrk].update < Date.now() - this.exp * 6 || wikiText[wikiTrk].lang != cfg.language || tr.force) {
 				setTimeout(() => {
 					const dl_wiki_track = new DldWikipedia(() => dl_wiki_track.onStateChange());
-					dl_wiki_track.search(0, tr.artist, trk, name.album(tr.focus, true), trk, 3, wikiTracks.fo, wikiTracks.pth, tr.force);
+					dl_wiki_track.search(0, wikiArtist, wikiTrk, wikiAlbum, wikiTrk, 3, wikiTracks.fo, wikiTracks.pth, tr.focus, tr.force);
 				}, 2400); // wait for mbid & Qid & limit call frequency
 			}
 		}

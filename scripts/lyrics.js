@@ -96,6 +96,7 @@ class Lyrics {
 			$.gr(1, 1, false, g => {
 				for (let i = 0; i < lyrics.length; i++) {
 					const l = g.EstimateLineWrap(lyrics[i].content, ui.font.lyrics, this.w - 10);
+					if (l[1] > this.maxLyrWidth) this.maxLyrWidth = l[1];
 					if (l.length > 2) {
 						const numLines = l.length / 2;
 						let maxScrollTime = this.durationScroll;
@@ -109,6 +110,7 @@ class Lyrics {
 				}
 			});
 		}
+		this.maxLyrWidth = Math.min(this.maxLyrWidth + 40, this.w);
 		const incr = Math.min(500, this.durationScroll);
 		this.lyrics.forEach((v, i) => {
 			const t1 = this.getTimestamp(i - 1);
@@ -179,6 +181,7 @@ class Lyrics {
 		this.locus = -1;
 		this.lyrics = [];
 		this.lyricsOffset = 0;
+		this.maxLyrWidth = 0;
 		this.minDurationScroll = Math.min(this.durationScroll, 250); 
 		this.newHighlighted = false;
 		this.scroll = 0;
@@ -294,7 +297,7 @@ class Lyrics {
 	}
 
 	repaintRect() {
-		window.RepaintRect(this.x, this.y, this.w, this.h + this.lineHeight);
+		window.RepaintRect(this.x + (this.w - this.maxLyrWidth) / 2, this.y, this.maxLyrWidth, this.h + this.lineHeight);
 	}
 
 	scrollUpdateNeeded() {

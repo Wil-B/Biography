@@ -11,6 +11,7 @@ class DldWikipedia {
 		this.artistValidated = false;
 		this.fallBackDone = false;
 		this.fo;
+		this.focus = false;
 		this.force;
 		this.func = null;
 		this.genres = [];
@@ -64,13 +65,14 @@ class DldWikipedia {
 			}
 	}
 
-	search(p_searchItem, p_artist, p_title, p_album, p_recording, p_type, p_fo, p_pth, p_force) {
+	search(p_searchItem, p_artist, p_title, p_album, p_recording, p_type, p_fo, p_pth, p_focus, p_force) {
 		let URL = '';
 		this.searchItem = p_searchItem;
 		if (this.init) {
 			this.album = p_album;
 			if (p_type == '!stndBio') this.aridType = 2; // !stndBio recording or release methods can't be used
 			this.artist = p_artist;
+			this.focus = p_focus;
 			this.force = p_force;
 			this.lookUp = p_type == '!stndBio';
 			this.recording = p_recording;
@@ -84,7 +86,7 @@ class DldWikipedia {
 		
 		if (!this.tagChecked) {
 			this.getRgMbid();
-			this.ar_mbid = $.eval('$trim($if3(%musicbrainz_artistid%,%musicbrainz artist id%,))');
+			this.ar_mbid = $.eval('$trim($if3(%musicbrainz_artistid%,%musicbrainz artist id%,))', this.focus);
 			if (!this.ar_mbid || this.ar_mbid.length != 36) {
 				const related_artists = $.jsonParse(`${cfg.storageFolder.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}')}related_artists.json`, {}, 'file');
 				this.ar_mbid = related_artists[this.artist.toUpperCase()]; // f&p says if it's a tag read
@@ -540,7 +542,7 @@ class DldWikipedia {
 	}
 
 	doFallbackSearch() {
-		if (this.type && !this.fallBackDone && !this.user_mbid) {
+		if (this.type && !this.fallBackDone/* && !this.user_mbid*/) { // uncomment to block fallback if user_mbid
 			this.fallBackDone = true;
 			this.search(7);
 			return true;
@@ -613,7 +615,7 @@ class DldWikipedia {
 	getRgMbid() {
 		const type1 = ['', 'releasegroup', 'work', 'releasegroup', 'work'][this.type];
 		const type2 = ['', 'releasegroup', 'work', 'release group', 'work'][this.type];
-		this.rg_mbid = $.eval(`$trim($if3(%musicbrainz_${type1}id%,%musicBrainz ${type2} id%,))`);
+		this.rg_mbid = $.eval(`$trim($if3(%musicbrainz_${type1}id%,%musicBrainz ${type2} id%,))`, this.focus);
 		if (!this.rg_mbid || this.rg_mbid.length != 36) this.rg_mbid = '';
 		if (this.rg_mbid) this.user_mbid = true;
 	}
@@ -623,7 +625,10 @@ class DldWikipedia {
 		const altArtist = this.artist.length > 6 && !/^The The$/i.test(this.artist) ? this.artist.replace(/^The /i, '') : '';
 		const arr = [...new Set([this.artist, this.related_artist, this.alias, altArtist, $.removeDiacritics(this.artist)].map(v => v.replace(/ and /gi, ' & ')).filter(Boolean))];
 		if (this.artist == 'Various Artists') arr.push('compilation');
-		return arr.some(v => v && RegExp(`\\b${v}([\\s.,;:!?'"]|$)`, 'i').test(text)); // handle trailing accented etc
+		return arr.some(v => {
+			const w = $.regexEscape(v);
+			return w && RegExp(`\\b${w}([\\s.,;:!?'"]|$)`, 'i').test(text);
+		}); // handle trailing accented etc
 	}
 
 	save() {

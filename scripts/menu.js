@@ -114,12 +114,13 @@ class MenuItems {
 	constructor() {
 		this.docTxt = '';
 		this.handles = new FbMetadbHandleList();
-		this.isNextAvail = false;
 		this.openName = [];
 		this.popUpTitle = 'Missing Data:';
 		this.right_up = false;
 		this.shift = false;
+		this.sources = [];
 		this.tags = false;
+		this.types = [];
 		this.counter = {
 			bio: 0,
 			rev: 0
@@ -170,6 +171,8 @@ class MenuItems {
 		bMenu = new MenuManager;
 		bMenu.newMenu({});
 		const artist = panel.art.list.length ? panel.art.list[0].name : name.artist(panel.id.focus);
+		const n = ppt.artistView ? 'bio' : 'rev';
+		const isLyrics = txt[n].loaded.txt && txt.reader.lyrics;
 		switch (ppt.artistView) {
 			case true:
 				panel.art.list.forEach((v, i) => bMenu.newItem({
@@ -196,6 +199,17 @@ class MenuItems {
 					func: () => this.lookUpArtistItems(i),
 					checkItem: i < 4 && [ppt.showSimilarArtists, ppt.showMoreTags, ppt.showArtistHistory, ppt.autoLock][i],
 					separator: i == 2 || i == 3 || i == 4 || i == 5
+				});
+
+				bMenu.newItem({
+					separator: true,
+					hide: !txt.bio.reader && panel.id.lyricsSource
+				});
+
+				bMenu.newItem({
+					str: 'Lyrics are always of current track',
+					flags: MF_GRAYED,
+					hide: !txt.bio.reader && panel.id.lyricsSource
 				});
 				break;
 			case false:
@@ -224,13 +238,20 @@ class MenuItems {
 					checkItem: i < 3 && [ppt.showTopAlbums, ppt.showAlbumHistory, ppt.autoLock][i],
 					separator: i == 1 || i == 2 || i == 3 || i == 4
 				});
+				
+				bMenu.newItem({
+					separator: true,
+					hide: !txt.rev.reader && panel.id.lyricsSource
+				});
+
+				bMenu.newItem({
+					str: 'Lyrics are always of current track',
+					flags: MF_GRAYED,
+					hide: !txt.rev.reader && panel.id.lyricsSource
+				});
 				break;
 		}
 		bMenu.load(x, y);
-	}
-	
-	revLookUp() {
-		return panel.alb.list.length && panel.alb.list[panel.alb.ix].artist != panel.alb.list[0].artist;
 	}
 
 	mainMenu() {
@@ -242,15 +263,25 @@ class MenuItems {
 			hide: !$.server || !this.shift || !vk.k('ctrl')
 		});
 
-		[this.getSourceStr(0), this.getSourceStr(1)].forEach((v, i) => menu.newItem({
-			str: v,
-			func: () => this.toggle('', ppt.artistView ? 'Bio' : 'Rev', '', !i ? 1 : -1),
-			flags: this.isNextAvail ? MF_STRING : MF_GRAYED,
-			separator: i,
+		const b = ppt.artistView ? 'Bio' : 'Rev';
+		const n = b.toLowerCase();
+
+		menu.newMenu({
+			menuName: 'Load',
 			hide: ppt.img_only
+		});
+
+		this.sources.forEach((v, i) => menu.newItem({
+			menuName: 'Load',
+			str: v,
+			func: () => this.toggle(i, b, true),
+			flags: () => txt[n][this.types[i]] ? MF_STRING : MF_GRAYED,
+			checkRadio: i == txt[n].loaded.ix,
+			separator: txt[n].reader ? i == 3 && (!ppt.artistView || !panel.stndItem()) : i == 2 && (!ppt.artistView || !panel.stndItem())
 		}));
 
-		['Album review', 'Track review', 'Both'].forEach((v, i) => menu.newItem({
+		['Album review', 'Track review', 'Prefer both'].forEach((v, i) => menu.newItem({
+			menuName: 'Load',
 			str: v,
 			func: () => {
 				txt.logScrollPos();
@@ -265,18 +296,22 @@ class MenuItems {
 				txt.refresh(1);
 				txt.getScrollPos();
 			},
+			flags: !txt[n][this.types[0]] && !txt[n][this.types[1]] && !txt[n][this.types[2]] ? MF_STRING : !txt[n].loaded.txt && [this.albAvail, this.trkAvail, this.albAvail || this.trkAvail][i] ? MF_STRING : MF_GRAYED,
 			checkRadio: !i && !ppt.inclTrackRev || i == 1 && ppt.inclTrackRev == 2 || i == 2 && ppt.inclTrackRev == 1,
-			separator: i == 2,
-			hide: ppt.artistView || ppt.img_only || txt.rev.loaded.txt && this.isNextAvail || this.revLookUp() || txt.isCompositionLoaded()
+			hide: ppt.artistView || !panel.stndItem() || txt.isCompositionLoaded()
 		}));
-		
-		if (!ppt.artistView && !ppt.img_only && (this.revLookUp() || txt.isCompositionLoaded())) {
+
+		if (!panel.stndItem() || txt.isCompositionLoaded()) {
 			menu.newItem({
-				str: 'Type: ' + (txt.isCompositionLoaded() ? 'composition loaded' : 'album look-up'),
-				flags: MF_GRAYED,
-				separator: true
+				menuName: 'Load',
+				str: 'Mode: ' + (ppt.artistView ? 'artist look-up' : (txt.isCompositionLoaded() ? 'composition loaded' : 'album look-up')),
+				flags: MF_GRAYED
 			});
 		}
+
+		menu.newItem({
+			separator: !ppt.img_only ? true : false
+		});
 
 		menu.newMenu({
 			menuName: 'Display'
@@ -302,23 +337,32 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Text',
-			str: 'Text',
 			appendTo: 'Sources'
 		});
 
-		for (let i = 0; i < 2; i++) menu.newItem({
+		menu.newItem({
 			menuName: 'Text',
-			str: ['Lock to selected source', 'Review: allmusic && wikipedia: prefer composition'][i],
+			str: 'Site' + (ppt.txtReaderEnable ? ' && reader/lyrics' : '') + ' handling:',
+			flags: MF_GRAYED,
+			separator: true
+		});
+
+		for (let i = 0; i < 4; i++) menu.newItem({
+			menuName: 'Text',
+			str: ['Auto-fallback', 'Static', 'Amalgamate', 'Prefer composition (allmusic && wikipedia review)'][i],
 			func: () => {
-				if (!i) this.toggle(4, ppt.artistView ? 'Bio' : 'Rev');
-				else {
-				ppt.toggle('classicalMusicMode'); ppt.classicalAlbFallback = ppt.classicalMusicMode;
-				txt.refresh(1);
+				switch (i) {
+					case 0:
+					case 1: this.toggle(4, b); break;
+					case 2: ppt.toggle('sourceAll'); txt.refresh(1); break;
+					case 3: ppt.toggle('classicalMusicMode'); ppt.classicalAlbFallback = ppt.classicalMusicMode; txt.refresh(1); break;
 				}
 			},
-			checkItem: !i && ppt.lockBio || i && ppt.classicalMusicMode,
-			separator: !i && cfg.classicalModeEnable,
-			hide: i && !cfg.classicalModeEnable
+			flags: !i && ppt.sourceAll || i == 1 && ppt.sourceAll ? MF_GRAYED : MF_STRING,
+			checkItem: i == 2 && ppt.sourceAll || i == 3 && ppt.classicalMusicMode,
+			checkRadio: !i && (!ppt[`lock${b}`] || ppt.sourceAll) || i == 1 && ppt[`lock${b}`] && !ppt.sourceAll,
+			separator: i == 1 || i == 2 && cfg.classicalModeEnable,
+			hide: i == 3 && !cfg.classicalModeEnable || i == 4 && ppt.sourceAll
 		});
 
 		menu.newItem({
@@ -332,14 +376,20 @@ class MenuItems {
 			str: 'Photo'
 		});
 
-		['Cycle from folder', 'Artist (single image [fb2k: display])'].forEach((v, i) => menu.newItem({
+		['Cycle from download folder', 'Cycle from custom folder [fallback to above]', 'Artist (single image [fb2k: display])'].forEach((v, i) => menu.newItem({
 			menuName: 'Photo',
 			str: v,
 			func: () => {
-				ppt.toggle('cycPhoto');
+				ppt.cycPhoto = i < 2;
+				ppt.cycPhotoLocation = i;
+				if (i == 1 && !ppt.get('SYSTEM.Photo Folder Checked', false)) {
+					fb.ShowPopupMessage('Enter folder in options: "Server Settings"\\Photo\\Custom photo folder.', 'Biography: custom folder for photo cycling');
+					ppt.set('SYSTEM.Photo Folder Checked', true);
+				}
 				img.updImages();
 			},
-			checkRadio: [ppt.cycPhoto, !ppt.cycPhoto][i]
+			checkRadio: ppt.cycPhotoLocation == i,
+			separator: i == 1
 		}));
 
 		menu.newMenu({		
@@ -625,7 +675,7 @@ class MenuItems {
 
 		for (let i = 0; i < 13 + 4; i++) menu.newItem({
 			menuName: 'Tagger',
-			str: !i ? 'Write existing file info to tags: ' : i == 13 + 1 ? 'All tagger settings...' : i == 13 + 2 ? 'Tag files...' + (this.tags ? '' : ' N/A no tags enabled') : i == 13 + 3 ? 'Cancel' : i == 11 ? cfg[`tagName${i - 1}`] + (cfg[`tagEnabled${i - 1}`] ? ' (' + cfg[`tagEnabled${i + 2}`] + ')' : '') : cfg[`tagName${i - 1}`],
+			str: !i ? 'Write existing file info to tags: ' : i == 13 + 1 ? 'All tagger settings...' : i == 13 + 2 ? (cfg.taggerConfirm ? 'Tag files...' : `Tag ${this.handles.Count} ${this.handles.Count > 1 ? 'tracks' : 'track'}...`) + (this.tags ? '' : ' N/A no tags enabled') : i == 13 + 3 ? 'Cancel' : i == 11 ? cfg[`tagName${i - 1}`] + (cfg[`tagEnabled${i - 1}`] ? ' (' + cfg[`tagEnabled${i + 2}`] + ')' : '') : cfg[`tagName${i - 1}`],
 			func: () => cfg.setTag(i, this.handles),
 			flags: !i || i == 13 + 1 && !this.tags ? MF_GRAYED : MF_STRING,
 			checkItem: i && i < 13 + 1 && cfg[`tagEnabled${i - 1}`],
@@ -652,16 +702,12 @@ class MenuItems {
 			hide: !ppt.menuShowInactivate || ppt.menuShowInactivate == 1 && !this.shift
 		});
 
-		menu.newItem({
-			str: () => popUpBox.ok ? 'Options...' : 'Options: see console',
-			func: () => cfg.open('PanelCfg'),
+		for (let i = 0; i < 2; i++) menu.newItem({
+			str: () => [popUpBox.ok ? 'Options...' : 'Options: see console', 'Configure...'][i],
+			func: () => !i ? cfg.open('PanelCfg') : window.EditScript(),
+			separator: !i && this.shift,
+			hide: i && !this.shift
 		});
-	}
-	
-	getSourceStr(i) {
-		const suffix = this.isNextAvail ? '...' : ' N/A';
-		const type = !i ? 'Next ' : 'Previous ';
-		return `${type}text${suffix}`;
 	}
 
 	checkMissingData(i) {
@@ -749,20 +795,26 @@ class MenuItems {
 			}
 	}
 
+	getSourceNames() {
+		const b = ppt.artistView ? 'Bio' : 'Rev';
+		const n = b.toLowerCase();
+		this.types = !txt[n].reader ? $.source.amLfmWiki : $.source.amLfmWikiTxt;
+		this.sources = ['Allmusic', 'Last.fm', 'Wikipedia'];
+		if (txt[n].reader) this.sources.push(txt[n].subhead.txt[0] || '');
+		if (ppt.sourceAll) this.sources = this.sources.map(v => v + ' first');
+		if (!panel.stndItem() && txt.reader.lyrics) this.sources[3] += ' // current track';
+	}
+
 	images(v) {
 		return name.isLfmImg(fso.GetFileName(v));
 	}
 
-	isNextSourceAvailable() {
-		let n = ppt.artistView ? 'Bio' : 'Rev';
-		if (ppt[`lock${n}`]) return this.isNextAvail = true;
-		n = ppt.artistView ? 'bio' : 'rev';
-		const types = txt[n].reader ? ['am', 'lfm', 'wiki', 'txt'] : ['am', 'lfm', 'wiki'];
-		this.isNextAvail = false;
-		let found = 0;
-		types.some(type => {
-			if (txt[n][type]) found++;
-			if (found == 2) return this.isNextAvail = true;
+	isRevAvail() {
+		const type = ['alb', 'trk'];
+		type.forEach(w => {
+			this[`${w}Avail`] = $.source.amLfmWiki.some((v, i) => {
+				return ppt.lockRev ? txt.rev.loaded.ix == txt.avail[`${v}${w}`] : txt.avail[`${v}${w}`] != -1;
+			});
 		});
 	}
 
@@ -778,8 +830,8 @@ class MenuItems {
 				txt.get = 0;
 				let force = false;
 				panel.style.inclTrackRev = ppt.inclTrackRev;
-				if (ppt.showAlbumHistory && ppt.inclTrackRev) {
-					if (panel.alb.list[panel.alb.ix].artist != panel.alb.list[0].artist) panel.style.inclTrackRev = 0;
+				if (ppt.inclTrackRev) {
+					if (i) panel.style.inclTrackRev = 0;
 					txt.albumFlush();
 					force = true;
 				}
@@ -963,7 +1015,7 @@ class MenuItems {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 
@@ -996,7 +1048,7 @@ class MenuItems {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 
@@ -1040,7 +1092,7 @@ class MenuItems {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation);
+		const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 	}
 
@@ -1064,11 +1116,12 @@ class MenuItems {
 
 		this.docTxt = $.getClipboardData() || '';
 		this.getDisplayStr();
+		this.getSourceNames();
 		this.img.artist = imgInfo.artist;
 		this.path.img = imgInfo.imgPth;
 		this.img.isLfm = imgInfo.blk && this.path.img;
 		this.img.name = this.img.isLfm ? this.path.img.slice(this.path.img.lastIndexOf('_') + 1) : this.path.img.slice(this.path.img.lastIndexOf('\\') + 1);
-		this.isNextSourceAvailable();
+		this.isRevAvail();
 		this.path.am = ppt.artistView ? txt.bioPth('Am') : txt.revPth('Am');
 		this.path.lfm = ppt.artistView ? txt.bioPth('Lfm') : txt.revPth('Lfm');
 		this.path.txt = ppt.artistView ? txt.txtReaderPth() : txt.txtRevPth();
@@ -1190,7 +1243,7 @@ class MenuItems {
 		switch (i) {
 			case 0: case 1: case 2: {
 				const n = ppt.artistView ? 'bio' : 'rev';
-				const s = ['am', 'lfm', 'wiki'][i];
+				const s = $.source.amLfmWiki[i];
 				this.undo.folder = this.path[s][0];
 				this.undo.path = this.path[s][1];
 				this.undo.text = $.open(this.undo.path);
@@ -1278,6 +1331,7 @@ class MenuItems {
 	toggle(i, b, fix, direction) {
 		txt.logScrollPos();
 		const n = b.toLowerCase();
+		if (i === ppt[`source${n}`]) return;
 		if (i == 4) {
 			ppt.toggle('lockBio');
 			ppt.lockRev = ppt.lockBio;
@@ -1285,7 +1339,7 @@ class MenuItems {
 		if (i === '') i = ppt[`source${n}`];
 			if (fix) {
 				ppt[`source${n}`] = i;
-			} else if (ppt[`lock${b}`]) {
+			} else if (ppt[`lock${b}`] && !ppt.sourceAll) {
 				const limit = txt[n].reader ? 3 : 2;
 				direction == 1 ? ppt[`source${n}`] = i == limit ? 0 : ++i : ppt[`source${n}`] = i == 0 ? limit : --i;
 			} else {
@@ -1305,15 +1359,9 @@ class MenuItems {
 				}
 			}
 		}
-		txt[n].source.am = ppt[`source${n}`] == 0;
-		txt[n].source.lfm = ppt[`source${n}`] == 1;
-		txt[n].source.wiki = ppt[`source${n}`] == 2;
-		txt[n].source.txt = ppt[`source${n}`] == 3;
+		$.source.amLfmWikiTxt.forEach((v, i) => txt[n].source[v] = ppt[`source${n}`] == i);
+		$.source.amLfmWiki.forEach(v => {if (txt[n].source[v]) txt.done[`${v}${b}`] = false});
 		txt[n].source.ix = ppt[`source${n}`];
-
-		if (txt[n].source.am) txt.done[`am${b}`] = false;
-		if (txt[n].source.lfm) txt.done[`lfm${b}`] = false;
-		if (txt[n].source.wiki) txt.done[`wiki${b}`] = false;
 		txt.getText(false);
 		but.src.y = but.src.fontSize < 12 || txt[n].loaded.ix == 2 ? 1 : 0;
 		txt.getScrollPos();
