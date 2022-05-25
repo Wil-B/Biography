@@ -1,4 +1,4 @@
-# v1.3.1 [unreleased uncommitted]
+# v1.3.1
 ### Added
 - Wildcard support to textreader & lyric source patterns (filename & extension)
 - Amalgamate sources option for biographies and reviews (menu > sources > text)
