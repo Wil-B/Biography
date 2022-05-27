@@ -1,6 +1,6 @@
 # v1.3.2 [unreleased]
 ### Fixed
-- Regression: review albumart fallback image not loading
+- Regression: review album art fallback image not loading
 
 <br />
 
