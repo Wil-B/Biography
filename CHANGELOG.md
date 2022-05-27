@@ -1,3 +1,9 @@
+# v1.3.2 [unreleased]
+### Fixed
+- Fix: regression: review albumart fallback image not loading
+
+<br />
+
 # v1.3.1
 ### Added
 - Wildcard support to textreader & lyric source patterns (filename & extension)
