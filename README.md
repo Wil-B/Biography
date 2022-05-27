@@ -36,7 +36,7 @@ New install or update:
 7) Import the package
 
 ### SUPPORT
-The official discussion thread for biography is located at [HydrogenAudio](https://hydrogenaud.io/index.php?topic=112914.0) and that's a great place
+The official discussion thread for Biography is located at [HydrogenAudio](https://hydrogenaud.io/index.php?topic=112914.0) and that's a great place
 to go for questions and other support issues.
 
 ## Screenshots
