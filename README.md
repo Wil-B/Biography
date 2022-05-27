@@ -35,6 +35,10 @@ New install or update:
 6) Open package manager if it doesn't open automatically
 7) Import the package
 
+### SUPPORT
+The official discussion thread for biography is located at [HydrogenAudio](https://hydrogenaud.io/index.php?topic=112914.0) and that's a great place
+to go for questions and other support issues.
+
 ## Screenshots
  
 ### Top layout with dark theme
