@@ -562,15 +562,15 @@ class Settings {
 			this.language = this.lang.arr[this.lang.ix];
 		} else this.toggle('languageFallback');
 		txt.bio.subhead = {
-			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
-			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
-			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
+			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${txt.bio.lang[cfg.lang.ix]}`],
+			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${txt.bio.lang[cfg.lang.ix]}`],
+			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${txt.bio.lang[cfg.lang.ix]}`],
 			txt: ['', '']
 		}
 		txt.rev.subhead = {
-			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
-			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
-			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
+			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${txt.rev.lang[cfg.lang.ix]}`],
+			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${txt.rev.lang[cfg.lang.ix]}`],
+			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${txt.rev.lang[cfg.lang.ix]}`],
 			txt: ['', '']
 		}
 		txt.artistReset(true);
