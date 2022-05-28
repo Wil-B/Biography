@@ -1457,10 +1457,11 @@ class Text {
 	}
 
 	isTrackRevAvail(source, o) {
+		if (!o) return -1;
 		switch (source) {
-			case 'am': return o && (o.composer.length || o.date || o.genres.length || o.moods.length || o.themes.length || o.wiki) ? 0 : -1;
-			case 'lfm': return o && (o.length || o.releases || o.stats || o.tags.length || o.wiki) ? 1 : -1;
-			case 'wiki': return o && (o.composer.length || o.date || o.genre.length || o.length || o.wiki) ? 2 : -1;
+			case 'am': return (['date', 'wiki'].some(v => $.getProp(o, v, false)) || ['composer', 'genres', 'moods', 'themes'].some(v => $.getProp(o, v, []).length)) ? 0 : -1;
+			case 'lfm': return (['length', 'releases', 'stats', 'wiki'].some(v => $.getProp(o, v, false)) || $.getProp(o, 'tags', []).length) ? 1 : -1;
+			case 'wiki': return (['date', 'length', 'wiki'].some(v => $.getProp(o, v, false)) || ['composer', 'genre'].some(v => $.getProp(o, v, []).length)) ? 2 : -1;
 		}
 	}
 
