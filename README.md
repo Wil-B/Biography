@@ -49,5 +49,7 @@ to go for questions and other support issues.
 See textreader & lyrics tab help for set-up tips
 
 ### Various layouts
-![Various layouts](https://user-images.githubusercontent.com/35600752/156671553-97584a48-b458-4ee9-a09c-d67d990c87e9.png)
-Top, left, right, bottom, overlay and freestyle layouts are all supported with drag resizing of image & filmstrip
+![Various layouts](https://user-images.githubusercontent.com/35600752/171164742-bd0610dd-6f0e-4d26-834e-c3d944857a3a.png)
+
+### Amalgamated sources
+![Amalgamate sources ](https://user-images.githubusercontent.com/35600752/171165042-efc9a884-91fc-4aa4-bd74-1fdce81d91d1.png)
