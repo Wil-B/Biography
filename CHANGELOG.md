@@ -1,4 +1,7 @@
 # v1.3.2 [unreleased]
+### Changed
+- Improved load sub-menu
+
 ### Fixed
 - Regression: review album art fallback image not loading (issue introduced in v1.3.1)
 - Regression: set language not working (issue introduced in v1.3.1)
@@ -38,9 +41,6 @@
 	- <b>this fix will reset most textreader & lyrics settings to default</b>
 	- <b>export panel properties, before updating, if you need a record</b>
 - Miscellaneous fixes
-
-### Amalgamate sources screenshot:
-![Amalgamate sources](https://user-images.githubusercontent.com/35600752/170026842-d256c1a2-2a56-43b0-9738-42e0d8f19f26.png)
 
 <br />
 
