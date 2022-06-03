@@ -1,11 +1,15 @@
 # v1.3.2 [unreleased]
 ### Changed
 - Improved load sub-menu
+    - now distinguishes between biographies & reviews
+    - simplified for users not requiring track reviews, as the review type options aren't shown by default
+    - to show those options, enable menu > sources > text > show track review options...
 
 ### Fixed
 - Regression: review album art fallback image not loading (issue introduced in v1.3.1)
 - Regression: set language not working (issue introduced in v1.3.1)
 - Track availability check not working in some languages
+- Rare filmstrip draw issues
 
 <br />
 
