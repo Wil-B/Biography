@@ -8,7 +8,7 @@
 ### Fixed
 - Regression: review album art fallback image not loading (issue introduced in v1.3.1)
 - Regression: set language not working (issue introduced in v1.3.1)
-- Track availability check not working in some languages
+- Track review availability check not working in some languages
 - Rare filmstrip draw issues
 
 <br />
