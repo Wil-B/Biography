@@ -1,4 +1,4 @@
-# v1.3.2 [unreleased]
+# v1.3.2
 ### Changed
 - Improved load sub-menu
     - now distinguishes between biographies & reviews
