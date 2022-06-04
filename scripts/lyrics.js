@@ -215,12 +215,11 @@ class Lyrics {
 		this.parse(lyr);
 	}
 
-	on_mouse_wheel(step) {
-		const origOffset = this.userOffset;
-		if (Math.abs(this.userOffset != 1)) step *= $.clamp(Math.round(1000 / ((Date.now() - this.stepTime) * 5)), 1, 5);
+	on_mouse_wheel(step) {		
+		step *= $.clamp(Math.round(1000 / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
-		if (Math.sign(origOffset) != Math.sign(this.userOffset)) this.userOffset = 0;
-		else this.userOffset += 1000 * -step;
+		this.userOffset += 1000 * -step;
+		if (!this.userOffset) this.repaintRect();
 		this.showOffset = this.type.synced && this.userOffset != 0;
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
@@ -298,6 +297,7 @@ class Lyrics {
 
 	repaintRect() {
 		window.RepaintRect(this.x + (this.w - this.maxLyrWidth) / 2, this.y, this.maxLyrWidth, this.h + this.lineHeight);
+		if (this.showOffset) window.RepaintRect(this.x, this.top, this.w, this.lineHeight + 1);
 	}
 
 	scrollUpdateNeeded() {

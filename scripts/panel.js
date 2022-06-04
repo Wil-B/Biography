@@ -310,8 +310,8 @@ class Panel {
 		return true;
 	}
 
-	checkAutofilm() {
-		if (!ppt.showFilmStrip || !ppt.autoFilm) return;
+	checkFilm() {
+		if (!ppt.showFilmStrip) return;
 		const item = this.getItem();
 		if (Date.now() - this.id.loadTimestamp > 1500) { // delay needed for correct sizing on init; ignored by click (sets loadTimestamp = 0); 
 			switch (item) {
@@ -1014,8 +1014,8 @@ class Panel {
 	}
 
 	mbtn_up(x, y, menuLock, bypass) {
-		if ((x < 0 || y < 0 || x > this.w || y > this.h) && !bypass) return; // added bypass
-		if (this.id.lookUp && (but.btns['lookUp'].trace(x, y) || menuLock || bypass)) {// added bypass
+		if ((x < 0 || y < 0 || x > this.w || y > this.h) && !bypass) return;
+		if (this.id.lookUp && (but.btns['lookUp'].trace(x, y) || menuLock || bypass)) {
 			if (panel.id.lyricsSource) {
 				this.lock = 0;
 				return;
@@ -1029,7 +1029,7 @@ class Panel {
 				img.setAlbID();
 				img.cov.folder = panel.cleanPth(cfg.albCovFolder, panel.id.focus);
 			}
-			if (!bypass) this.lock = this.lock == 0 || menuLock ? 1 : 0; // added bypass
+			if (!bypass) this.lock = this.lock == 0 || menuLock ? 1 : 0;
 			txt.curHeadingID = this.lock ? txt.headingID() : '';
 			if (!this.lock && (ppt.artistView && this.id.lockArt != $.eval(this.art.fields, panel.id.focus) || !ppt.artistView && this.id.lockAlb != name.albID(panel.id.focus, 'full') + (this.style.inclTrackRev ? name.trackID(panel.id.focus) : ''))) {
 				txt.on_playback_new_track(true);
@@ -1307,10 +1307,10 @@ class Panel {
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : ppt.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - ppt.textR;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - this.filmStripSize.r - ui.sbar.sp;
+					if (!this.filmStripSize.r) this.sbar.x = this.w - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
-					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? this.text.t : 0) + this.sbar.top_corr;
-					this.sbar.h = (ui.sbar.type < this.sbar.style || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
+					this.sbar.y = (ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+					this.sbar.h = (ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = 0;
@@ -1330,10 +1330,10 @@ class Panel {
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : ppt.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : panel.w - ppt.textL - ppt.textR;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
+					if (!this.filmStripSize.r) this.sbar.x = this.w - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
-					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 2 ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
-					this.sbar.h = (ui.sbar.type < this.sbar.style || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
+					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || this.filmStripSize.b ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
+					this.sbar.h = (ui.sbar.type < this.sbar.style || this.filmStripSize.b ? ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
@@ -1359,8 +1359,8 @@ class Panel {
 				this.img.l = ppt.textL + txt_sp + (!ppt.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (ppt.sbarShow ? ui.sbar.sp + sp1 : 0);
 				if (ppt.sbarShow) {
 					this.sbar.x = this.text.l + this.text.w + sp1;
-					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? this.text.t : 0) + this.sbar.top_corr;
-					this.sbar.h = ui.sbar.type < this.sbar.style || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
+					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+					this.sbar.h = ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
@@ -1383,7 +1383,7 @@ class Panel {
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : ppt.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : panel.w - ppt.textL - ppt.textR;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
+					if (!this.filmStripSize.r) this.sbar.x = this.w - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
 					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading ? this.text.t : 0) + this.sbar.top_corr;
 					this.sbar.h = ui.sbar.type < this.sbar.style ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.img.t - this.sbar.y + bot_corr;
@@ -1410,10 +1410,10 @@ class Panel {
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - ppt.textR;
 				if (this.style.fullWidthHeading) this.img.t = this.text.t;
 				if (ppt.sbarShow) {
-					if (ppt.filmStripPos != 1) this.sbar.x = this.w - (!ppt.filmStripOverlay ? this.filmStripSize.r : 0) - ui.sbar.sp;
+					if (!this.filmStripSize.r) this.sbar.x = this.w - ui.sbar.sp;
 					else this.sbar.x = this.text.l + this.text.w + sp1;
-					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? this.text.t : 0) + this.sbar.top_corr;
-					this.sbar.h = ui.sbar.type < this.sbar.style || ppt.filmStripPos == 0 || ppt.filmStripPos == 2 ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
+					this.sbar.y = (ui.sbar.type < this.sbar.style || ppt.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+					this.sbar.h = ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;

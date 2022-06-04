@@ -502,7 +502,7 @@ class Images {
 	}
 
 	createImages() {
-		const bg = this.isType('AnyBor') || !ui.blur.dark && !ui.blur.light;
+		const bg = this.isType('AnyBorShadow') || !ui.blur.dark && !ui.blur.light;
 		const cc = StringFormat(1, 1);
 		const font1 = gdi.Font('Segoe UI', 230, 1);
 		const font2 = gdi.Font('Segoe UI', 120, 1);
@@ -642,7 +642,6 @@ class Images {
 
 	filmOK(newArr) {
 		return newArr && this.art.list.length && ppt.showFilmStrip && filmStrip.scroll.pos.art[this.artist] && filmStrip.scroll.pos.art[this.artist].arr && filmStrip.scroll.pos.art[this.artist].arr.length;
-		
 	}
 
 	getImgAlpha(image) {
@@ -995,10 +994,12 @@ class Images {
 
 	isType(n, image) {
 		switch (n) { // init before createImages & this.setCrop
-			case 'AnyBor':
+			case 'AnyBorShadow':
 				return ['artBorderImgOnly', 'artShadowImgOnly', 'artBorderDual', 'artShadowDual', 'covBorderImgOnly', 'covShadowImgOnly', 'covBorderDual', 'covShadowDual'].some(v => ppt[v]);
 			case 'Blur':
 				return ui.style.isBlur && !(ppt.img_only && this.style.crop && this.style.border < 2) ? image.Clone(0, 0, image.Width, image.Height) : null;
+			case 'AnyBor':
+				return ['artBorderImgOnly', 'artBorderDual', 'covBorderImgOnly', 'covBorderDual'].some(v => ppt[v]);
 			case 'Fade':
 				return !ppt.typeOverlay && ppt.style > 3 && !ppt.img_only;
 			case 'Overlay':
@@ -1011,21 +1012,21 @@ class Images {
 						return !ppt.img_only ? ppt.covStyleDual == 2 : ppt.covStyleImgOnly == 2;
 				}
 				break;
-				case 'Border':
-					switch (ppt.artistView) {
-						case true:
-							return ppt.artBorderDual && ppt.artShadowDual || ppt.artBorderImgOnly && ppt.artShadowImgOnly ? 3 : ppt.artShadowDual || ppt.artShadowImgOnly ? 2 : ppt.artBorderDual || ppt.artBorderImgOnly ? 1 : 0;
-						case false:
-							return ppt.covBorderDual && ppt.covShadowDual || ppt.covBorderImgOnly && ppt.covShadowImgOnly ? 3 : ppt.covShadowDual || ppt.covShadowImgOnly ? 2 : ppt.covBorderDual || ppt.covBorderImgOnly ? 1 : 0;
-					}
-					break;
-					default:
-						switch (ppt.artistView) {
-							case true:
-								return !ppt.img_only ? ppt[`art${n}Dual`] : ppt[`art${n}ImgOnly`];
-							case false:
-								return !ppt.img_only ? ppt[`cov${n}Dual`] : ppt[`cov${n}ImgOnly`];
-						}
+			case 'Border':
+				switch (ppt.artistView) {
+					case true:
+						return !ppt.img_only && ppt.artBorderDual && ppt.artShadowDual || ppt.img_only && ppt.artBorderImgOnly && ppt.artShadowImgOnly ? 3 : !ppt.img_only && ppt.artShadowDual || ppt.img_only && ppt.artShadowImgOnly ? 2 : !ppt.img_only && ppt.artBorderDual || ppt.img_only && ppt.artBorderImgOnly ? 1 : 0;
+					case false:
+						return !ppt.img_only && ppt.covBorderDual && ppt.covShadowDual || ppt.img_only && ppt.covBorderImgOnly && ppt.covShadowImgOnly ? 3 : !ppt.img_only && ppt.covShadowDual || ppt.img_only && ppt.covShadowImgOnly ? 2 : !ppt.img_only && ppt.covBorderDual || ppt.img_only && ppt.covBorderImgOnly ? 1 : 0;
+				}
+				break;
+			default:
+				switch (ppt.artistView) {
+					case true:
+						return !ppt.img_only ? ppt[`art${n}Dual`] : ppt[`art${n}ImgOnly`];
+					case false:
+						return !ppt.img_only ? ppt[`cov${n}Dual`] : ppt[`cov${n}ImgOnly`];
+				}
 		}
 	}
 
@@ -1779,7 +1780,7 @@ class Seeker {
 		}
 
 		this.debounce = $.debounce(() => {
-			if (panel.imgBoxTrace(panel.m.x, panel.m.y)) return;
+			if (panel.imgBoxTrace(panel.m.x, panel.m.y) || this.imgSeeker == 2) return;
 			this.show = false;
 			img.paint();
 			filmStrip.paint();
@@ -1824,11 +1825,11 @@ class Seeker {
 			if (count) {
 				const count_w = Math.max(gr.CalcTextWidth(count_m, ui.font.small), 8);
 				const count_x = ppt.imgSeeker ? Math.round($.clamp(this.bar.x1 - count_w / 2 + prog, this.bar.l + 2, this.bar.l + this.nw - count_w - 4)) : this.counter.x + ui.style.l_w * 2 + img.bor.w1;
-				const count_y = ppt.imgSeeker ? Math.round(this.bar.y2 - this.bar.gripOffset - this.counter.h * 1.5) : this.counter.y + ui.style.l_w * 2 + img.bor.w1;
-				gr.FillRoundRect(count_x, count_y, count_w + 2, this.counter.h + 2, 3, 3, RGBA(0, 0, 0, 210));
-				gr.DrawRoundRect(count_x + 1, count_y + 1, count_w, this.counter.h, 1, 1, 1, RGBA(255, 255, 255, 60));
-				gr.DrawRoundRect(count_x, count_y, count_w + 2, this.counter.h + 2, 1, 1, 1, RGBA(0, 0, 0, 200));
-				gr.GdiDrawText(count, ui.font.small, RGB(250, 250, 250), count_x + 1, count_y, count_w, this.counter.h + 2, txt.cc);
+				const count_y = ppt.imgSeeker ? Math.round(this.bar.y2 - this.bar.gripOffset - ui.font.small_h * 1.5) : this.counter.y + ui.style.l_w * 2 + img.bor.w1;
+				gr.FillRoundRect(count_x, count_y, count_w + 2, ui.font.small_h + 2, 3, 3, RGBA(0, 0, 0, 210));
+				gr.DrawRoundRect(count_x + 1, count_y + 1, count_w, ui.font.small_h, 1, 1, 1, RGBA(255, 255, 255, 60));
+				gr.DrawRoundRect(count_x, count_y, count_w + 2, ui.font.small_h + 2, 1, 1, 1, RGBA(0, 0, 0, 200));
+				gr.GdiDrawText(count, ui.font.small, RGB(250, 250, 250), count_x + 1, count_y, count_w, ui.font.small_h + 2, txt.cc);
 			}
 		}
 	}
@@ -1875,7 +1876,7 @@ class Seeker {
 	}
 
 	metrics(circular, crop, horizontal, reflection, vertical) {
-		ppt.imgSeekerDisabled = ppt.style > 3 && !ppt.img_only && !panel.clip && this.intersectRect() || ppt.filmStripOverlay;
+		ppt.imgSeekerDisabled = ppt.style > 3 && !ppt.img_only && !panel.clip && this.intersectRect() || (ppt.filmStripOverlay && !ppt.text_only);
 		this.imgSeeker = !ppt.imgSeekerDisabled ? ((!ppt.imgSeeker && !ppt.imgCounter) ? 0 : ppt.imgSeekerShow) : 0;
 		if (!this.imgSeeker) {
 			this.show = false;
@@ -1894,9 +1895,6 @@ class Seeker {
 		const alignCenter = vertical && !crop && ppt.alignV == 1 && !this.overlap;
 		const alignLeft = horizontal && !crop && ppt.alignH == 0;
 		const alignRight = horizontal && !crop && ppt.alignH == 2;
-
-		this.counter.h = 8;
-		$.gr(1, 1, false, g => this.counter.h = Math.max(g.CalcTextHeight('0', ui.font.small), 8));
 
 		this.nw = ppt.img_only && crop ? img.nw - panel.filmStripSize.l - panel.filmStripSize.r : img.nw;
 		this.nh = ppt.img_only ? img.nh - (!crop ? 0 : panel.filmStripSize.b) : ppt.style < 4 ? Math.min(!crop ? this.nw : img.nh, img.nh) : this.overlap ? panel.style.imgSize : Math.min(!crop ? (panel.ibox.w - panel.bor.l - panel.bor.r) : panel.ibox.h - panel.bor.t - panel.bor.b, panel.ibox.h - panel.bor.t - panel.bor.b);
@@ -1919,7 +1917,7 @@ class Seeker {
 
 		this.seekerBelowImg = ppt.imgSeeker && this.nh < 0.8 * panel.h - panel.filmStripSize.b && (vertical && !crop && ppt.alignV == 0 && !this.overlap || alignCenter);
 		this.bar.reflCorr = this.seekerBelowImg && reflection ? ppt.reflSize / 100 : 0;
-		this.bar.offset = ppt.imgCounter ? this.counter.h * 2 + this.bar.gripOffset + 2 : this.counter.h * 1.5 + this.bar.gripOffset;
+		this.bar.offset = ppt.imgCounter ? ui.font.small_h * 2 + this.bar.gripOffset + 2 : ui.font.small_h * 1.5 + this.bar.gripOffset;
 
 		if (ppt.imgSeekerDots == 1) {
 			this.bar.dot_w = Math.floor($.clamp(this.bar.w1 / this.imgNo, 2, this.bar.h));
@@ -1938,7 +1936,7 @@ class Seeker {
 			const show = !ppt.text_only && (ppt.artistView || !panel.alb.ix) && (this.imgSeeker == 2 || trace);
 			if (this.imgNo > 1 && (!this.l_dn || this.dn)) {
 				if (!this.seekerBelowImg) this.hand = p_x > this.bar.x3 && p_x < this.bar.x3 + this.bar.w2 && p_y > this.bar.y1 + this.bar.y4 && p_y < this.bar.y1 + this.bar.y5;
-				else this.hand = p_x > this.bar.x3 && p_x < this.bar.x3 + this.bar.w2 && p_y > this.bar.y2 - this.counter.h && p_y < this.bar.y5;
+				else this.hand = p_x > this.bar.x3 && p_x < this.bar.x3 + this.bar.w2 && p_y > this.bar.y2 - ui.font.small_h && p_y < this.bar.y5;
 			}
 			if (show != this.show && !ppt.text_only && trace) {
 				img.paint();

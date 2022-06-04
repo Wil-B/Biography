@@ -16,7 +16,9 @@ class DldWikipedia {
 		this.func = null;
 		this.genres = [];
 		this.init = true;
-		this.lookUp = false;
+		this.lookUpArt = false;
+		this.lookUpAlb = false;
+		this.lookUpComp = false;
 		this.name = '';
 		this.offset = 0;
 		this.pth;		
@@ -74,26 +76,33 @@ class DldWikipedia {
 			this.artist = p_artist;
 			this.focus = p_focus;
 			this.force = p_force;
-			this.lookUp = p_type == '!stndBio';
+			this.lookUpArt = p_type == '!stndBio';
+			this.lookUpAlb = p_type == '!stndAlb';
+			this.lookUpComp = p_type == '!stndComp';
 			this.recording = p_recording;
 			this.title = p_title;
 			this.name = this.artist + (this.title ? ` - ${$.titlecase(this.title)}` : ``);
-			this.type = p_type != '!stndBio' ? p_type : 0;
+			this.type = p_type == '!stndBio' ? 0 : p_type == '!stndAlb' ? 1 : p_type == '!stndComp' ? 2 : p_type;
 			this.fo = p_fo;
 			this.pth = p_pth;
 			this.init = false;
 		}
-		
+
 		if (!this.tagChecked) {
 			this.getRgMbid();
-			this.ar_mbid = $.eval('$trim($if3(%musicbrainz_artistid%,%musicbrainz artist id%,))', this.focus);
-			if (!this.ar_mbid || this.ar_mbid.length != 36) {
-				const related_artists = $.jsonParse(`${cfg.storageFolder.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}')}related_artists.json`, {}, 'file');
-				this.ar_mbid = related_artists[this.artist.toUpperCase()]; // f&p says if it's a tag read
+			if (this.lookUpArt || this.lookUpAlb || this.lookUpComp) {
+				this.ar_mbid = '';
+				this.tagChecked = true;
+			} else {
+				this.ar_mbid = $.eval('$trim($if3(%musicbrainz_artistid%,%musicbrainz artist id%,))', this.focus);
+				if (!this.ar_mbid || this.ar_mbid.length != 36) {
+					const related_artists = $.jsonParse(`${cfg.storageFolder.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}')}related_artists.json`, {}, 'file');
+					this.ar_mbid = related_artists[this.artist.toUpperCase()]; // f&p says if it's a tag read
+				}
+				if ((!this.ar_mbid || this.ar_mbid.length != 36) && !this.force) this.ar_mbid = server.artistMbid[this.artist];
+				if (!this.ar_mbid || this.ar_mbid.length != 36) this.ar_mbid = '';
+				this.tagChecked = true;
 			}
-			if ((!this.ar_mbid || this.ar_mbid.length != 36) && !this.force) this.ar_mbid = server.artistMbid[this.artist];
-			if (!this.ar_mbid || this.ar_mbid.length != 36) this.ar_mbid = '';
-			this.tagChecked = true;
 		}
 
 		this.func = null;
@@ -258,7 +267,7 @@ class DldWikipedia {
 						}
 						if (!this.ar_mbid) {
 							if (this.doFallbackSearch()) return; // type 1-4
-							if (this.type || !$.file(this.pth)) return $.trace('wikipedia: ' + this.artist + (items.length > 1 || aliases.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators' + (!this.lookUp ? ', album name or track title, not matched' : ' N/A for menu look ups') : ': name not matched at musicbrainz'), true); // type 0 only
+							if (this.type || !$.file(this.pth)) return $.trace('wikipedia: ' + this.artist + (items.length > 1 || aliases.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators' + (!this.lookUpArt ? ', album name or track title, not matched' : ' N/A for menu look ups') : ': name not matched at musicbrainz'), true); // type 0 only
 						}
 						return this.search(1);
 					}
@@ -443,7 +452,7 @@ class DldWikipedia {
 				}
 				if (this.type == 3) { // try song via works
 					this.type = 4;
-					this.getRgMbid(2);
+					this.getRgMbid();
 					return this.search(2);
 				}
 				this.save();
@@ -613,6 +622,10 @@ class DldWikipedia {
 	}
 
 	getRgMbid() {
+		if (this.lookUpAlb || this.lookUpComp) {
+			this.rg_mbid = '';
+			return;
+		}
 		const type1 = ['', 'releasegroup', 'work', 'releasegroup', 'work'][this.type];
 		const type2 = ['', 'releasegroup', 'work', 'release group', 'work'][this.type];
 		this.rg_mbid = $.eval(`$trim($if3(%musicbrainz_${type1}id%,%musicBrainz ${type2} id%,))`, this.focus);

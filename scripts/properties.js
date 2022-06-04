@@ -395,6 +395,7 @@ let properties = [
 	['Theme', 0, 'theme'],
 	['Touch Control', false, 'touchControl'],
 	['Track Review', 0, 'inclTrackRev'],
+	['Track Review Show Options', false, 'showTrackRevOptions'],
 	['Touch Step 1-10', 1, 'touchStep'],
 	['Zoom Font Size (%)', 100, 'zoomFont'],
 	['Zoom Heading Font Size (%)', 115, 'zoomHead'],
@@ -406,6 +407,11 @@ let properties = [
 const ppt = new PanelProperties;
 ppt.init('auto', properties);
 properties = undefined;
+
+if (ppt.get('Reset Track Review', true)) {
+	ppt.inclTrackRev = 0;
+	ppt.set('Reset Track Review', false);
+}
 
 if (ppt.get('Remove Old Properties', true)) {
 	const oldProperties = ['Allmusic Alb', 'Allmusic Bio', 'Both Bio', 'Both Rev', 'Heading', 'Heading BtnName Biography [AllMusic]', 'Heading BtnName Biography [Last.fm]', 'Heading BtnName Biography [Wikipedia]', 'Heading BtnName Review [AllMusic]', 'Heading BtnName Review [Last.fm]', 'Heading BtnName Review [Wikipedia]', 'Heading Title Format Album Review [AllMusic]', 'Heading Title Format Album Review [Last.fm]', 'Heading Title Format Biography [AllMusic]', 'Heading Title Format Biography [Last.fm]', 'Heading Title Format Track Review [AllMusic]', 'Heading Title Format Track Review [Last.fm]', 'Layout Dual Image+Text', 'Image Seeker Dots', 'Subheading [Source] Text Biography [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Biography [Last.fm]: Heading|No Heading', 'Subheading [Source] Text Biography [Wikipedia]: Heading|No Heading', 'Subheading [Source] Text Review [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Review [Last.fm]: Heading|No Heading', 'Subheading Source Hide-0 Show-1', 'Subheading [Source] Text Review [Wikipedia]: Heading|No Heading', 'Subheading [Track Review] Title Format [AllMusic]', 'Subheading [Track Review] Title Format [Last.fm]', 'Summary First', 'Tagger Last.fm Genre Find>Replace', 'Tagger Last.fm Genre Number Clean Up', 'Tagger Last.fm Genre Run Find>Replace', 'Tagger Last.fm Genre Strip Artist+Album Names', 'Text Album + Track Auto Optimise', 'Text Reader Source 0 Name', 'Text Reader Source 1 Name', 'Text Reader Source 2 Name', 'Text Reader Source 3 Name', 'Text Reader Source 4 Name', 'Text Reader Source 5 Name', 'Text Reader Source 6 Name', 'Text Reader Source 7 Name', 'Text Reader Source 1 (field or full path)', 'Text Reader Source 2 (field or full path)', 'Text Reader Source 3 (field or full path)', 'Text Reader Source 4 (field or full path)', 'Text Reader Source 5 (field or full path)', 'Text Reader Source 6 (field or full path)', 'Text Reader Source 7 (field or full path)', 'Text Reader Source 8 (field or full path)', 'Text Reader Source 1 Lyrics', 'Text Reader Source 2 Lyrics', 'Text Reader Source 3 Lyrics', 'Text Reader Source 4 Lyrics', 'Text Reader Source 5 Lyrics', 'Text Reader Source 6 Lyrics','Text Reader Source 7 Lyrics', 'Text Reader Source 8 Lyrics'];

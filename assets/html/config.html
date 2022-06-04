@@ -1538,7 +1538,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 2; window.mainImage.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cycleTime_container'+i+'" name="image_input" style="padding:0; margin:0;" class="input2" /><label for="cycleTime_container'+i+'" class="inp_label2">'+mainImgLabels[i]+'</label></div>');
 					
 					window.seeker_dropdown.innerHTML = sbarShowLabels[ppt['imgSeekerShow_internal'].value];
-					if (!ppt['imgSeekerDisabled_internal'].value && !ppt['filmStripOverlay_internal'].value) for (i = 0; i < 3; i++) {window.seeker.insertAdjacentHTML('beforeend', '<a onclick="setSeekerShow(' + i + ');">'+sbarShowLabels[i]+'</a>');}
+					if (!ppt['imgSeekerDisabled_internal'].value) for (i = 0; i < 3; i++) {window.seeker.insertAdjacentHTML('beforeend', '<a onclick="setSeekerShow(' + i + ');">'+sbarShowLabels[i]+'</a>');}
 					else {
 						window.seeker_dropdown.style.background = '#EBEBE4';
 						window.seeker_dropdown.style.color = '#C6C6C6';
@@ -1549,7 +1549,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 0; window.filmStripShow.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="filmStrip_checkbox'+i+'" name="image_checkbox" style="'+cbox+'" type="checkbox" /><label for="filmStrip_checkbox'+i+'" class="checkbox_label">Only show if > 1 thumbnail</label></div>');
 					
 					window.film_dropdown.innerHTML = filmStripLabels[ppt['filmStripMargin_internal'].value];
-					if (!ppt['filmStripOverlay_internal'].value) for (i = 0; i < 5; i++) {window.filmStripAlign.insertAdjacentHTML('beforeend', '<a onclick="setFilmAlignment(' + i + ');">'+filmStripLabels[i]+'</a>');}
+					if (!ppt['filmStripOverlay_internal'].value || ppt['text_only_internal'].value) for (i = 0; i < 5; i++) {window.filmStripAlign.insertAdjacentHTML('beforeend', '<a onclick="setFilmAlignment(' + i + ');">'+filmStripLabels[i]+'</a>');}
 					else {
 						window.film_dropdown.style.background = '#EBEBE4';
 						window.film_dropdown.style.color = '#C6C6C6';
@@ -1741,10 +1741,12 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				window.highlight_checkbox5.parentNode.disabled = window.colour_checkbox4.checked;
 				window.highlight_checkbox7.parentNode.disabled = window.colour_checkbox5.checked;
 				window.highlight_checkbox8.parentNode.disabled = window.colour_checkbox0.checked;
-				window.imgSeekerStyle0.parentNode.disabled = !ppt['imgSeekerShow_internal'].value;
-				window.imgSeekerStyle1.parentNode.disabled = !ppt['imgSeekerShow_internal'].value;
-				window.imgSeekerDots2.parentNode.disabled = !ppt['imgSeekerShow_internal'].value || !window.imgSeekerStyle1.checked;
-				window.imgSeekerDots3.parentNode.disabled = !ppt['imgSeekerShow_internal'].value || !window.imgSeekerStyle1.checked;
+				var disabled1 = !ppt['imgSeekerShow_internal'].value || ppt['imgSeekerDisabled_internal'].value;
+				var disabled2 = disabled1 || !window.imgSeekerStyle1.checked;
+				window.imgSeekerStyle0.parentNode.disabled = disabled1;
+				window.imgSeekerStyle1.parentNode.disabled = disabled1;
+				window.imgSeekerDots2.parentNode.disabled = disabled2;
+				window.imgSeekerDots3.parentNode.disabled = disabled2;
 				window.seekerNA.innerHTML = ppt['imgSeekerDisabled_internal'].value ? (ppt['filmStripOverlay_internal'].value ? "<i>Grayed items items N/A with filmstrip overlay of image area</i>" : "<i>Seeker & counter N/A with current overlay metrics</i>") : "";
 				window.lyricsScrollTimeMax.style.display = ppt['lyricsScrollMaxMethod_internal'].value == 0 ? "none" : "block";
 				window.lyricsScrollTimeAvg.style.display = ppt['lyricsScrollMaxMethod_internal'].value == 1 ? "none" : "block";

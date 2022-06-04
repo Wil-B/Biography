@@ -95,7 +95,7 @@ class Server {
 		else this.id.track_1 = tr.artist + tr.title;
 
 		if ((cfg.dlAmRev || cfg.dlLfmRev || cfg.dlWikiRev) && !track_done) {
-			if (ppt.inclTrackRev) this.getTrack(tr);
+			if (ppt.showTrackRevOptions) this.getTrack(tr);
 			else window.NotifyOthers('bio_chkTrackRev', tr);
 		}
 	}
@@ -472,12 +472,13 @@ class Server {
 				const custRev = wikiRev.includes('Custom Review');
 				const wikiAlbum = this.album;
 				const wikiAlbumArtist = this.albumArtist;
+				const wikiStnd = stndAlb;
 				const wikiTitle = name.title(alb.focus, true);
 
 				if (this.expired(wiki_rev.pth, this.exp, '', wikiRev, 2) && !custRev || force == 2 && !custRev || force == 1) {
 					setTimeout(() => {
 						const wiki_alb = new DldWikipedia(() => wiki_alb.onStateChange());
-						wiki_alb.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiAlbum, wikiAlbum, wikiTitle, 1, wiki_rev.fo, wiki_rev.pth, alb.focus, force);
+						wiki_alb.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiAlbum, wikiAlbum, wikiTitle, wikiStnd ? 1 : '!stndAlb', wiki_rev.fo, wiki_rev.pth, alb.focus, force);
 					}, 1200); // wait for mbid & Qid
 				}
 			}
@@ -487,6 +488,7 @@ class Server {
 				const wikiAlbum = name.album(alb.focus, true);
 				const wikiAlbumArtist = this.albumArtist;
 				const wikiComp = $.open(wiki_comp.pth);
+				const wikiStnd = stndAlb;
 				const wikiTitle = name.title(alb.focus, true);
 				const wikiWork = this.composition;
 				const custRev = wikiComp.includes('Custom Review');
@@ -494,7 +496,7 @@ class Server {
 				if ((!this.expired(wiki_comp.pth, this.exp, '', wikiComp, 2) || custRev) && !force || custRev && force == 2) return;
 				setTimeout(() => {
 					const wk_comp = new DldWikipedia(() => wk_comp.onStateChange());
-					wk_comp.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiWork, wikiAlbum, wikiTitle, 2, wiki_comp.fo, wiki_comp.pth, alb.focus, force);
+					wk_comp.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiWork, wikiAlbum, wikiTitle, wikiStnd ? 2 : '!stndComp', wiki_comp.fo, wiki_comp.pth, alb.focus, force);
 				}, 3600); // wait for mbid & Qid & limit call frequency
 			}
 		}
@@ -548,7 +550,6 @@ class Server {
 		} else this.lastGetTrack = Date.now();
 
 		if (this.id.track_2 == tr.artist + tr.title && !tr.force && !tr.menu) return;
-
 		this.id.track_2 = tr.artist + tr.title;
 		const trk = tr.title.toLowerCase();
 

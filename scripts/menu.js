@@ -264,24 +264,34 @@ class MenuItems {
 		});
 
 		const b = ppt.artistView ? 'Bio' : 'Rev';
+		const loadName = 'Load' + (!ppt.sourceAll ? '' : ' first');
 		const n = b.toLowerCase();
+		const separator = !ppt.artistView && (ppt.showTrackRevOptions || txt.isCompositionLoaded()) || !panel.stndItem();
 
 		menu.newMenu({
-			menuName: 'Load',
+			menuName: loadName,
 			hide: ppt.img_only
 		});
 
 		this.sources.forEach((v, i) => menu.newItem({
-			menuName: 'Load',
+			menuName: loadName,
 			str: v,
 			func: () => this.toggle(i, b, true),
 			flags: () => txt[n][this.types[i]] ? MF_STRING : MF_GRAYED,
 			checkRadio: i == txt[n].loaded.ix,
-			separator: txt[n].reader ? i == 3 && (!ppt.artistView || !panel.stndItem()) : i == 2 && (!ppt.artistView || !panel.stndItem())
+			separator: txt[n].reader ? i == 3 && separator : i == 2 && separator
 		}));
 
-		['Album review', 'Track review', 'Prefer both'].forEach((v, i) => menu.newItem({
-			menuName: 'Load',
+		menu.newItem({
+			menuName: loadName,
+			str: 'Type:',
+			flags: MF_GRAYED,
+			separator: true,
+			hide: !ppt.showTrackRevOptions || ppt.artistView || !panel.stndItem() || txt.isCompositionLoaded()
+		});
+
+		['Album', 'Track', 'Prefer both'].forEach((v, i) => menu.newItem({
+			menuName: loadName,
 			str: v,
 			func: () => {
 				txt.logScrollPos();
@@ -298,12 +308,12 @@ class MenuItems {
 			},
 			flags: !txt[n][this.types[0]] && !txt[n][this.types[1]] && !txt[n][this.types[2]] ? MF_STRING : !txt[n].loaded.txt && [this.albAvail, this.trkAvail, this.albAvail || this.trkAvail][i] ? MF_STRING : MF_GRAYED,
 			checkRadio: !i && !ppt.inclTrackRev || i == 1 && ppt.inclTrackRev == 2 || i == 2 && ppt.inclTrackRev == 1,
-			hide: ppt.artistView || !panel.stndItem() || txt.isCompositionLoaded()
+			hide: !ppt.showTrackRevOptions || ppt.artistView || !panel.stndItem() || txt.isCompositionLoaded()
 		}));
 
 		if (!panel.stndItem() || txt.isCompositionLoaded()) {
 			menu.newItem({
-				menuName: 'Load',
+				menuName: loadName,
 				str: 'Mode: ' + (ppt.artistView ? 'artist look-up' : (txt.isCompositionLoaded() ? 'composition loaded' : 'album look-up')),
 				flags: MF_GRAYED
 			});
@@ -340,29 +350,37 @@ class MenuItems {
 			appendTo: 'Sources'
 		});
 
-		menu.newItem({
+		for (let i = 0; i < 5; i++) menu.newItem({
 			menuName: 'Text',
-			str: 'Site' + (ppt.txtReaderEnable ? ' && reader/lyrics' : '') + ' handling:',
-			flags: MF_GRAYED,
-			separator: true
-		});
-
-		for (let i = 0; i < 4; i++) menu.newItem({
-			menuName: 'Text',
-			str: ['Auto-fallback', 'Static', 'Amalgamate', 'Prefer composition (allmusic && wikipedia review)'][i],
+			str: ['Auto-fallback', 'Static', 'Amalgamate', 'Show track review options on load menu', 'Prefer composition reviews (allmusic && wikipedia)'][i],
 			func: () => {
 				switch (i) {
 					case 0:
 					case 1: this.toggle(4, b); break;
 					case 2: ppt.toggle('sourceAll'); txt.refresh(1); break;
-					case 3: ppt.toggle('classicalMusicMode'); ppt.classicalAlbFallback = ppt.classicalMusicMode; txt.refresh(1); break;
+					case 3:
+						ppt.toggle('showTrackRevOptions');
+						txt.logScrollPos();
+						panel.style.inclTrackRev = ppt.inclTrackRev = 0;
+						console.log('call SERVER ppt.showTrackRevOptions',ppt.showTrackRevOptions)
+						if (ppt.showTrackRevOptions) server.checkTrack({
+							focus: panel.id.focus,
+							force: false,
+							menu: true,
+							artist: panel.art.list.length ? panel.art.list[0].name : name.artist(panel.id.focus),
+							title: name.title(panel.id.focus)
+						});
+						txt.refresh(1);
+						txt.getScrollPos();
+						break;
+					case 4: ppt.toggle('classicalMusicMode'); ppt.classicalAlbFallback = ppt.classicalMusicMode; txt.refresh(1); break;
 				}
 			},
 			flags: !i && ppt.sourceAll || i == 1 && ppt.sourceAll ? MF_GRAYED : MF_STRING,
-			checkItem: i == 2 && ppt.sourceAll || i == 3 && ppt.classicalMusicMode,
+			checkItem: i == 2 && ppt.sourceAll || i == 3 && ppt.showTrackRevOptions || i == 4 && ppt.classicalMusicMode,
 			checkRadio: !i && (!ppt[`lock${b}`] || ppt.sourceAll) || i == 1 && ppt[`lock${b}`] && !ppt.sourceAll,
-			separator: i == 1 || i == 2 && cfg.classicalModeEnable,
-			hide: i == 3 && !cfg.classicalModeEnable || i == 4 && ppt.sourceAll
+			separator: i == 1 || i == 2 || i == 3 && cfg.classicalModeEnable,
+			hide: i == 4 && !cfg.classicalModeEnable
 		});
 
 		menu.newItem({
@@ -800,8 +818,8 @@ class MenuItems {
 		const n = b.toLowerCase();
 		this.types = !txt[n].reader ? $.source.amLfmWiki : $.source.amLfmWikiTxt;
 		this.sources = ['Allmusic', 'Last.fm', 'Wikipedia'];
+		this.sources = this.sources.map(v => v + (ppt.artistView ? ' biography' : ' review'));
 		if (txt[n].reader) this.sources.push(txt[n].subhead.txt[0] || '');
-		if (ppt.sourceAll) this.sources = this.sources.map(v => v + ' first');
 		if (!panel.stndItem() && txt.reader.lyrics) this.sources[3] += ' // current track';
 	}
 

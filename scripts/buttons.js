@@ -33,6 +33,7 @@ class Buttons {
 		this.rating = {
 			h1: 0,
 			h2: 0,
+			hash: '',
 			images: [],
 			scale: 2,
 			show: false,
@@ -225,7 +226,7 @@ class Buttons {
 		}
 		if (n == 'all' || n == 'lookUp') {
 			this.lookUp.col = $.toRGB(ui.col.text);
-			$.gr(1, 1, true, g => {
+			$.gr(1, 1, false, g => {
 				this.lookUp.sz = Math.max(g.CalcTextWidth('\uF107', this.lookUp.font), g.CalcTextWidth('\uF023', this.lookUp.fontLock), g.CalcTextHeight('\uF107', this.lookUp.font), g.CalcTextHeight('\uF023', this.lookUp.fontLock));
 			});
 		}
@@ -255,6 +256,8 @@ class Buttons {
 					this.src.amRev = '';
 					this.src.lfmBio = '';
 					this.src.lfmRev = '';
+					this.src.wikiBio = '';
+					this.src.wikiRev = '';
 					this.src.txtBio = '';
 					this.src.txtRev = '';
 				}
@@ -284,8 +287,6 @@ class Buttons {
 				break;
 			}
 		}
-		this.rating.images = [];
-		if (ui.stars == 1 && ui.show.btnRedLastfm) this.rating.imagesLfm = [];
 		if (ui.stars == 1) this.setRatingImages(Math.round(this.src.h / 1.5) * 5, Math.round(this.src.h / 1.5), ui.col.starOn, ui.col.starOff, ui.col.starBor, false);
 		else if (ui.stars == 2) {
 			this.setRatingImages(Math.round(ui.font.main_h / 1.75) * 5, Math.round(ui.font.main_h / 1.75), ui.col.starOn, ui.col.starOff, ui.col.starBor, false);
@@ -301,29 +302,36 @@ class Buttons {
 		});
 	}
 
-	drawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, line_color, fill_color) {
+	drawStar(g, col, pts, line_thickness) {
+		g.SetSmoothingMode(2);
+		g.FillPolygon(col, 1, pts);
+		if (line_thickness > 0) g.DrawPolygon(col, line_thickness, pts);
+	}
+
+	getStarPoints(star_size, star_padding, star_indent, star_vpadding, points, line_thickness) {
 		const point_arr = [];
 		let rr = 0;
 		for (let i = 0; i != points; i++) {
-			i % 2 ? rr = Math.round((out_radius - line_thickness * 4) / 2) / in_radius : rr = Math.round((out_radius - line_thickness * 4) / 2);
+			i % 2 ? rr = Math.round((star_size - line_thickness * 4) / 2) / star_indent : rr = Math.round((star_size - line_thickness * 4) / 2);
 			const x_point = Math.floor(rr * Math.cos(Math.PI * i / points * 2 - Math.PI / 2));
 			const y_point = Math.ceil(rr * Math.sin(Math.PI * i / points * 2 - Math.PI / 2));
-			point_arr.push(x_point + out_radius / 2);
-			point_arr.push(y_point + out_radius / 2);
+			point_arr.push(x_point + star_size / 2);
+			point_arr.push(y_point + star_size / 2);
 		}
-		const img = $.gr(out_radius, out_radius, true, g => {
-			g.SetSmoothingMode(2);
-			g.FillPolygon(fill_color, 1, point_arr);
-			if (line_thickness > 0) g.DrawPolygon(line_color, line_thickness, point_arr);
-		});
-		gr.DrawImage(img, x, y, out_radius, out_radius, 0, 0, out_radius, out_radius);
+		const pts = [];
+		for (let i = 0; i < 5; i++) {
+			pts[i] = point_arr.map((v, j) => {
+				if (j % 2 === 0) return v + i * (star_size + star_padding);
+				else return v + star_vpadding;
+			});
+		}
+		return pts;
 	}
-	
+
 	isNextSourceAvailable() {
 		let n = ppt.artistView ? 'Bio' : 'Rev';
 		if (ppt[`lock${n}`] && !ppt.sourceAll) return true;
 		n = ppt.artistView ? 'bio' : 'rev';
-		//const types = txt[n].reader ? $.source.amLfmWikiTxt : $.source.amLfmWiki;
 		const types = txt[n].reader && panel.stndItem() ? $.source.amLfmWikiTxt : $.source.amLfmWiki;
 		let found = 0;
 		return types.some(type => {
@@ -538,6 +546,10 @@ class Buttons {
 	}
 
 	setRatingImages(w, h, onCol, offCol, borCol, lfm) {
+		const hash = w + '-' + h + '-' + onCol + '-' + offCol + '-' + borCol + '-' + lfm;
+		if (hash == this.rating.hash) return;
+		else this.rating.hash = hash;
+		if (lfm) this.rating.imagesLfm = [];
 		if (this.src.icon && ui.stars == 1) onCol = onCol & 0xe0ffffff;
 		w = w * this.rating.scale;
 		h = h * this.rating.scale;
@@ -552,15 +564,17 @@ class Buttons {
 			star_padding = Math.round((w - 5 * star_size) / 4);
 			star_height--;
 		}
+		const line_thickness = 0;
 		const star_vpadding = star_height < h ? Math.floor((h - star_height) / 2) : 0;
+		const pts = this.getStarPoints(star_size, star_padding, star_indent, star_vpadding, 10, line_thickness);
 		for (let rating = 0; rating < 11; rating++) {
 			real_rating = rating / 2;
 			if (Math.round(real_rating) != real_rating) {
 				const img_off = $.gr(w, h, true, g => {
-					for (let i = 0; i < 5; i++) this.drawPolyStar(g, i * (star_size + star_padding), star_vpadding, star_size, star_indent, 10, 0, borCol, offCol);
+					for (let i = 0; i < 5; i++) this.drawStar(g, offCol, pts[i], line_thickness)
 				});
 				const img_on = $.gr(w, h, true, g => {
-					for (let i = 0; i < 5; i++) this.drawPolyStar(g, i * (star_size + star_padding), star_vpadding, star_size, star_indent, 10, 0, borCol, onCol);
+					for (let i = 0; i < 5; i++) this.drawStar(g, onCol, pts[i], line_thickness);
 				});
 				const half_mask_left = $.gr(w, h, true, g => {
 					g.FillSolidRect(0, 0, w, h, RGBA(255, 255, 255, 255));
@@ -577,7 +591,8 @@ class Buttons {
 					g.DrawImage(img_on, 0, 0, w, h, 0, 0, w, h);
 				});
 			} else img = $.gr(w, h, true, g => {
-				for (let i = 0; i < 5; i++) this.drawPolyStar(g, i * (star_size + star_padding), star_vpadding, star_size, star_indent, 10, 0, borCol, i < real_rating ? onCol : offCol);
+				for (let i = 0; i < 5; i++) this.drawStar(g, i < real_rating ? onCol : offCol, pts[i], line_thickness);
+
 			});
 			!lfm ? this.rating.images[rating] = img : this.rating.imagesLfm[rating] = img;
 		}
@@ -735,7 +750,7 @@ class Btn {
 		let spacer = 0;
 		if (ppt.hdPos != 2) {
 			if (!ppt.hdBtnShow || ppt.hdPos == 1) {
-				dh = ppt.hdPos == 1 ? (but.rating.show || but.src.text ? (ppt.hdPos != 1 && ui.show.btnBg ? '' : (ppt.hdLine != 2 ? '  ' : ' ')) : '') + txt.heading + txt.na : txt.heading + txt.na;
+				dh = ppt.hdPos == 1 ? (but.rating.show || but.src.text ? (ppt.hdPos != 1 && ui.show.btnBg ? '' : (ppt.hdLine != 2 ? '  ' : ' ')) : '') + txt.na + txt.heading : txt.na + txt.heading;
 				dx1 = this.x + but.src.w;
 				dx2 = but.src.x = this.x;
 			} else {
@@ -821,7 +836,7 @@ class Btn {
 			case 1: {
 				let iconFont = false;
 				const b = ppt.artistView ? 'Bio' : 'Rev';
-				if (!ppt[`lock${b}`]) iconFont = txt[n].loaded.ix == 1 || txt[n].loaded.ix == 2;
+				if (!ppt[`lock${b}`] || ppt.sourceAll) iconFont = txt[n].loaded.ix == 1 || txt[n].loaded.ix == 2;
 				else iconFont = ppt[`source${n}`] == 1 || ppt[`source${n}`] == 2;
 				gr.GdiDrawText(but.src.name, !iconFont ? but.src.font : but.src.iconFont, col, dx2, this.p1 + (!iconFont ? 0 : but.src.y), but.src.w, but.src.h, !but.rating.show ? txt.cc : txt.c[0]);
 				break;

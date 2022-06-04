@@ -36,6 +36,7 @@ class UserInterface {
 			main_h: 21,
 			message: gdi.Font('Segoe UI', 16, 0),
 			small: gdi.Font('Segoe UI', 10, 0),
+			small_h: 8,
 			subHeadSource: gdi.Font('Segoe UI', 16, 0),
 			subHeadTrack: gdi.Font('Segoe UI', 16, 0),
 			subHeadWiki: gdi.Font('Segoe UI', 16, 0),
@@ -161,6 +162,7 @@ class UserInterface {
 			this.font.main_h = Math.round(g.CalcTextHeight('String', this.font.main) + ppt.textPad);
 			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + ppt.textPad);
 			this.font.heading_h = g.CalcTextHeight('String', this.font.heading);
+			this.font.small_h = Math.max(g.CalcTextHeight('0', this.font.small), 8);
 		});
 		const min_line_y = this.font.heading_h;
 		const max_line_y = Math.round(this.font.heading_h * (ppt.hdLine == 1 ? 1.25 : 1.1) + (ppt.hdLine == 1 ? this.heading.linePad : 0));

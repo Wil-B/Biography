@@ -114,7 +114,7 @@ class Text {
 			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
 			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
 			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.bio.lang[cfg.lang.ix]}`],
-			txt: ['', '']
+			txt: ['textreader', 'textreader']
 		}
 
 		this.done = {
@@ -167,8 +167,7 @@ class Text {
 			summary: false,
 			subHeading: false,
 			text: false,
-			line: false,
-			y: 0
+			line: false
 		}
 
 		this.reader = {
@@ -255,14 +254,15 @@ class Text {
 			am: [cfg.amDisplayName, `${cfg.amDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
 			lfm: [cfg.lfmDisplayName, `${cfg.lfmDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
 			wiki: [cfg.wikiDisplayName, `${cfg.wikiDisplayName} ${this.rev.lang[cfg.lang.ix]}`],
-			txt: ['', '']
+			txt: ['textreader', 'textreader']
 		}
 
 		this.rating = {
 			am: -1,
 			amStr: '',
 			lfm: -1,
-			lfmStr: ''
+			lfmStr: '',
+			y: 0
 		}
 
 		this.currentTrackTags = $.debounce(() => {
@@ -325,52 +325,53 @@ class Text {
 					}
 				}
 			});
+			$.gr(1, 1, false, g => {
+				arr.forEach((v, i, ary) => {
+					v.align = !this.reader.txtLyrics || ppt.sourceAll ? this.l : this.cc;
+					v.col = this.rev.subHeading && !i ? ui.col.source : i < summaryEnd ? ui.col.summary : ui.col.text;
+					v.font = !this.rev.subHeading || i ? (i < summaryEnd ? ui.font.summary : font) : ui.font.subHeadSource;
+					v.h1 = this.line.h;
+					v.h2 = this.line.h + 1;
+					$.source.amLfmWikiTxt.forEach((w, i) => {
+						v[`${w}Line`] = v.text == this.rev.subhead[w][1] && !(this.ratingPos.line && panel.summary.show);
+						if (v[`${w}Line`]) {
+							const v_w = g.CalcTextWidth(v.text + ' ', this.ratingPos.line ? ui.font.main : ui.font.subHeadSource);
+							v[`${w}LineX1`] = i < 2 ? panel.text.l + v_w + (this.rating[w] >= 0 && (this.ratingPos.subHeading || this.ratingPos.line) ? but.rating.w2 : 0) + this.bio.sp : panel.text.l + this.rev[`${w}_w`].nohd + this.bio.sp; // noHd
+							v[`${w}LineX2`] = Math.max(v[`${w}LineX1`], panel.text.l + panel.text.w);;
+						}
+					});
+					v.offset = 0;
+					v.subHeading = this.rev.subHeading && !i ? this.rev.subHeading : 0;
+					['am', 'lfm'].forEach(w => {
+						v[`${w}SubHeadingRating`] = this.ratingPos.subHeading && v.text == this.rev.subhead[w][ppt.heading ? 0 : 1] && this.rating[w] >= 0;
+						if (v[`${w}SubHeadingRating`]) v[`${w}SubHeadingRatingX`] = panel.text.l + (ppt.heading ? this.rev[`${w}_w`].hd : this.rev[`${w}_w`].nohd);
 
-			arr.forEach((v, i, ary) => {
-				v.align = !this.reader.txtLyrics || ppt.sourceAll ? this.l : this.cc;
-				v.col = this.rev.subHeading && !i ? ui.col.source : i < summaryEnd ? ui.col.summary : ui.col.text;
-				v.font = !this.rev.subHeading || i ? (i < summaryEnd ? ui.font.summary : font) : ui.font.subHeadSource;
-				v.h1 = this.line.h;
-				v.h2 = this.line.h + 1;
-				$.source.amLfmWikiTxt.forEach((w, i) => {
-					v[`${w}Line`] = v.text == this.rev.subhead[w][1] && !(this.ratingPos.line && panel.summary.show);
-					if (v[`${w}Line`]) {
-						let v_w = 0; $.gr(1, 1, false, g => v_w = g.CalcTextWidth(v.text + ' ', this.ratingPos.line ? ui.font.main : ui.font.subHeadSource));
-						v[`${w}LineX1`] = i < 2 ? panel.text.l + v_w + (this.rating[w] >= 0 && (this.ratingPos.subHeading || this.ratingPos.line) ? but.rating.w2 : 0) + this.bio.sp : panel.text.l + this.rev[`${w}_w`].nohd + this.bio.sp; // noHd
-						v[`${w}LineX2`] = Math.max(v[`${w}LineX1`], panel.text.l + panel.text.w);;
+						v[`${w}LineRating`] = this.ratingPos.line && this.rating[w] >= 0 && v.text == this.rev.subhead[w][ppt.heading ? 0 : 1];
+						if(v[`${w}LineRating`]) {
+							const v_w = g.CalcTextWidth(v.text + ' ', ui.font.main);
+							v[`${w}LineRatingX`] = panel.text.l + v_w;
+						}
+					});
+					if (v.text.startsWith('!\u00a6')) {
+						v.col = ui.col.track;
+						v.font = ui.font.subHeadTrack;
+						v.song = true;
+						const songLine = !ppt.heading ? (panel.style.inclTrackRev != 2 ? true : !ary[0].subHeading) : false;
+						if (songLine) {
+							v.songLine = true;
+							const v_w = g.CalcTextWidth(v.text + ' ', ui.font.subHeadTrack)
+							v.songX1 = panel.text.l + v_w;
+							v.songX2 = Math.max(v.songX1, panel.text.l + panel.text.w);
+						}
+						v.text = v.text.replace('!\u00a6', '');
 					}
+					if ((this.rev.loaded.wiki || ppt.sourceAll) && (v.text.startsWith('==') || v.text.endsWith('=='))) {
+						v.font = ui.font.subHeadWiki;
+						v.offset = ui.font.main_h * 0.125;
+						v.subHeadWiki = true;
+					}
+					if (this.rev.subHeading && !i && ppt.heading) v.offset = ui.font.main_h * 0.2;
 				});
-				v.offset = 0;
-				v.subHeading = this.rev.subHeading && !i ? this.rev.subHeading : 0;
-				['am', 'lfm'].forEach(w => {
-					v[`${w}SubHeadingRating`] = this.ratingPos.subHeading && v.text == this.rev.subhead[w][ppt.heading ? 0 : 1] && this.rating[w] >= 0;
-					if (v[`${w}SubHeadingRating`]) v[`${w}SubHeadingRatingX`] = panel.text.l + (ppt.heading ? this.rev[`${w}_w`].hd : this.rev[`${w}_w`].nohd);
-
-					v[`${w}LineRating`] = this.ratingPos.line && this.rating[w] >= 0 && v.text == this.rev.subhead[w][ppt.heading ? 0 : 1];
-					if(v[`${w}LineRating`]) {
-						let v_w = 0; $.gr(1, 1, false, g => v_w = g.CalcTextWidth(v.text + ' ', ui.font.main));
-						v[`${w}LineRatingX`] = panel.text.l + v_w;
-					}
-				});
-				if (v.text.startsWith('!\u00a6')) {
-					v.col = ui.col.track;
-					v.font = ui.font.subHeadTrack;
-					v.song = true;
-					const songLine = !ppt.heading ? (panel.style.inclTrackRev != 2 ? true : !ary[0].subHeading) : false;
-					if (songLine) {
-						v.songLine = true;
-						let v_w = 0; $.gr(1, 1, false, g => v_w = g.CalcTextWidth(v.text + ' ', ui.font.subHeadTrack));
-						v.songX1 = panel.text.l + v_w;
-						v.songX2 = Math.max(v.songX1, panel.text.l + panel.text.w);
-					}
-					v.text = v.text.replace('!\u00a6', '');
-				}
-				if ((this.rev.loaded.wiki || ppt.sourceAll) && (v.text.startsWith('==') || v.text.endsWith('=='))) {
-					v.font = ui.font.subHeadWiki;
-					v.offset = ui.font.main_h * 0.125;
-					v.subHeadWiki = true;
-				}
-				if (this.rev.subHeading && !i && ppt.heading) v.offset = ui.font.main_h * 0.2;
 			});
 			if (this.rev.arr.length && arr.length) this.rev.arr.push({text: ''});
 			this.rev.arr = this.rev.arr.concat(arr);
@@ -382,8 +383,7 @@ class Text {
 		this.line.drawn = !this.reader.txtLyrics || ppt.sourceAll ? panel.lines_drawn : Math.floor(panel.lines_drawn * ui.font.main_h / this.line.h);
 		alb_scrollbar.metrics(panel.sbar.x, panel.sbar.y, ui.sbar.w, panel.sbar.h, this.line.drawn, this.line.h, false);
 		alb_scrollbar.setRows(this.rev.arr.length);
-
-		if (this.ratingPos.subHeading || this.ratingPos.line) this.ratingPos.y = Math.round((ui.font.main_h - but.rating.h1 / 2) / 1.8);
+		if (this.ratingPos.subHeading || this.ratingPos.line) this.rating.y = Math.round((ui.font.main_h - but.rating.h1 / 2) / 1.8);
 		if (panel.style.inclTrackRev == 1 || ppt.sourceAll) this.getScrollPos();
 	}
 
@@ -556,25 +556,27 @@ class Text {
 			let l = [];
 			let summaryEnd = 0;
 			const arr = [];
-			if (!panel.summary.show || !v.includes('\u00a6End\u00a6')) {
-				$.gr(1, 1, false, g => l = g.EstimateLineWrap(v, font, panel.text.w));
-				for (let i = 0; i < l.length; i += 2) arr.push({text: l[i].trim()});
-			} else {
-				let bioText = v.split('\u00a6End\u00a6');
-				const bioSummary = bioText[0].trim();
-				const bioMain = bioText[1].trim();
-				if (bioSummary) {
-					$.gr(1, 1, false, g => l = g.EstimateLineWrap(bioSummary, ui.font.summary, panel.text.w));
+			$.gr(1, 1, false, g => {
+				if (!panel.summary.show || !v.includes('\u00a6End\u00a6')) {
+					l = g.EstimateLineWrap(v, font, panel.text.w);
 					for (let i = 0; i < l.length; i += 2) arr.push({text: l[i].trim()});
-					for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(/^\u2219\s|^\|\s+/, '').replace(/\s*\|$/, '');
-					summaryEnd = arr.length;
-					if (bioMain) arr.push({text: ''});
+				} else {
+					let bioText = v.split('\u00a6End\u00a6');
+					const bioSummary = bioText[0].trim();
+					const bioMain = bioText[1].trim();
+					if (bioSummary) {
+						l = g.EstimateLineWrap(bioSummary, ui.font.summary, panel.text.w);
+						for (let i = 0; i < l.length; i += 2) arr.push({text: l[i].trim()});
+						for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(/^\u2219\s|^\|\s+/, '').replace(/\s*\|$/, '');
+						summaryEnd = arr.length;
+						if (bioMain) arr.push({text: ''});
+					}
+					if (bioMain) {
+						l = g.EstimateLineWrap(bioMain, font, panel.text.w);
+						for (let i = 0; i < l.length; i += 2) arr.push({text: l[i].trim()});
+					}
 				}
-				if (bioMain) {
-					$.gr(1, 1, false, g => l = g.EstimateLineWrap(bioMain, font, panel.text.w));
-					for (let i = 0; i < l.length; i += 2) arr.push({text: l[i].trim()});
-				}
-			}
+			});
 
 			arr.forEach((v, i) => {
 				v.align = !this.reader.txtLyrics || ppt.sourceAll ? this.l : this.cc;
@@ -746,12 +748,12 @@ class Text {
 						switch (true) {
 							case this.ratingPos.subHeading:
 							['am', 'lfm'].forEach(v => {
-								if (item[`${v}SubHeadingRating`]) gr.DrawImage(but.rating.images[this.rating[v]], item[`${v}SubHeadingRatingX`], item_y + this.ratingPos.y + item.offset, but.rating.w1 / 2, but.rating.h1 / 2, 0, 0, but.rating.w1, but.rating.h1, 0, 255);
+								if (item[`${v}SubHeadingRating`]) gr.DrawImage(but.rating.images[this.rating[v]], item[`${v}SubHeadingRatingX`], item_y + this.rating.y + item.offset, but.rating.w1 / 2, but.rating.h1 / 2, 0, 0, but.rating.w1, but.rating.h1, 0, 255);
 							});
 							break;
 						case this.ratingPos.line:
 							['am', 'lfm'].forEach(v => {
-								if (item[`${v}LineRating`]) gr.DrawImage(but.rating.images[this.rating[v]], item[`${v}LineRatingX`], item_y + this.ratingPos.y + item.offset, but.rating.w1 / 2, but.rating.h1 / 2, 0, 0, but.rating.w1, but.rating.h1, 0, 255);
+								if (item[`${v}LineRating`]) gr.DrawImage(but.rating.images[this.rating[v]], item[`${v}LineRatingX`], item_y + this.rating.y + item.offset, but.rating.w1 / 2, but.rating.h1 / 2, 0, 0, but.rating.w1, but.rating.h1, 0, 255);
 							});
 							break;
 						}
@@ -801,25 +803,25 @@ class Text {
 				break;
 		}
 
-		items.forEach(v => {
-			let w = tag.getTag(n, v);
-			let li = w.tag;
-			if (li) {
-				let list = w.label + '\r\n';
-				li.forEach((v, i, arr) => {
-					let nm = (en ? (i + 1) + '. ' : '\u2022 ') + v;
-					$.gr(1, 1, false, g => {
-						if (g.CalcTextWidth(nm, ui.font.main) > panel.text.w) {
-							nm = g.EstimateLineWrap(nm, ui.font.main, panel.text.w - g.CalcTextWidth('... ', ui.font.main))[0] + '...';
-						}
+		$.gr(1, 1, false, g => {
+			items.forEach(v => {
+				let w = tag.getTag(n, v);
+				let li = w.tag;
+				if (li) {
+					let list = w.label + '\r\n';
+					li.forEach((v, i, arr) => {
+						let nm = (en ? (i + 1) + '. ' : '\u2022 ') + v;
+							if (g.CalcTextWidth(nm, ui.font.main) > panel.text.w) {
+								nm = g.EstimateLineWrap(nm, ui.font.main, panel.text.w - g.CalcTextWidth('... ', ui.font.main))[0] + '...';
+							}
+						list += nm;
+						if (i < arr.length - 1) list += '\r\n'
 					});
-					list += nm;
-					if (i < arr.length - 1) list += '\r\n'
-				});
-				let toBeReplaced = n.substring(w.ix);
-				toBeReplaced = toBeReplaced.split('\n')[0];
-				n = n.replace(RegExp($.regexEscape(toBeReplaced)), list);
-			}
+					let toBeReplaced = n.substring(w.ix);
+					toBeReplaced = toBeReplaced.split('\n')[0];
+					n = n.replace(RegExp($.regexEscape(toBeReplaced)), list);
+				}
+			});
 		});
 		return n;
 	}
@@ -1057,15 +1059,17 @@ class Text {
 			const p = this.getPosition(sub, '\u2219', limit);
 			if (p != -1) sub = sub.slice(0, p).trim();
 		}
-		let w = 0;
-		$.gr(1, 1, false, g => w = g.CalcTextWidth(sub, ui.font.summary));
 		let end = '';
-		while (w > panel.text.w && sub.includes('\u2219')) {
-			const f = sub.lastIndexOf('\u2219'); // limit genres to 1 line
-			if (f != -1) sub = sub.slice(0, f).trim();
-			$.gr(1, 1, false, g => w = g.CalcTextWidth(`${sub} ...`, ui.font.summary));
-			end = ' ...';
-		}
+		let w = 0;
+		$.gr(1, 1, false, g => {
+			w = g.CalcTextWidth(sub, ui.font.summary);
+			while (w > panel.text.w && sub.includes('\u2219')) {
+				const f = sub.lastIndexOf('\u2219'); // limit genres to 1 line
+				if (f != -1) sub = sub.slice(0, f).trim();
+				w = g.CalcTextWidth(suffix ? `${sub} ...` : sub, ui.font.summary);
+				end = ' ...';
+			}
+		});
 		return sub + (suffix ? end : '');
 	}
 
@@ -1752,7 +1756,7 @@ class Text {
 		this.rev.scrollPos = {};
 		this.getText(false);
 		panel.getList(true);
-		but.refresh(true); // try true
+		but.refresh(true);
 		this.notifyTags();
 	}
 

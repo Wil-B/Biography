@@ -279,7 +279,7 @@ function on_notify_data(name, info) {
 	}
 	switch (name) {
 		case 'bio_chkTrackRev':
-			if (!$.server && panel.style.inclTrackRev) {
+			if (!$.server && ppt.showTrackRevOptions) {
 				clone = JSON.parse(JSON.stringify(info));
 				clone.inclTrackRev = true;
 				window.NotifyOthers('bio_isTrackRev', clone);

@@ -151,6 +151,7 @@ class Helpers {
 	}
 
 	gr(w, h, im, func) {
+		if (isNaN(w) || isNaN(h)) return;
 		let i = gdi.CreateImage(Math.max(w, 2), Math.max(h, 2));
 		let g = i.GetGraphics();
 		func(g, i);
