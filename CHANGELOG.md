@@ -140,5 +140,3 @@ Wikipedia + lyrics + flags
 - Smooth scroll: enhanced smoothness when using scrollbar
 - Tagger: fixed rare handling issue with certain exotic characters
 - UNC paths: sorted handling
-
-[Test.zip](https://github.com/Wil-B/Biography/files/8837492/Test.zip)
