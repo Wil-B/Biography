@@ -1132,7 +1132,7 @@ class Panel {
 			}
 		} else this.trace.text = y > this.tbox.t && y < this.tbox.t + this.tbox.h && x > this.tbox.l && x < this.tbox.l + this.tbox.w;
 		if (!this.trace.text && !this.trace.film) this.trace.image = img.trace(x, y);
-		if (!ppt.autoEnlarge || click || this.zoom()) return;
+		if (!ppt.autoEnlarge || click || this.zoom() || seeker.dn) return;
 		const enlarged_img_o = this.style.enlarged_img;
 		this.style.enlarged_img = !this.trace.text && this.trace.image;
 		if (this.style.enlarged_img && !ppt.text_only && !ppt.img_only && !enlarged_img_o) this.mode(1);
