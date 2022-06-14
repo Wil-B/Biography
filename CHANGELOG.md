@@ -4,7 +4,7 @@
 
 ### Fixed
 - Display of allmusic rating now respects the show album rating setting
-- Last.fm: added missing reset to stop error
+- Last.fm biography: issue when certain web content isn't found
 
 <br />
 
