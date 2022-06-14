@@ -1312,8 +1312,9 @@ class Text {
 				switch (true) {
 					case !ppt.sourceAll:
 						if (ppt.artistView ? !ppt.lockBio : !ppt.lockRev) { // get target else fallback source
+							const isMainAvail = this.isMainAvail(n);
 							[type, types_1[source], types_2[source], types_3[source]].some(v => {
-								if (this[n][v] && (v != 'txt' || !this.isMainAvail(n, v))) { // favour amLfmWiki fallback if !prefer textreader/lyrics
+								if (this[n][v] && (v != 'txt' || !isMainAvail)) { // favour amLfmWiki fallback if !prefer textreader/lyrics
 									this[n].text = this[n][v];
 									return this[n].loaded[v] = true;
 								}
