@@ -1,3 +1,13 @@
+# v1.3.3
+### Changed
+- Improved image seeker behaviour when enlarge image on hover is enabled
+
+### Fixed
+- Display of allmusic rating now respects the show album rating setting
+- Last.fm: added missing reset to stop error
+
+<br />
+
 # v1.3.2
 ### Changed
 - Improved load sub-menu
