@@ -1,3 +1,14 @@
+# v1.3.4
+### Changed [unreleased]
+- Tagger
+    - last.fm genre whitelist is now updated automatically
+    - usage of last.fm genre whitelist is now optional (tagger tab)
+
+### Fixed
+- Reworked feature detection to stop occasional issues with options dialog not opening
+
+<br />
+
 # v1.3.3
 ### Changed
 - Improved image seeker behaviour when enlarge image on hover is enabled
