@@ -1,6 +1,6 @@
 # v1.3.4 [unreleased]
 ### Added
-- Item properties. Organises tags written with biography tagger (if present) as well as displaying standard properties (textreader & lyrics tab)
+- Item properties. Organises tags written with biography tagger (if present) as well as displaying standard properties. Enable on textreader & lyrics tab.
 
 ![Item properties](https://user-images.githubusercontent.com/35600752/176311420-7aef19bd-ab3f-47ef-9eb1-de445ed75a81.png)
 
