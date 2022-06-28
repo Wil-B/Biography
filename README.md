@@ -8,6 +8,7 @@ Feature rich biography plug-in for [foobar2000](https://www.foobar2000.org)
      - history
 - Lyrics: synced and unsynced
 - Textreader
+- Item properties
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
 - Themes: user interface, dark, blend and light
 - Custom colours and fonts
