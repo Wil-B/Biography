@@ -57,4 +57,4 @@ See textreader & lyrics tab help for set-up tips
 
 ### Item properties
 ![Item properties](https://user-images.githubusercontent.com/35600752/176311420-7aef19bd-ab3f-47ef-9eb1-de445ed75a81.png)
-Organise tags written with biography tagger (if present) as well as display the standard properties (textreader & lyrics tab)
+Organise tags written with biography tagger (if present) as well as display standard properties (textreader & lyrics tab)
