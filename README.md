@@ -54,6 +54,6 @@ See textreader & lyrics tab help for set-up tips
 ### Amalgamated sources
 ![Amalgamate sources ](https://user-images.githubusercontent.com/35600752/171165042-efc9a884-91fc-4aa4-bd74-1fdce81d91d1.png)
 
-### Item properties
-![item properties](https://user-images.githubusercontent.com/35600752/176311420-7aef19bd-ab3f-47ef-9eb1-de445ed75a81.png)
+### Item-properties
+![properties](https://user-images.githubusercontent.com/35600752/176311420-7aef19bd-ab3f-47ef-9eb1-de445ed75a81.png)
 Organise tags written with biography tagger as well as standard fields
