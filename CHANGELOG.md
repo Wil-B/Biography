@@ -1,5 +1,8 @@
-# v1.3.4
-### Changed [unreleased]
+# v1.3.4 [unreleased]
+### Added
+- [Item properties](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties) (textreader & lyrics tab). Organises tags written with biography tagger as well as standard fields
+
+### Changed
 - Tagger
     - last.fm genre whitelist is now updated automatically
     - usage of last.fm genre whitelist is now optional (tagger tab)
