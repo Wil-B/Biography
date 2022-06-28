@@ -1,6 +1,6 @@
 # v1.3.4 [unreleased]
 ### Added
-- [Item properties](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties) (textreader & lyrics tab). Organises tags written with biography tagger as well as standard fields
+- [Item properties](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties): organises tags written with biography tagger as well as standard fields (textreader & lyrics tab)
 
 ### Changed
 - Tagger
