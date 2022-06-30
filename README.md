@@ -59,7 +59,7 @@ See textreader & lyrics tab help for set-up tips
 Default grouping.
 <br>
 Organise tags written with biography tagger (if present) as well as display standard properties. Enable on textreader & lyrics tab.
-![Default grouping](https://user-images.githubusercontent.com/35600752/176746640-c8861731-de6c-4649-af41-826b348b38e8.png)
+![Default Grouping](https://user-images.githubusercontent.com/35600752/176750032-de14c5d9-fbdb-4f4d-b5cf-8e91363dc1c8.png)
 
 Alternative grouping
 <br>
