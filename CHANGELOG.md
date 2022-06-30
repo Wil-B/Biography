@@ -9,6 +9,7 @@
 
 ### Fixed
 - Reworked feature detection to stop occasional issues with options dialog not opening
+- v1.3.2 regression: image cache issue
 
 <br />
 
