@@ -56,9 +56,9 @@ See textreader & lyrics tab help for set-up tips
 ![Amalgamate sources ](https://user-images.githubusercontent.com/35600752/171165042-efc9a884-91fc-4aa4-bd74-1fdce81d91d1.png)
 
 ### Item properties
-Default grouping.
+Default grouping. Organise tags written with biography tagger (if present) as well as display standard properties.
 <br>
-Organise tags written with biography tagger (if present) as well as display standard properties. Enable on textreader & lyrics tab.
+Enable on textreader & lyrics tab.
 ![Default Grouping](https://user-images.githubusercontent.com/35600752/176750032-de14c5d9-fbdb-4f4d-b5cf-8e91363dc1c8.png)
 
 Alternative grouping
