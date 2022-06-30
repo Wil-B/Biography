@@ -63,6 +63,6 @@ Enable on textreader & lyrics tab.
 
 Alternative grouping
 <br>
-See textreader, lyrics & item properties help on textreader & lyrics tab for more info.
+See help on textreader & lyrics tab for more info.
 ![Alternative grouping](https://user-images.githubusercontent.com/35600752/176746679-4332be2a-ded6-48e2-972c-3d062391818a.png)
 
