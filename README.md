@@ -64,5 +64,5 @@ Enable on textreader & lyrics tab.
 Alternative grouping
 <br>
 See help on textreader & lyrics tab for more info.
-![Alternative grouping](https://user-images.githubusercontent.com/35600752/176746679-4332be2a-ded6-48e2-972c-3d062391818a.png)
+![Alternative grouping](https://user-images.githubusercontent.com/35600752/176903075-39578745-8274-41d6-b86c-6d8dd323ec9d.png)
 
