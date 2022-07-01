@@ -9,7 +9,7 @@
 
 ### Fixed
 - Reworked feature detection to stop occasional issues with options dialog not opening
-- Occasional issues with the options dialog not opening due to the feature checker wrongly reporting Spider Monkey Panel Show HTML Dialog as unsupported. In such cases there is now a confirm to guard against false negatives. Additionally, there is a manual setting in the first panel property.
+- Occasional issues with the options dialog not opening due to the feature checker wrongly reporting Spider Monkey Panel Show HTML Dialog as unsupported. In such cases there is now a confirm to guard against false negatives. Additionally, there is a manual setting in the first panel property
 - v1.3.2 regression: image cache issue
 
 <br />
