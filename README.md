@@ -56,13 +56,11 @@ See textreader & lyrics tab help for set-up tips
 ![Amalgamate sources ](https://user-images.githubusercontent.com/35600752/171165042-efc9a884-91fc-4aa4-bd74-1fdce81d91d1.png)
 
 ### Item properties
-Default grouping. Organise tags written with biography tagger (if present) as well as display standard properties.
-<br>
 Enable on textreader & lyrics tab.
-![Default Grouping](https://user-images.githubusercontent.com/35600752/176750032-de14c5d9-fbdb-4f4d-b5cf-8e91363dc1c8.png)
+<br><br>
+Standard grouping
+![item_properties](https://user-images.githubusercontent.com/35600752/178979382-fdd7e692-3eef-4d18-8a82-01e950e2c02d.png)
 
 Alternative grouping
-<br>
-See help on textreader & lyrics tab for more info.
-![Alternative grouping](https://user-images.githubusercontent.com/35600752/176903075-39578745-8274-41d6-b86c-6d8dd323ec9d.png)
+![item_properties_alternative_grouping](https://user-images.githubusercontent.com/35600752/178977756-c55520e0-0322-46b8-9c11-3e9bfa0cd136.png)
 
