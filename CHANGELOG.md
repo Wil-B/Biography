@@ -2,8 +2,7 @@
 ### Added
 - Item properties. See screenshots at end of [README](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties)
 - %storage_folder%
-	- returns the Spider Monkey Panel package_data location for biography, e.g.
-	...\foobar2000\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252}
+	- returns the Spider Monkey Panel package_data\storage folder for biography. See release notes below for more info
 
 ### Changed
 - Tagger
@@ -14,6 +13,15 @@
 - Occasional issues with the options dialog not opening due to the feature checker wrongly reporting Spider Monkey Panel Show HTML Dialog as unsupported. In such cases there is now a confirm to guard against false negatives. Additionally, there is a manual setting in the first panel property
 - v1.3.2 regression: image cache issue
 
+### Release notes
+- %storage_folder%
+	- returns the Spider Monkey Panel package_data\storage folder for biography, e.g.
+		- C:\...\foobar2000\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252} [standard install]
+		- Z:\foobar2000\profile\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252} [portable install]
+	- alternative to %profile% which returns the foobar2000 profile folder, e.g.
+		- C:\...\foobar2000 [standard install]
+		- Z:\foobar2000\profile [portable install]
+	- %storage_folder%, like %profile%, is for use as the first item of a path. See the textreader & lyrics tab for an example
 <br />
 
 # v1.3.3
