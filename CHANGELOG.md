@@ -1,6 +1,9 @@
 # v1.3.4 [unreleased]
 ### Added
 - Item properties. See screenshots at end of [README](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties)
+- %storage_folder%
+	- returns the Spider Monkey Panel package_data location for biography, e.g.
+	...\foobar2000\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252}
 
 ### Changed
 - Tagger
