@@ -10,7 +10,7 @@ Feature rich biography plug-in for [foobar2000](https://www.foobar2000.org)
 - Textreader
 - Item properties
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
-- Themes: user interface, dark, blend and light
+- Themes: user interface, dark, blend, light and random
 - Custom colours and fonts
 - Filmstrip: top, left, right, bottom or hidden
 - Image+text, image only or text only
@@ -59,8 +59,8 @@ See textreader & lyrics tab help for set-up tips
 Enable on textreader & lyrics tab.
 <br><br>
 Standard grouping
-![item_properties](https://user-images.githubusercontent.com/35600752/178979382-fdd7e692-3eef-4d18-8a82-01e950e2c02d.png)
+![item_properties](https://user-images.githubusercontent.com/35600752/179354318-3479fee8-54fe-46ff-ae06-d405eebbc553.png)
 
 Alternative grouping
-![item_properties_alternative_grouping](https://user-images.githubusercontent.com/35600752/178977756-c55520e0-0322-46b8-9c11-3e9bfa0cd136.png)
+![item_properties_alternative_grouping](https://user-images.githubusercontent.com/35600752/179354332-31ef0545-4834-4837-bcbc-a86f912181e6.png)
 
