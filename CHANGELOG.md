@@ -16,10 +16,10 @@
 ### Release notes
 - %storage_folder%
 	- returns the Spider Monkey Panel package_data\storage folder for biography, e.g.
-		- C:\...\foobar2000\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252} [standard install]
+		- C:\\...\foobar2000\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252} [standard install]
 		- Z:\foobar2000\profile\foo_spider_monkey_panel\package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252} [portable install]
 	- alternative to %profile% which returns the foobar2000 profile folder, e.g.
-		- C:\...\foobar2000 [standard install]
+		- C:\\...\foobar2000 [standard install]
 		- Z:\foobar2000\profile [portable install]
 	- %storage_folder%, like %profile%, is for use as the first item of a path. See the textreader & lyrics tab for an example
 <br />
