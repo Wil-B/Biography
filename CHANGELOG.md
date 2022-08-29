@@ -1,4 +1,4 @@
-# v1.3.4 [unreleased]
+# v1.3.4
 ### Added
 - Item properties. See screenshots at end of [README](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties)
 - %storage_folder%
