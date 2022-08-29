@@ -771,6 +771,7 @@ class Infobox {
 		.replace(/[[\]]/g, '')
 		.replace(/{{-}}/g, '')
 		.replace(/{{ref\|a}}/g, '')
+		.replace(/{{refn/g, '')
 		.replace(/\(see below\)/g, '')
 		.replace(/[{}]/g, '');
 		return this.tidyPunctuation(n);
@@ -830,7 +831,7 @@ class Infobox {
 			const f = [];
 			const lc = v.toLowerCase();
 			['composer', 'lyricist', 'producer'].forEach(v => {
-				const ix = lc.indexOf(v);
+				const ix = RegExp(`[^\\(]${v}`).test(lc) ? lc.indexOf(v) : -1;
 				if (ix != -1) f.push(ix);
 			});
 			const i = f.length ? Math.min(...f) : -1;

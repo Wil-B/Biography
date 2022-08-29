@@ -2,7 +2,6 @@
 
 function on_colours_changed() {
 	ui.getColours();
-	if (panel.id.lyricsSource) lyrics.setCol();
 	alb_scrollbar.setCol();
 	art_scrollbar.setCol();
 	img.createImages();
@@ -196,6 +195,7 @@ function on_mouse_leave() {
 	art_scrollbar.leave();
 	art_scroller.leave();
 	cov_scroller.leave();
+	txt.leave();
 	img.leave();
 	filmStrip.leave();
 	panel.m.y = -1;
@@ -229,6 +229,7 @@ function on_mouse_move(x, y) {
 	resize.move(x, y);
 	resize.filmMove(x, y);
 	seeker.move(x, y);
+	txt.move(x, y);
 	img.move(x, y);
 	filmStrip.move(x, y);
 	panel.m.x = x;
@@ -242,6 +243,7 @@ function on_mouse_rbtn_up(x, y) {
 
 function on_mouse_wheel(step) {
 	if (!ppt.panelActive) return;
+	txt.deactivateTooltip();
 	switch (panel.zoom()) {
 		case false:
 			switch (true) {
@@ -478,6 +480,7 @@ function on_script_unload() {
 		timer.clear(timer.img);
 	}
 	but.on_script_unload();
+	txt.deactivateTooltip();
 }
 
 function on_size() {
@@ -493,6 +496,7 @@ function on_size() {
 	ui.getFont();
 	panel.getLogo();
 	if (!ppt.panelActive) return;
+	txt.deactivateTooltip();
 	panel.calcText = true;
 	txt.on_size();
 	img.on_size();

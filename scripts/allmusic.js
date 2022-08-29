@@ -98,7 +98,7 @@ class DldAllmusicBio {
 					}
 					server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + this.artist + ' - ' + this.title);
 					if (!$.file(this.pth_bio)) {
-						$.trace('allmusic biography: ' + this.artist + (artists.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators' + (this.title ? ', album name or track title, not matched' : ' N/A for menu look ups') : ': not found'), true);
+						$.trace('allmusic biography: ' + this.artist + (artists.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators, album name or track title, either not matched or absent (e.g. menu look ups)' : ': not found'), true);
 					}
 				} catch (e) {
 					server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + this.artist + ' - ' + this.title);

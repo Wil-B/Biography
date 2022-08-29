@@ -190,7 +190,7 @@ class ResizeHandler {
 		}
 		filmStrip.clearCache();
 		if (panel.style.showFilmStrip && ppt.filmStripOverlay) filmStrip.set(ppt.filmStripPos);
-		txt.refresh(this.updFilm ? 0 : 5);
+		txt.refresh(this.updFilm ? 0 : 3);
 		filmStrip.paint();
 	}
 

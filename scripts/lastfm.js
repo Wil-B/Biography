@@ -919,3 +919,61 @@ class LfmTopAlbums {
 		this.on_search_done_callback(this.artist, topAlbums);
 	}
 }
+
+class DldLastfmGenresWhitelist {
+	constructor(state_callback) {
+		this.func = null;
+		this.ready_callback = state_callback;
+		this.timer = null;
+		this.xmlhttp = null;
+	}
+
+	onStateChange() {
+		if (this.xmlhttp != null && this.func != null)
+			if (this.xmlhttp.readyState == 4) {
+				clearTimeout(this.timer);
+				this.timer = null;
+				if (this.xmlhttp.status == 200) this.func();
+				else $.trace('unable to update last.fm genres whitelist' + ' Status error: ' + this.xmlhttp.status, true);
+			}
+	}
+
+	search() {
+		this.func = null;
+		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		const URL = 'https://musicbrainz.org/genres';
+		this.func = this.analyse;
+		this.xmlhttp.open('GET', URL);
+		this.xmlhttp.onreadystatechange = this.ready_callback;
+		if (!this.timer) {
+			const a = this.xmlhttp;
+			this.timer = setTimeout(() => {
+				a.abort();
+				this.timer = null;
+			}, 30000);
+		}
+		this.xmlhttp.send();
+	}
+
+	analyse() {
+		doc.open();
+		const div = doc.createElement('div');
+		div.innerHTML = this.xmlhttp.responseText;
+		const a = div.getElementsByTagName('a');
+		let genres = [];
+		for (let i = 0; i < a.length; i++) {
+			if (a[i].href.includes('/genre/')) {
+				genres.push(a[i].innerText.trim());
+			}
+		}
+
+		if (genres.length > 860) {
+			const pth = `${cfg.storageFolder}lastfm_genre_whitelist.json`;
+			const existingGenres = $.jsonParse(pth, [], 'file');
+			if (genres.length > existingGenres.length) {
+				$.buildPth(pth);
+				$.save(pth, JSON.stringify(genres), true);
+			}
+		}
+	}
+}

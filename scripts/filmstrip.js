@@ -574,7 +574,7 @@ class FilmStrip {
 				}
 				const caption = 'Reset Filmstrip To Default Size';
 				const prompt = 'Continue?';
-				const wsh = soFeatures.gecko && soFeatures.clipboard ? popUpBox.confirm(caption, prompt, 'Yes', 'No', continue_confirmation) : true;
+				const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 				break;
 			}
@@ -732,7 +732,7 @@ class FilmStrip {
 
 	trace(x, y) {
 		if (!panel.style.showFilmStrip) return false;
-		return [y > this.y && y < this.y + this.h, x > this.x && x < this.x + this.w, y > this.y && y < this.y + this.h, x > this.x && x < this.x + this.w][ppt.filmStripPos];
+		return y > this.y && y < this.y + this.h && x > this.x && x < this.x + this.w;
 	}
 
 	trimCache(image_path, key) {

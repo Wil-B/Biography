@@ -28,6 +28,7 @@
 	input[type="checkbox"]:hover {border:1px solid #000000; padding:1px 0;}
 	input[readonly] {background-color:#E1E1E1;}
 	.checkbox_label {padding:0; margin:0; vertical-align:middle; margin-left:0.31em;}
+	.checkbox_enable {padding:0; margin:0; vertical-align:middle; margin-left:0.5em; margin-right:17%; font:bold 1.15em Segoe UI; color:#0066CC; }
 
 	input[type="radio"] {vertical-align:middle; position:relative; width:17px; height:15px; border:0; padding:2px 1px; margin:5px 0;}
 	input[type="radio"]:focus {border:1px solid #0078D7; padding:1px 0;}
@@ -36,8 +37,8 @@
 
 	.alignLH {width:40%; padding:1.25em 0 0; float:left;}
 	.alignRH {padding:1.25em 0 0; float:left;}
-	.alignLeftH {width:21%; padding:1.01em 0 0; float:left;}
-	.alignRightH {padding:1.01em 0 0; float:left;}	
+	.alignLeftH {width:21%; padding:1.25em 0 0; float:left;}
+	.alignRightH {padding:1.25em 0 0; float:left;}	
 	.div_text2 {padding:1.01em 0 0;}
 	.div_text3 {padding:1.25em 0 0;}
 	.div_text6 {padding:1.25em 0 0.5em;}
@@ -48,7 +49,9 @@
 	.div_text11 {padding:3.57em 0 0.5em;}
 	.div_text12 {padding:1.57em 0 0.31em;}
 	.div_text14 {padding:1.25em 0 0.91em;}
-	.alignLH, .alignRH, .alignLeftH, .alignRightH, .div_text1, .div_text2, .div_text3, .div_text6, .div_text7, .div_text8, .div_text9, .div_text10, .div_text11, .div_text12, .div_text14 {
+	.div_text15 {padding:0.725em 0 0;}
+	.div_text16 {padding:0.58em 0 0;}
+	.alignLH, .alignRH, .alignLeftH, .alignRightH, .div_text1, .div_text2, .div_text3, .div_text6, .div_text7, .div_text8, .div_text9, .div_text10, .div_text11, .div_text12, .div_text14, .div_text15, .div_text16 {
 		font:bold 1.15em Segoe UI; color:#0066CC; word-wrap:break-word; white-space:pre-wrap;
 	}
 	
@@ -68,11 +71,15 @@
 	.info1, .info2, .info3, .info4, .info5, .info6, .info7, .info8, .info9, .info10, .info11, .info12, .info14 {
 		word-wrap:break-word; white-space:pre-wrap;
 	}
-
+	
+	.alignLeft {width:4%; margin-top:0.7em; float:left;}
 	.alignLeft1 {width:18%; margin-top:0.7em; float:left;}
-	.alignLeft2 {width:24%; margin-top:0.7em; float:left;}
+	.alignLeft2 {width:19%; margin-top:0.7em; float:left;}
+	.alignLeft3 {width:4%; margin-top:0.58em; float:left;}
+	.alignLeft4 {width:19%; margin-top:0.58em; float:left;}
 	.alignRight1 {margin-top:0.7em; float:left;}
-	.alignLeft1, .alignLeft2, .alignRight1 {
+	.alignRight2 {margin-top:0.58em; float:left;}
+	.alignLeft, .alignLeft1, .alignLeft2, .alignLeft3, .alignLeft4, .alignRight1, .alignRight2 {
 		font:bold 1em Segoe UI; word-wrap:break-word; white-space:pre-wrap;
 	}
 
@@ -93,13 +100,14 @@
 	
 	.input15 {width:15%;}
 	.input17 {width:17%;}
+	.input18 {display:inline-block; vertical-align:middle; width:18%; margin-left:2%; margin-right:0;}
 	.input21 {display:inline-block; vertical-align:middle; width:22%; margin-right:0;}
 	.input54 {width:54%}
 	.input70 {width:70%;}
 
 	.input50 {width:5em;}
 	.input60 {float:right; width:60%;}
-	.input71 {display:inline-block; vertical-align:middle; width:65%; margin-left:2%;}
+	.input65 {display:inline-block; vertical-align:middle; width:65%; margin-left:2%;}
 	
 	.input76 {width:76%;}
 	.input85 {width:88%;}
@@ -156,16 +164,18 @@
 	.column19 {width:19%;}
 	.column21 {width:21%;}
 	.column25 {width:25%;}
+	.column30 {width:30%;}
 	.column31 {width:31%;}
 	.column33 {width:33%;}
 	.column40 {width:40%;}
 	.column43 {width:43%;}
+	.column45 {width:45%;}
 	.column46 {width:46%;}
 	.column50 {width:50%;}
 	.column55 {width:55%;}
 	.column60 {width:60%;}
 
-	.column4, .column5, .column14, .column16, .column19, .column21, .column25, .column31, .column33, .column40, .column43, .column46, .column50, .column55, .column60 {
+	.column4, .column5, .column14, .column16, .column19, .column21, .column25, .column30, .column31, .column33, .column40, .column43, .column45, .column46, .column50, .column55, .column60 {
 		margin:0; padding:0; float:left;
 	}
 
@@ -361,7 +371,7 @@
 	
 			</div>			
 			<div class="row">
-			<div class="div_text2">Main</div>
+			<div class="div_text3">Main</div>
 				<div class="column50">
 					<div class="info2"><b>Format</b></div>
 					<div id="headingStyle"></div>
@@ -440,18 +450,21 @@
 		</div>
 
 		<div id="textreader" class="tabcontent">
-				<div class="div_text6">Enable</div>
-				<div id="cusText1"></div>
-				<div class="div_text2">Artist view</div>
-				<span class="alignLeft2">Name</span>
-				<span class="alignRight1">Full path or tag*</span>
-				<span class="alignRight1" style="float:right;">Lyrics source</span>
+				<span id="cusText1" style="padding-top:1.25em; width:23%; float:left;"></span>
+				<span class="info4" style="padding-top:1.57em; float:left;">Supports text, lyrics and item properties. Uses first found for each view.</span>
+				<div style="clear:both;"></div>
+				<div class="div_text15">Artist view</div>
+				<span class="alignLeft3">Use</span>
+				<span class="alignLeft4">Name</span>
+				<span class="alignRight2">Full path or tag*</span>
+				<span class="alignRight2" style="float:right;">Lyrics source</span>
 				<div style="clear:both;"></div>
 				<div id="cusText2"></div>
-				<div class="div_text2">Album view</div>
-				<span class="alignLeft2">Name</span>
-				<span class="alignRight1">Full path or tag*</span>
-				<span class="alignRight1" style="float:right;">Lyrics source</span>
+				<div class="div_text16">Album view</div>
+				<span class="alignLeft3">Use</span>
+				<span class="alignLeft4">Name</span>
+				<span class="alignRight2">Full path or tag*</span>
+				<span class="alignRight2" style="float:right;">Lyrics source</span>
 				<div style="clear:both;"></div>
 				<div id="cusText3"></div>
 				<div class="row">
@@ -461,7 +474,7 @@
 				</span>
 				</div>
 				<div id="cusTextPreview"></div>
-				<div class="row" style="padding-top:0.7em;">
+				<div class="row" style="margin-top:1.25em; padding-top:0.31em; background-color:#E8E8E8; border-bottom: 1px solid #D8D8D8;">
 				<div class="column5"style="padding-top:0.31em;">Lyrics:</div>
 				<div class="column25">
 					<div id="downloadLyrics"></div>
@@ -485,10 +498,22 @@
 					</span>
 				</div>
 				</div>
-			<div style="display:inline-block; padding-top:1.25em; padding-bottom:0.7em; width:18%"><a id="setSize" href="#" onclick="showLyricsHelp();return false;">Textreader & lyrics help</a></div>
+				<div class="row"style="padding-top:0.31em; background-color:#E8E8E8;">
+				<div class="column30"style="padding-top:0.31em;">Item properties:</div>
+				<div class="column14">
+					<div id="rowStripes"></div>
+				</div>
+				<div class="column14">
+					<div id="lineDividers"></div>
+				</div>
+				<div class="column40">
+					<div id="fieldWidth"></div>
+				</div>
+				</div>
+			<div style="display:inline-block; padding-top:0.7em; padding-bottom:0.7em; width:50%"><a id="setSize" href="#" onclick="showLyricsHelp();return false;">Textreader, lyrics & item properties help</a></div>
 			<div id="lyrics_help" style="display: none;">
 			<div class="div_text2"><b>General</b></div>
-			<div class="info4"><ul><li>Usage has to be enabled (top left)</li><li>Images and other sources are all available, so text & lyrics can be viewed in more interesting ways</li><li>Check "lyrics sources" to identify which sources require lyrics handling</li></ul></div>
+			<div class="info4"><ul><li>Usage has to be enabled (top left)</li><li>Check "lyrics sources" to identify which sources require lyrics handling</li><li>Images and other sources are all available, so text, lyrics and item properties can be viewed in more interesting ways</li></ul></div>
 <div class="div_text2"><b>Lyrics</b></div>
 <div class="info4">-  Autoscroll existing & newly downloaded lyrics
 -  Default is to fallback to showing biography or review if no lyrics are found
@@ -502,13 +527,19 @@
 <div class="info8"><b><i>Lyrics in tags</i></b></div>
 <div class="info4">If lyrics display as ".", LargeFieldsConfig.txt needs to be edited:</div>
 <div class="info4"><ul><li>Increase the defaultMetaMax size limit</li><li>For %lyrics% or %unsynced lyrics% tags, comment out or remove those specific entries under "fieldSpam"</li></ul></div>
-<div class="info8"><b><i>Scroll time</i></b></div>
-<div class="info4">This is the time taken to scroll a line in milliseconds. Recommended range 400-1500.</div>
-<div class="info8"><b><i>Overlay</i></b></div>
-<div class="info4">Lyrics can be overlayed on top of faded cycling artist images or album cover for an alternative view, e.g.</div>
-<div class="info4"><ul><li>Enable the overlay layout (menu > layout). Press ctrl & drag the red line to top</li><li>Image tab: set an auto-fill image type under image+text</li><li>Filmstrip: place at bottom, e.g. with circular image type</li><li>Display tab: set image margins to 0 & adjust text margins if required <i>(this is likely to be necessary if the filmStrip is set to overlay the image)</i>. Set theme to dark, random or personal preference</li><li>Use shift + wheel to adjust image strength</li></ul></div>
+<div class="info8"><b><i>Scroll</i></b></div>
+<div class="info4">Scroll time is the milliseconds taken to scroll a line. The recommended range is 400-1500. Lyrics cannot be autoscrolled if text sources are amalgamated</div>
+<div class="div_text3"><b>Item properties</b></div>
+<div class="info4">Item properties can be displayed by pasting in one of the paths below. Both display the same information, but use different groupings.</div>
+<div class="input_cnt3"><input class="input98" style="border:none; background:none;" value="%storage_folder%\item_properties.json"/></div>
+<div class="input_cnt2"><input class="input98" style="border:none; background:none;" value="%storage_folder%\item_properties_alternative_grouping.json"/></div>
+<div class="info4"><ul><li>item_properties splits metadata into organised groups</li><li>item_properties_alternative_grouping shows metadata in a single group</li><li>both show other groups like youtube, statistics, location, general and replaygain</li><li>either can be edited in a text editor to add, remove or re-order groups and properties</li></ul></div>
+<div class="div_text2"><b>Overlay</b></div>
+<div class="info4">Lyrics, item properties, text, biographies and reviews can all be overlayed on top of faded cycling artist images or album cover for an alternative view, e.g.</div>
+<div class="info4"><ul><li>Enable the overlay layout (menu > layout). Press ctrl & drag the red line to top</li><li>Image tab: set an auto-fill image type under image+text</li><li>Filmstrip: place at bottom*, e.g. with circular image type</li><li>Display tab: set image margins to 0 & adjust text margins if required. Set theme to dark, random or personal preference</li><li>Use shift + wheel to adjust image strength</li></ul>
+* Other positions work best with the filmstrip set to overlay the image area (menu > layout > filmstrip), with adjustment of text margins and full width heading off (heading tab)</div>
 <div class="div_text3"><b>Look-up (drop down menu)</b></div>
-<div class="info4"><ul><li>Usage is optional</li><li>Textreader would need to to load info for artists (artist view) or albums (album view). Use %BIO_ARTIST%, %BIO_ALBUMARTIST% or %BIO_ALBUM%, as appropriate</li><li>Lyrics, if displayed, automatically show for the current track</li></ul>
+<div class="info4"><ul><li>Usage is optional</li><li>Textreader would need to to load info for artists (artist view) or albums (album view). Use %BIO_ARTIST%, %BIO_ALBUMARTIST% or %BIO_ALBUM%, as appropriate</li><li>Lyrics and item properties, if displayed, automatically show for the current track</li></ul>
 </div>
 </div>
 		</div>
@@ -715,13 +746,13 @@ To get ...*YOUR PATH*..., use sources > open file location > image. Copy the par
 			<div id="tagWikipedia"></div>
 			</div>
 			<div class="column46" style="margin-left:6%">
-			<div class="div_text9"><b>Last.fm genre whitelist</b></div>
-<div class="info3">
-Last.fm tags are filtered to remove non-genre items. Allowed genres are in accordance with this <a href="https://musicbrainz.org/genres" target=\"_blank\">whitelist</a>.
+			<div class="div_text6"><b>Last.fm genres</b></div>
+			<div id="whitelist"></div>
+<div id="whitelistInfo" class="info3">
 
 To add to the whitelist, enter comma separated genres below:
 </div>				
-				<div id="lfmGenreTag"></div>
+			<div id="lfmGenreTag"></div>
 			<div class="div_text3">Notify tags</div>
 			<div id="notifyTags"></div>
 			<div class="div_text3">Show confirm popup before tagging files</div>
@@ -730,7 +761,7 @@ To add to the whitelist, enter comma separated genres below:
 			<div id="tagger_help" style="display: none;">
 			<div class="info4"><b>General</b></div>
 			<div class="info4">All tag writing is from saved sources (i.e. only existing info in already saved bios and reviews is written). This is to comply with constraints of certain sites. The tagger should work best if Biography has been used for a while & items are cached for a sufficient time. Tags are multi-value except rating.
-<div class="info4"><i>Last.fm genres</i></div>A whitelist is used to remove any non-genre tags. Translate is also available. These aren't needed with other genre sources.</div>
+<div class="info4"><i>Last.fm genres</i></div>A whitelist can be used to remove any non-standard genre tags. Translate is also available if the whitelist is used. These aren't needed with other genre sources. The whitelist is downloaded and updated automatically.</div>
 <div class="info4"><i>Statistics</i></div>Tagging statistics requires files created or updated with biography v1.2.0 or later. Last.fm playcount (scrobbles), listeners & a combined score (1-100) are written as a multi-value tag.
 
 <div class="info4">Scores rank the long-term popularity of artists and albums on a 1-100 scale using total scrobbles and listeners. The highest scoring artist or album at last.fm is set to a score of 100.</div>
@@ -920,12 +951,12 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				if (cur.page == "title_format" || cur.page == "download" || cur.page == "cover" || cur.page == "textreader" && id.slice(-1) < 8) {
 					var sFind = null;
 					var sReplace = null;
-					if (id == 'dld_container9') {
+					if (id == 'dld_container11') {
 						sFind = value;
-						sReplace = document.getElementById('dld_container10').value;
+						sReplace = document.getElementById('dld_container12').value;
 					}
-					if (id == 'dld_container10') {
-						sFind = document.getElementById('dld_container9').value;
+					if (id == 'dld_container12') {
+						sFind = document.getElementById('dld_container11').value;
 						sReplace = value;
 					}
 					var tf = /tf_/.test(id);
@@ -1042,7 +1073,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				cfg = JSON.parse(parsed_args[1]);
 				if (ppt.multiServer_internal.value) {
 					var servName = ppt.serverName_internal.value;
-					servName = servName[0].toUpperCase() + servName.slice(1).toLowerCase() + ' ';
+					servName = servName.charAt(0).toUpperCase() + servName.slice(1).toLowerCase() + ' ';
 					var newName = ServerCfg.innerHTML.replace(' (All Panels)',  '')
 					ServerCfg.innerHTML = servName + newName;
 				}
@@ -1069,7 +1100,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				var colourLabels = ['Text', 'Highlight', 'Button', 'Heading', 'Rating stars', 'Summary', 'Overlay fill', 'Overlay border', 'Background', 'Line', 'Transparent fill', 'Film selected'];
 				var covLabels = ['Auto-download [lastfm best quality]', 'Save folder', 'Save file name', 'Check custom paths', 'Custom path 1', 'Custom path 2', 'Custom path 3'];
 				var cusScrollLabels = ['Step (0 = page)', 'Smooth duration max (ms)', 'Touch duration max (ms)', 'Touch sensitivity 0-10'];
-				var cusTextLabels = ['Supports tags or full paths: text & lyrics. Uses first found for each view.', 'Preview', 'Synchronise with newly downloaded', 'Scroll synced', 'Scroll unsynced'];
+				var cusTextLabels = ['Supports tags or full paths: text, lyrics and item properties. Uses first found for each view.', 'Preview', 'Synchronise with newly downloaded', 'Scroll synced', 'Scroll unsynced'];
 				var dlLabels = ['Custom', 'Default (package data)', 'Review', 'Biography', 'Review', 'Biography', 'Photo', 'Review albumart', 'Similar artists', 'Review', 'Biography', 'Enable'];
 				var fallbackLabels = ['Biography', 'Review'];
 				var filmStripLabels = ['Flush', 'Align with image', 'Apply image margins','Align with text', 'Apply text margins', ]
@@ -1109,6 +1140,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				var tfServLabels = ['%BIO_ALBUMARTIST%', '%BIO_ARTIST%', '%BIO_ALBUM%', '%BIO_TITLE%', 'Composition tag'];
 				var themeLabels = ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Always cover based', 'Swap colours'];
 				var themeBlurLabels = ['Auto-fill', 'Level (%)', 'Opacity (%)', '%'];
+				var whitelistLabels = ['Write all last.fm tags', 'Apply filter to remove non-standard genres using this <a href="https://musicbrainz.org/genres" target=\"_blank\">whitelist</a>',];
 
 				var imgTable1 = ['artStyleDual', 'covStyleDual', 'artStyleImgOnly', 'covStyleImgOnly', 'filmPhotoStyle', 'filmCoverStyle'];
 				var imgTable2 = [['artReflDual', 'covReflDual', 'artReflImgOnly', 'covReflImgOnly', '', 'Reflection'], ['artBorderDual', 'covBorderDual', 'artBorderImgOnly', 'covBorderImgOnly', '', 'Border'], ['artShadowDual', 'covShadowDual', 'artShadowImgOnly', 'covShadowImgOnly', '', 'Shadow']];
@@ -1137,8 +1169,8 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 						type : ['int', 'int', 'int', 'int', 'int', 'int', 'float', 'float', 'float']
 					},
 					textreader: {
-						name: ['nmTxtReader0', 'pthTxtReader0', 'nmTxtReader1', 'pthTxtReader1', 'nmTxtReader2', 'pthTxtReader2', 'nmTxtReader3', 'pthTxtReader3', 'nmTxtReader4', 'pthTxtReader4', 'nmTxtReader5', 'pthTxtReader5', 'nmTxtReader6', 'pthTxtReader6', 'nmTxtReader7', 'pthTxtReader7', 'lyricsFadeHeight', 'lyricsScrollTimeAvg', 'lyricsScrollTimeMax'],
-						type : ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'float', 'float', 'float']
+						name: ['nmTxtReader0', 'pthTxtReader0', 'nmTxtReader1', 'pthTxtReader1', 'nmTxtReader2', 'pthTxtReader2', 'nmTxtReader3', 'pthTxtReader3', 'nmTxtReader4', 'pthTxtReader4', 'nmTxtReader5', 'pthTxtReader5', 'nmTxtReader6', 'pthTxtReader6', 'nmTxtReader7', 'pthTxtReader7', 'lyricsFadeHeight', 'lyricsScrollTimeAvg', 'lyricsScrollTimeMax', 'fieldWidth'],
+						type : ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'float', 'float', 'float', 'float']
 					},
 					custom: {
 						name: ['custFont', 'custHeadFont', 'text', 'text_h', 'headingBtn', 'headingText', 'stars', 'summary', 'rectOv', 'rectOvBor', 'bg', 'line', 'bgTrans', 'frame'],
@@ -1181,7 +1213,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					display: ['topAlign', 'expandLists', 'autoOptimiseText', 'covBlur', 'swapCol', 'highlightHdBtn', 'highlightHdText', 'highlightHdLine', 'highlightImgBor', 'highlightOvBor', 'highlightStars', 'highlightSubHd', 'highlightSummary', 'highlightText', 'amRating', 'lfmRating', 'summaryGenre', 'summaryDate', 'summaryLocale', 'summaryPopNow', 'summaryLatest', 'summaryOther'],
 					headings: ['hdShowTitle', 'hdBtnShow', 'fullWidthHeading', 'hdShowBtnBg', 'hdShowRedLfm', 'bioFlagShow', 'revFlagShow'],
 					image: ['autoEnlarge', 'imgSmoothTrans', 'imgFilterLfm', 'imgFilterMaxSzEnabled', 'imgFilterMinSzEnabled', 'imgFilterMinPxEnabled', 'autoFilm', 'imgCounter', 'imgSeeker', 'artReflDual', 'covReflDual', 'artReflImgOnly', 'covReflImgOnly', 'artBorderDual', 'covBorderDual', 'artBorderImgOnly', 'covBorderImgOnly', 'artShadowDual', 'covShadowDual', 'artShadowImgOnly', 'covShadowImgOnly'],
-					textreader: ['txtReaderEnable', 'lyricsTxtReader0', 'lyricsTxtReader1', 'lyricsTxtReader2', 'lyricsTxtReader3', 'lyricsTxtReader4', 'lyricsTxtReader5', 'lyricsTxtReader6', 'lyricsTxtReader7', 'syncTxtReaderLyrics', 'scrollSynced', 'scrollUnsynced'],
+					textreader: ['txtReaderEnable', 'useTxtReader0', 'lyricsTxtReader0', 'useTxtReader1', 'lyricsTxtReader1', 'useTxtReader2', 'lyricsTxtReader2', 'useTxtReader3', 'lyricsTxtReader3', 'useTxtReader4', 'lyricsTxtReader4', 'useTxtReader5', 'lyricsTxtReader5', 'useTxtReader6', 'lyricsTxtReader6', 'useTxtReader7', 'lyricsTxtReader7', 'syncTxtReaderLyrics', 'scrollSynced', 'scrollUnsynced', 'rowStripes', 'lineDividers'],
 					custom: ['custFontUse', 'custHeadFontUse', 'textUse', 'text_hUse', 'headingBtnUse', 'headingTextUse', 'starsUse', 'summaryUse', 'rectOvUse', 'rectOvBorUse', 'bgUse', 'lineUse', 'bgTransUse', 'frameUse'],
 					advanced: ['sbarFullHeight', 'blurAutofill'],
 					title_format: ['classicalModeEnable'],
@@ -1204,10 +1236,10 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					download: ['autoCache'],
 					photo: [],
 					cover: [],
-					tagger: [],
+					tagger: ['useWhitelist'],
 					misc: []
 				}
-				radio.all = radio.behaviour.concat(radio.display, radio.headings, radio.image, radio.download);
+				radio.all = radio.behaviour.concat(radio.display, radio.headings, radio.image, radio.download, radio.tagger);
 				lang_ix = parsed_args[6];
 
 				function getTableData(id) {
@@ -1370,7 +1402,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				
 				function setHeadingFont(n, type) {
 					var prop = ['headFontStyle', 'trackStyle', 'sourceStyle', 'wikiStyle', 'lyricsFontStyle', 'summaryStyle'][type];
-					window[prop + '_dropdown'].innerHTML = (type == 3 ? 'Wikipedia subheading: ' : type == 4 ? 'Lyrics font style: ' : type == 5 ? 'Summary font style: ' : '') + headingFontLabels[n];
+					window[prop + '_dropdown'].innerHTML = (type == 3 ? 'Wikipedia section heading: ' : type == 4 ? 'Lyrics font style: ' : type == 5 ? 'Summary font style: ' : '') + headingFontLabels[n];
 					ppt[prop + '_internal'].value = n;
 					setHeadingFontStyle(n, type);
 					switch (type) {
@@ -1528,7 +1560,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					window.sourceStyle_dropdown.innerHTML = headingFontLabels[ppt['sourceStyle_internal'].value];
 					setHeadingFontStyle(ppt['sourceStyle_internal'].value, 2);			
 					for (i = 0; i < 6; i++) {window.sourceFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 2 + ');">'+headingFontLabels[i]+'</a>');}
-					window.wikiStyle_dropdown.innerHTML = 'Wikipedia subheading: ' + headingFontLabels[ppt['wikiStyle_internal'].value];
+					window.wikiStyle_dropdown.innerHTML = 'Wikipedia section heading: ' + headingFontLabels[ppt['wikiStyle_internal'].value];
 					setHeadingFontStyle(ppt['wikiStyle_internal'].value, 3);			
 					for (i = 0; i < 6; i++) {window.wikiFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 3 + ');">'+headingFontLabels[i]+'</a>');}
 				}
@@ -1580,10 +1612,10 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				}
 				
 				function setTextreader() {
-					i = 0; window.cusText1.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">'+cusTextLabels[i]+'</label></div>');
+					i = 0; window.cusText1.insertAdjacentHTML('beforeend', '<span class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_enable">Enable</label></span>');
 					var cboxMargin = "width:" + cbox_w + "px; height:" + cbox_h + "px; margin-left:5em;"
-					for (i = 0; i < 4; i++) {window.cusText2.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_input" class="input21" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input71" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
-					for (i = 4; i < 8; i++) {window.cusText3.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_input" class="input21" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input71" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
+					for (i = 0; i < 4; i++) {window.cusText2.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><input name="textreader_input" class="input18" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input65" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
+					for (i = 4; i < 8; i++) {window.cusText3.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><input name="textreader_input" class="input18" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input65" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
 
 					window.lyricsFontStyle_dropdown.innerHTML = 'Lyrics font style: ' + headingFontLabels[ppt['lyricsFontStyle_internal'].value];
 					setHeadingFontStyle(ppt['lyricsFontStyle_internal'].value, 4);			
@@ -1592,11 +1624,14 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 2; window.downloadLyrics.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">'+cusTextLabels[i]+'</label></div>');
 					i = 3; window.syncedScroll.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">'+cusTextLabels[i]+'</label></div>');
 					i = 4; window.unsyncedScroll.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">'+cusTextLabels[i]+'</label></div>');
-					i = 5; window.lyricsFadeHeight.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsFadeHeight_container'+i+'" name="textreader_input" class="input17" /><label for="lyricsFadeHeight_container'+i+'" class="inp_label2">Fade height (0 = default)</label></div>');
+					i = 5; window.lyricsFadeHeight.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsFadeHeight_container'+i+'" name="textreader_input" class="input2" /><label for="lyricsFadeHeight_container'+i+'" class="inp_label2">Fade height (0 = auto)</label></div>');
 					i = 6; window.lyricsScrollTimeAvg.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeAvg_container'+i+'" name="textreader_input" class="input98" /></div>');
 					i = 7; window.lyricsScrollTimeMax.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeMax_container'+i+'" name="textreader_input" class="input98" /></div>');
 					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[ppt['lyricsScrollMaxMethod_internal'].value];
 					for (i = 0; i < 2; i++) {window.lyricsScrollMethod.insertAdjacentHTML('beforeend', '<a onclick="setLyricsScrollMethod(' + i + ',' + 0 + ');">'+lyricsScrollMethodLabels[i]+'</a>');}
+					i = 8; window.rowStripes.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Row stripes</label></div>');
+					i = 9; window.lineDividers.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Lines</label></div>');
+					i = 10; window.fieldWidth.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="nameWidth_container'+i+'" name="textreader_input" class="input2" /><label for="nameWidth_container'+i+'" class="inp_label2">Name column: width % (0 = auto)</label></div>');
 				}
 
 				function setCustom() {
@@ -1645,7 +1680,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 						window.wikipedia.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="dnld_checkbox'+i+'" name="download_checkbox" type="checkbox" /><label for="dnld_checkbox'+i+'" class="checkbox_label">'+dlLabels[i]+'</label><input id="dld_container'+i+'" name="download_input" class="input82" /></div>');
 					}
 
-					window.supplemental.insertAdjacentHTML('beforeend', '<div class="row"><div class="column19"><input id="dnld_checkbox11" name="download_checkbox" type="checkbox" /><label for="dnld_checkbox11" class="checkbox_label">'+dlLabels[i]+'</label></div><div class="column40"><label for="dld_container9" class="inp_label3">Find what:</label><input id="dld_container9" name="download_input" class="input76" /></div><div class="column40"><label for="dld_container10" class="inp_label3">Replace with:</label><input id="dld_container10" name="download_input" class="input76" /></div></div>')
+					window.supplemental.insertAdjacentHTML('beforeend', '<div class="row"><div class="column19"><input id="dnld_checkbox11" name="download_checkbox" type="checkbox" /><label for="dnld_checkbox11" class="checkbox_label">'+dlLabels[i]+'</label></div><div class="column40"><label for="dld_container11" class="inp_label3">Find what:</label><input id="dld_container11" name="download_input" class="input76" /></div><div class="column40"><label for="dld_container12" class="inp_label3">Replace with:</label><input id="dld_container12" name="download_input" class="input76" /></div></div>');
 
 					window.photo_num.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="photo_container0" name="photo_input" class="input98" /></div>');
 					window.photo_limit.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="photo_container1" name="photo_input" class="input98" /></div>');
@@ -1670,6 +1705,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 13; window.similarArtists.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><label for="tag_checkbox'+i+'" class="inp_label3">Number similar artists 1-6</label><input id="tag_container'+i+'" name="tagger_input" class="input60" /></div>');
 					i = 14; window.notifyTags.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="tag_checkbox'+i+'" name="tagger_checkbox" type="checkbox" /><label for="tag_checkbox'+i+'" class="checkbox_label">'+tagLabel[i]+'</label></div>');
 					i = 15; window.taggerConfirm.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="tag_checkbox'+i+'" name="tagger_checkbox" type="checkbox" /></div>');
+					for (i = 0; i < 2; i++) {window.whitelist.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="useWhitelist'+i+'" name="useWhitelist" style="'+cbox+'" type="radio" /><label for="useWhitelist'+i+'" class="checkbox_label">'+whitelistLabels[i]+'</label></div>');}
 					i = 0; window.lfmGenreTag.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="lfmGenreTag_container'+i+'" name="tagger_input" class="input96" /></div>');
 					i = 1; window.lfmGenreTag.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><label for="lfmGenreTag_container'+i+'" class="inp_label1">Translate:</label><input id="lfmGenreTag_container'+i+'" name="tagger_input" class="input96" /></div>');
 					for (i = 0; i < 3; i++) {	
@@ -1750,12 +1786,12 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				window.seekerNA.innerHTML = ppt['imgSeekerDisabled_internal'].value ? (ppt['filmStripOverlay_internal'].value ? "<i>Grayed items items N/A with filmstrip overlay of image area</i>" : "<i>Seeker & counter N/A with current overlay metrics</i>") : "";
 				window.lyricsScrollTimeMax.style.display = ppt['lyricsScrollMaxMethod_internal'].value == 0 ? "none" : "block";
 				window.lyricsScrollTimeAvg.style.display = ppt['lyricsScrollMaxMethod_internal'].value == 1 ? "none" : "block";
-				window.syncedScroll.disabled = ppt['sourceAll_internal'].value;
-				window.unsyncedScroll.disabled = ppt['sourceAll_internal'].value;
 				document.getElementById('ratingTextName').style.display = ppt['star_internal'].value ? "block" : "none";
 				window.rating3.style.display = ppt['star_internal'].value ? "block" : "none";
 				window.theme_checkbox5.parentNode.disabled = ppt['theme_internal'].value == 0;
 				window.theme_checkbox6.parentNode.disabled = ppt['theme_internal'].value == 1 || 4;
+				window.whitelistInfo.style.display = window.useWhitelist1.checked ? "block" : "none";
+				window.lfmGenreTag.style.display = window.useWhitelist1.checked ? "block" : "none";
 
 				var dnld = document.querySelectorAll("[id^='dld_container'], [id=savePreview], [id=preview_cnt], [id=supplCache0], [id=supplCache1], [id=supplemental], [id^='savefolder']");
 				for (i = 0; i < dnld.length; i++) {

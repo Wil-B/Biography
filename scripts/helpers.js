@@ -260,7 +260,7 @@ class Helpers {
 	}
 
 	regexEscape(n) {
-		return n.replace(/([*+\-?^!:&"~${}()|[\]/\\])/g, '\\$1');
+		return n.replace(/[*+\-?^!:&"~${}()|[\]/\\]/g, '\\$&');
 	}
 
 	removeDiacritics(str) {
@@ -367,12 +367,7 @@ class Helpers {
 	}
 
 	tfEscape(n) {
-		let str = n.replace(/'/g, "''").replace(/[()[\],%]/g, "'$&'");
-		if (str.indexOf('$') != -1) {
-			const strSplit = str.split('$');
-			str = strSplit.join("'$$'");
-		}
-		return str;
+		return n.replace(/'/g, "''").replace(/[()[\],%]/g, "'$&'").replace(/\$/g, '$$$$');
 	}
 
 	throttle(e,i,t) {

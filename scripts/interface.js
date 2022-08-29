@@ -106,6 +106,11 @@ class UserInterface {
 		this.id.c_c = this.id.local && typeof opt_c_c !== 'undefined';
 
 		this.getColours();
+
+		this.refresh = $.debounce(() => {
+			txt.refresh(3);
+		}, 100);
+
 		this.setSbar();
 	}
 
@@ -158,6 +163,7 @@ class UserInterface {
 	}
 
 	calcText() {
+		ppt.textPad = Math.max(ppt.textPad, -Math.round(this.font.main.Size / 2));
 		$.gr(1, 1, false, g => {
 			this.font.main_h = Math.round(g.CalcTextHeight('String', this.font.main) + ppt.textPad);
 			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + ppt.textPad);
@@ -193,12 +199,21 @@ class UserInterface {
 	draw(gr) {
 		if (this.style.bg) gr.FillSolidRect(0, 0, panel.w, panel.h, this.col.bg);
 	}
+	
+	getAccentColour() {
+		let valid = false;
+		if (this.blur.dark && ppt.text_hUse) {
+			const c = ppt.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+			if (c.length == 3 || c.length == 4) valid = true;
+		}
+		this.col.accent = !this.blur.dark || ppt.text_hUse && valid ? this.col.text_h : RGB(128, 228, 27);
+	}
 
 	getBlend(c1, c2, f) {
 		const nf = 1 - f;
 		let r, g, b, a;
-		c1 = this.toRGBA(c1);
-		c2 = this.toRGBA(c2);
+		c1 = $.toRGBA(c1);
+		c2 = $.toRGBA(c2);
 		r = c1[0] * f + c2[0] * nf;
 		g = c1[1] * f + c2[1] * nf;
 		b = c1[2] * f + c2[2] * nf;
@@ -238,16 +253,19 @@ class UserInterface {
 		this.setStarType();
 		this.getUIColours();
 		this.getItemColours();
+		this.getAccentColour();
 	}
 
 	getFont() {
+		const RunningWine = () => utils.IsFile('Z:\\bin\\bash' || 'Z:\\bin\\ls' || 'Z:\\bin\\sh' || 'Z:\\etc\\fstab'); /* detects if user is running Wine on Linux or MacOs, default Wine mount point is Z:\ */
+
 		if (ppt.custFontUse && ppt.custFont.length) {
 			const custFont = $.split(ppt.custFont, 1);
 			this.font.main = gdi.Font(custFont[0], Math.max(Math.round($.value(custFont[1], 16, 0)), 1), Math.round($.value(custFont[2], 0, 0)));
 		} else if (this.dui) this.font.main = window.GetFontDUI(3);
 		else this.font.main = window.GetFontCUI(0);
 
-		if (!this.font.main) {
+		if (!this.font.main || /tahoma/i.test(this.font.main.Name) && RunningWine()) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used) 
 			this.font.main = gdi.Font('Segoe UI', 16, 0);
 			$.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
@@ -264,8 +282,7 @@ class UserInterface {
 			this.font.headingCustom = true;
 		} else {
 			this.font.headingStyle = ppt.headFontStyle < 4 ? ppt.headFontStyle : (ppt.headFontStyle - 4) * 2;
-			this.font.heading = gdi.Font(ppt.headFontStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold',
-				this.font.main.Size, this.font.headingStyle);
+			this.font.heading = gdi.Font(ppt.headFontStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, this.font.headingStyle);
 		}
 		this.font.boldAdjust = this.font.headingStyle != 1 && this.font.headingStyle != 4 && this.font.headingStyle != 5 ? 1 : 1.5;
 		this.font.main = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.main.Style);
@@ -302,6 +319,7 @@ class UserInterface {
 		this.calcText();
 		panel.setStyle();
 		but.createStars();
+		but.setTooltipFont();
 		txt.getSubHeadWidths();
 		txt.artCalc();
 		txt.albCalc();
@@ -336,6 +354,9 @@ class UserInterface {
 		}
 
 		this.col.bg1 = lightBg ? 0x08000000 : 0x08ffffff;
+		this.col.bg2 = lightBg ? 0x04000000 : 0x04ffffff;
+		this.col.bg3 = lightBg ? 0x04ffffff : 0x04000000;
+
 		if (ppt.swapCol) {
 			const colH = this.col.txt_h;
 			this.col.txt_h = this.col.txt;
@@ -350,26 +371,29 @@ class UserInterface {
 
 		if (this.stars) {
 			['starOn', 'starOff', 'starBor'].forEach((v, i) => {
-				this.col[v] = i < 2 ? (this.stars == 2 ? this.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt : this.col.txt_h : this.col.stars, !i ? 232 : 60) :
-					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? this.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt_h : this.col.txt : this.col.stars, !i ? 232 : 60) : (this.col.stars === '' ? RGBA(255, 255, 255, !i ? 232 : 60) : this.RGBtoRGBA(this.col.stars, !i ? 232 : 60))) : RGBA(0, 0, 0, 0);
+				this.col[v] = i < 2 ? (this.stars == 2 ? $.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt : this.col.txt_h : this.col.stars, !i ? 232 : 60) :
+					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? $.RGBtoRGBA(this.col.stars === '' ? ppt.highlightStars ? this.col.txt_h : this.col.txt : this.col.stars, !i ? 232 : 60) : (this.col.stars === '' ? RGBA(255, 255, 255, !i ? 232 : 60) : $.RGBtoRGBA(this.col.stars, !i ? 232 : 60))) : RGBA(0, 0, 0, 0);
 			});
 		}
 
 		this.col.bottomLine = this.getLineCol('bottom');
 		this.col.centerLine = this.getLineCol('center');
+		this.col.sectionLine = this.col.line === '' ? (ppt.highlightHdLine ? this.col.text_h : this.col.text) & 0x40ffffff : $.RGBAtoRGB(this.col.bottomLine, this.col.bg == 0 ? 0xff000000 : this.col.bg) & 0x56ffffff;
 		this.col.edBg = (this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg) & 0x99ffffff;
 		this.col.imgBor = this.col.text & 0x25ffffff;
-		this.col.source = this.blur.dark ? RGB(240, 240, 240) : !this.blur.light && (ppt.sourceStyle == 1 || ppt.sourceStyle == 3) && (ppt.headFontStyle != 1 && ppt.headFontStyle != 3) ? this.dim(ppt.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : ppt.highlightSubHd ? this.col.txt_h : this.col.txt;
-		this.col.track = this.blur.dark ? RGB(240, 240, 240) : !this.blur.light && (ppt.trackStyle == 1 || ppt.trackStyle == 3) && (ppt.headFontStyle != 1 && ppt.headFontStyle != 3) ? this.dim(ppt.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : ppt.highlightSubHd ? this.col.txt_h : this.col.txt;
+		const col_txt = this.col.txt == -1 ? RGB(240, 240, 240) : this.col.txt;
+		const col_txt_h = this.col.txt_h == -1 ? RGB(240, 240, 240) : this.col.txt_h;
+		this.col.source = this.blur.dark ? (ppt.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (ppt.sourceStyle == 1 || ppt.sourceStyle == 3) && (ppt.headFontStyle != 1 && ppt.headFontStyle != 3) ? this.dim(ppt.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : ppt.highlightSubHd ? this.col.txt_h : this.col.txt;
+		this.col.track = this.blur.dark ? (ppt.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (ppt.trackStyle == 1 || ppt.trackStyle == 3) && (ppt.headFontStyle != 1 && ppt.headFontStyle != 3) ? this.dim(ppt.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : ppt.highlightSubHd ? this.col.txt_h : this.col.txt;
 
 		this.sbar.col = this.blur.dark || this.blur.light ? 1 : ppt.sbarCol;
 
 		if (this.col.frame === '') this.col.frame = (this.blur.dark ? 0xff808080 : this.blur.light ? 0xA330AFED : this.col.bgSel) & 0xd0ffffff;
 		if (this.col.rectOv === '') this.col.rectOv = this.col.bg;
-		this.col.rectOv = this.RGBtoRGBA(this.col.rectOv, 255 - this.overlay.strength);
+		this.col.rectOv = $.RGBtoRGBA(this.col.rectOv, 255 - this.overlay.strength);
 		if (this.col.rectOvBor === '') {
 			this.col.rectOvBor = ppt.highlightOvBor ? this.col.txt_h : this.col.txt;
-			this.col.rectOvBor = this.RGBtoRGBA(this.col.rectOvBor, 228);
+			this.col.rectOvBor = $.RGBtoRGBA(this.col.rectOvBor, 228);
 		}
 
 		if (!ppt.heading) return;
@@ -382,7 +406,7 @@ class UserInterface {
 			this.blur.light ? RGBA(50, 50, 50, i == 2 ? 40 : 15) : 
 			this.getBlend(this.col.bg == 0 ? 0xff000000 : this.col.bg, this.col.headBtn, !i ? 0.9 : i == 2 ? 0.87 : (this.style.isBlur ? 0.75 : 0.82));
 		});
-		this.col.blend4 = this.toRGBA(this.col.blend1);
+		this.col.blend4 = $.toRGBA(this.col.blend1);
 	}
 
 	getLineCol(type) {
@@ -433,10 +457,17 @@ class UserInterface {
 		panel.style.fullWidthHeading = ppt.heading && ppt.fullWidthHeading;
 		panel.id.focus = ppt.focus;
 		panel.id.lyricsSource = false;
+		panel.id.propsSource = false;
 		for (let i = 0; i < 8; i++) {
-			if (ppt.txtReaderEnable && ppt[`pthTxtReader${i}`] && ppt[`lyricsTxtReader${i}`]) {
+			if (ppt.txtReaderEnable && ppt[`useTxtReader${i}`] && ppt[`pthTxtReader${i}`] && ppt[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(ppt[`pthTxtReader${i}`])[1])) {
 				panel.id.lyricsSource = true;
 				panel.id.focus = false;
+				break;
+			}
+		}
+		for (let i = 0; i < 8; i++) {
+			if (ppt.txtReaderEnable && ppt[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(ppt[`pthTxtReader${i}`])[1])) {
+				panel.id.propsSource = true;
 				break;
 			}
 		}
@@ -558,10 +589,6 @@ class UserInterface {
 		if (ppt.text_only && !ui.style.isBlur) txt.paint();
 	}
 
-	RGBtoRGBA(rgb, a) {
-		return a << 24 | rgb & 0x00FFFFFF;
-	}
-
 	setBrightness(c, percent) {
 		c = $.toRGB(c);
 		return RGB($.clamp(c[0] + (256 - c[0]) * percent / 100, 0, 255), $.clamp(c[1] + (256 - c[1]) * percent / 100, 0, 255), $.clamp(c[2] + (256 - c[2]) * percent / 100, 0, 255));
@@ -633,10 +660,6 @@ class UserInterface {
 		if (!ppt.amRating && !ppt.lfmRating) this.stars = 0;
 	}
 
-	toRGBA(c) {
-		return [c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff, c >> 24 & 0xff];
-	}
-
 	updateProp(prop, value) {
 		const serverName = ppt.serverName;
 		Object.entries(prop).forEach(v => {
@@ -676,7 +699,7 @@ class UserInterface {
 			txt.getSubHeadWidths();
 			window.Repaint();
 			ppt.zoomFont = Math.round(this.font.zoomSize / ppt.baseFontSize * 100);
-			txt.refresh(5);
+			this.refresh();
 		}
 		if (vk.k('shift') && ppt.style > 3 && panel.trace.text) {
 			this.overlay.strength += (-step * 5);

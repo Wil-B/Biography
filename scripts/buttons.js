@@ -6,6 +6,7 @@ class Buttons {
 		this.btns = {};
 		this.cur = null;
 		this.Dn = false;
+		this.traceBtn = false;
 		this.transition;
 		
 		this.flag = {
@@ -112,7 +113,6 @@ class Buttons {
 		ppt.zoomLookUpBtn = this.lookUp.scale;
 
 		this.setSbarIcon();
-		this.setTooltipFont();
 		this.createImages('all');
 	}
 
@@ -262,7 +262,7 @@ class Buttons {
 					this.src.txtRev = '';
 				}
 				$.gr(1, 1, false, g => {
-					['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio'].forEach(v => this.src.item_w[v] = g.CalcTextWidth(this.src[v], this.src.font))
+					['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio'].forEach(v => this.src.item_w[v] = g.CalcTextWidth(this.src[v], this.src.font, true))
 				});
 				break;
 			case 1: {
@@ -278,7 +278,7 @@ class Buttons {
 				const fonts = [this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.iconFont];
 				$.gr(1, 1, false, g => {
 					['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio', 'spaceIconFont'].forEach((v, i) => {
-						this.src.item_w[v] = g.CalcTextWidth(i < 9 ? this.src[v] : alt_w[i], fonts[i]);
+						this.src.item_w[v] = g.CalcTextWidth(i < 9 ? this.src[v] : alt_w[i], fonts[i], true);
 					})
 				});
 				this.src.item_w.space = Math.max(this.src.item_w.space, this.src.item_w.spaceIconFont);
@@ -330,7 +330,7 @@ class Buttons {
 
 	isNextSourceAvailable() {
 		let n = ppt.artistView ? 'Bio' : 'Rev';
-		if (ppt[`lock${n}`] && !ppt.sourceAll) return true;
+		if (ppt.lockBio && !ppt.sourceAll) return true;
 		n = ppt.artistView ? 'bio' : 'rev';
 		const types = txt[n].reader && panel.stndItem() ? $.source.amLfmWikiTxt : $.source.amLfmWiki;
 		let found = 0;
@@ -467,7 +467,8 @@ class Buttons {
 			this.btns.lookUp = new Btn(this.lookUp.x, this.lookUp.y, this.lookUp.w, this.lookUp.h, 7, this.lookUp.p1, this.lookUp.p2, '', {
 				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
 				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
-			}, !panel.id.lookUp, '', () => men.buttonMenu(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
+			//}, !panel.id.lookUp, '', () => men.buttonMenu(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
+			}, !panel.id.lookUp, '', () => bMenu.load(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
 		} else delete this.btns.lookUp;
 		if (ppt.sbarShow) {
 			switch (ui.sbar.type) {
@@ -522,17 +523,17 @@ class Buttons {
 		this.createImages('lookUp');
 		this.setTooltipFont();
 		this.refresh(true);
-		txt.refresh(4);
+		txt.refresh(2);
 		const n = ppt.artistView ? 'bio' : 'rev';
 		if (txt[n].loaded.txt && txt.reader.lyrics) txt.getText();
 	}
 
 	scrollAlb() {
-		return ppt.sbarShow && !ppt.artistView && !ppt.img_only && txt.rev.text && alb_scrollbar.scrollable_lines > 0 && alb_scrollbar.active && !alb_scrollbar.narrow.show && !txt.lyricsDisplayed();
+		return ppt.sbarShow && !ppt.artistView && !ppt.img_only && txt.rev.text.length && alb_scrollbar.scrollable_lines > 0 && alb_scrollbar.active && !alb_scrollbar.narrow.show && !txt.lyricsDisplayed();
 	}
 
 	scrollArt() {
-		return ppt.sbarShow && ppt.artistView && !ppt.img_only && txt.bio.text && art_scrollbar.scrollable_lines > 0 && art_scrollbar.active && !art_scrollbar.narrow.show && !txt.lyricsDisplayed();
+		return ppt.sbarShow && ppt.artistView && !ppt.img_only && txt.bio.text.length && art_scrollbar.scrollable_lines > 0 && art_scrollbar.active && !art_scrollbar.narrow.show && !txt.lyricsDisplayed();
 	}
 
 	setLookUpPos() {
@@ -654,13 +655,13 @@ class Buttons {
 	}
 
 	setTooltipFont() {
-		tooltip.SetFont('Segoe UI', 15 * $.scale * ppt.zoomTooltip / 100, 0);
+		tooltip.SetFont(ui.font.main.Name, ui.font.main.Size, ui.font.main.Style);
 	}
 	
 	srcTiptext() {
 		const suffix = this.isNextSourceAvailable() ? 'text' : 'N/A';
 		const type = panel.m.x > panel.heading.x + panel.heading.w / 2 ? 'Next ' : 'Previous ';
-		return this.src.visible && this.trace_src(panel.m.x, panel.m.y) || !but.tooltip.name ? `${type}${suffix}` : but.tooltip.name;
+		return this.src.visible && this.trace_src(panel.m.x, panel.m.y) || !but.tooltip.name ? `${type}${suffix}` : but.tooltip.name.replace(/&/g, '&&');
 	}
 
 	trace(btn, x, y) {
@@ -745,6 +746,8 @@ class Btn {
 	}
 
 	drawHeading(gr) {
+		const n = ppt.artistView ? 'bio' : 'rev';
+		const flag = txt[n].flag;
 		let dh, dx1, dx2;
 		let dw = this.w + (but.lookUp.pos == 2 ? but.lookUp.sz + (ppt.hdLine != 2 ? but.lookUp.gap : 10) * $.scale : 0);
 		let spacer = 0;
@@ -770,7 +773,7 @@ class Btn {
 					const src_w = but.src.w + (but.lookUp.pos == 2 ? but.lookUp.sz + (ppt.hdBtnShow || ppt.hdPos == 1 ? 10 * $.scale : 0) : 0);
 					let dh_w = gr.CalcTextWidth(dh, ui.font.heading) + but.src.item_w.space * (ppt.hdPos != 1 || dh ? 2 : 0) + (ppt.hdPos == 1 && but.lookUp.pos == 2 ? but.lookUp.sz + 10 * $.scale : 0);
 					if (!ppt.hdPos && dh_w < dw - src_w - but.src.item_w.space * (ppt.hdPos != 2 || !but.src.visible ? 3 : 1)) {
-						gr.DrawLine(this.x + dh_w, Math.round(this.y + this.h / 2), this.x + dw - src_w - but.src.item_w.space * 3, Math.round(this.y + this.h / 2), ui.style.l_w, ui.col.centerLine);
+						gr.DrawLine(this.x + dh_w + (flag ? but.flag.sp : 0), Math.round(this.y + this.h / 2), this.x + dw - src_w - but.src.item_w.space * 3, Math.round(this.y + this.h / 2), ui.style.l_w, ui.col.centerLine);
 					}
 					else if ((!ppt.hdBtnShow || ppt.hdPos != 0) && src_w + but.src.item_w.space * 2 + dh_w < dw) {
 						gr.DrawLine(dx1 + (but.src.visible ? but.src.item_w.space * (!ui.show.btnBg ? 2 : 3) : ppt.hdPos == 1 ? 0 : dh_w), Math.ceil(this.y + this.h / 2), this.x + dw - (ppt.hdBtnShow ? dh_w : ppt.hdPos == 1 ? dh_w : 0), Math.ceil(this.y + this.h / 2), ui.style.l_w, ui.col.centerLine);
@@ -788,8 +791,6 @@ class Btn {
 				}
 				break;
 		}
-		const n = ppt.artistView ? 'bio' : 'rev';
-		const flag = txt[n].flag;
 		if (flag) {
 			gr.SetInterpolationMode(7);
 			if (!ppt.hdPos) {
@@ -835,8 +836,7 @@ class Btn {
 				break;
 			case 1: {
 				let iconFont = false;
-				const b = ppt.artistView ? 'Bio' : 'Rev';
-				if (!ppt[`lock${b}`] || ppt.sourceAll) iconFont = txt[n].loaded.ix == 1 || txt[n].loaded.ix == 2;
+				if (!ppt.lockBio || ppt.sourceAll) iconFont = txt[n].loaded.ix == 1 || txt[n].loaded.ix == 2;
 				else iconFont = ppt[`source${n}`] == 1 || ppt[`source${n}`] == 2;
 				gr.GdiDrawText(but.src.name, !iconFont ? but.src.font : but.src.iconFont, col, dx2, this.p1 + (!iconFont ? 0 : but.src.y), but.src.w, but.src.h, !but.rating.show ? txt.cc : txt.c[0]);
 				break;
@@ -883,7 +883,8 @@ class Btn {
 	}
 
 	trace(x, y) {
-		return !this.hide && x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+		but.traceBtn = !this.hide && x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+		return but.traceBtn;
 	}
 }
 

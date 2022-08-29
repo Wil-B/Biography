@@ -224,6 +224,11 @@ class Server {
 		let supCache = false;
 		if (!stndBio) supCache = cfg.supCache && !lib.inLibrary(0, this.artist);
 
+		if (this.expired(`${cfg.storageFolder}lastfm_genre_whitelist.json`, this.exp) || tag.genres.length < 701 || force) {
+			const lfm_genres = new DldLastfmGenresWhitelist(() => lfm_genres.onStateChange());
+			lfm_genres.search();
+		}
+
 		switch (type) {
 			case 0: {
 				if (cfg.dlLfmBio && !artist_done) {
@@ -665,7 +670,7 @@ class Server {
 
 	tidy(n, cutLeadThe) {
 		const nn = cutLeadThe ? n.replace(/^The /i, '') : n;
-		return nn.replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/\band\b|\//gi, '&').replace(/[.,!?:;'\u2019"\u201C\u201D\-_()[\]\u2010\s+]/g, '').replace(/\u00D7/g, 'x').replace(/\$/g, 's').toLowerCase() || n.trim(); // added r & l double quotes \u201C\u201D & \u00D7 (×) to x (12 X 5)
+		return nn.replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/\band\b|\//gi, '&').replace(/[.,!?:;'\u2019"\u201C\u201D\-_()[\]\u2010\s+]/g, '').replace(/\u00D7/g, 'x').replace(/\$/g, 's').toLowerCase() || n.trim();
 	}
 
 	updateNotFound(f) {

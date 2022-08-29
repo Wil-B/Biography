@@ -86,6 +86,7 @@ class PanelProperties {
 }
 
 let properties = [
+	['- Show Html Dialog Unsupported-0 Supported-1 Autocheck-2', 2, 'isHtmlDialogSupported'],
 	['Album History', JSON.stringify([]), 'albumHistory'],
 	['Artist History', JSON.stringify([]), 'artistHistory'],
 	['Artist View', false, 'artistView'],
@@ -250,7 +251,6 @@ let properties = [
 
 	['Line Padding', 0, 'textPad'],
 	['Lock Bio', false, 'lockBio'],
-	['Lock Rev', false, 'lockRev'],
 	['Lock Auto', false, 'autoLock'],
 
 	['Menu Show Inactivate', 0, 'menuShowInactivate'],
@@ -333,14 +333,14 @@ let properties = [
 	['Statistics Show Last.fm Metacritic Score', true, 'score'],
 	['Statistics Show Last.fm Scrobbles & Listeners', true, 'stats'],
 
-	['Stub Path: Front [No Title Format Except %profile%]', '', 'panelFrontStub'],
-	['Stub Path: Back [No Title Format Except %profile%]', '', 'panelBackStub'],
-	['Stub Path: Disc [No Title Format Except %profile%]', '', 'panelDiscStub'],
-	['Stub Path: Icon [No Title Format Except %profile%]', '', 'panelIconStub'],
-	['Stub Path: Artist [No Title Format Except %profile%]', '', 'panelArtStub'],
+	['Stub Path Artist [No TF Bar %profile% & %storage_folder%]', '', 'panelArtStub'],
+	['Stub Path Back [No TF Bar %profile% & %storage_folder%]', '', 'panelBackStub'],
+	['Stub Path Disc [No TF Bar %profile% & %storage_folder%]', '', 'panelDiscStub'],
+	['Stub Path Front [No TF Bar %profile% & %storage_folder%]', '', 'panelFrontStub'],
+	['Stub Path Icon [No TF Bar %profile% & %storage_folder%]', '', 'panelIconStub'],
 
 	['Subheading [Track Review] Title Format', '> $if2(%BIO_ARTIST%,Artist Unknown) - $if2(%BIO_TITLE%,Title Unknown)', 'trackSubHeading'],
-	['Subheading Source Hide-0 Auto-1 Show-2', 0, 'sourceHeading'],
+	['Subheading Source Hide-0 Auto-1 Show-2', 1, 'sourceHeading'],
 	['Subheading Source Style', 4, 'sourceStyle'],
 	['Subheading Track Hide-0 Auto-1 Show-2', 1, 'trackHeading'],
 	['Subheading Track Style', 4, 'trackStyle'],
@@ -358,7 +358,18 @@ let properties = [
 	['Text Auto Optimise Multiple Items', true, 'autoOptimiseText'],
 	['Text Only', false, 'text_only'],
 
-	['Text Reader Enable', false, 'txtReaderEnable'],
+	['Text Reader Enable', true, 'txtReaderEnable'],
+	['Text Reader Item Properties: Field Width', 0, 'fieldWidth'],
+	['Text Reader Item Properties: Show Line Dividers', true, 'lineDividers'],
+	['Text Reader Item Properties: Show Row Stripes', true, 'rowStripes'],
+	['Text Reader 1 Use', true, 'useTxtReader0'],
+	['Text Reader 2 Use', true, 'useTxtReader1'],
+	['Text Reader 3 Use', true, 'useTxtReader2'],
+	['Text Reader 4 Use', true, 'useTxtReader3'],
+	['Text Reader 5 Use', true, 'useTxtReader4'],
+	['Text Reader 6 Use', true, 'useTxtReader5'],
+	['Text Reader 7 Use', true, 'useTxtReader6'],
+	['Text Reader 8 Use', true, 'useTxtReader7'],
 	['Text Reader Lyrics Fade Height', 0, 'lyricsFadeHeight'],
 	['Text Reader Lyrics Font Style', 1, 'lyricsFontStyle'],
 	['Text Reader Lyrics Scroll Max Method', 0, 'lyricsScrollMaxMethod'],
@@ -373,7 +384,7 @@ let properties = [
 	['Text Reader 5 Name', 'lyrics', 'nmTxtReader4'],
 	['Text Reader 6 Name', 'lyrics', 'nmTxtReader5'],
 	['Text Reader 7 Name', 'lyrics', 'nmTxtReader6'],
-	['Text Reader 8 Name', '', 'nmTxtReader7'],
+	['Text Reader 8 Name', 'item properties', 'nmTxtReader7'],
 	['Text Reader 1 Item (field or full path)', '%profile%\\lyrics\\%BIO_ARTIST% - %BIO_TITLE%.lrc', 'pthTxtReader0'],
 	['Text Reader 2 Item (field or full path)', '$if3(%lyrics%,%syncedlyrics%,%unsynced lyrics%,%unsyncedlyrics%)', 'pthTxtReader1'],
 	['Text Reader 3 Item (field or full path)', '%profile%\\lyrics\\%BIO_ARTIST% - %BIO_TITLE%.txt', 'pthTxtReader2'],
@@ -381,7 +392,7 @@ let properties = [
 	['Text Reader 5 Item (field or full path)', '%profile%\\lyrics\\%BIO_ARTIST% - %BIO_TITLE%.lrc', 'pthTxtReader4'],
 	['Text Reader 6 Item (field or full path)', '$if3(%lyrics%,%syncedlyrics%,%unsynced lyrics%,%unsyncedlyrics%)', 'pthTxtReader5'],
 	['Text Reader 7 Item (field or full path)', '%profile%\\lyrics\\%BIO_ARTIST% - %BIO_TITLE%.txt', 'pthTxtReader6'],
-	['Text Reader 8 Item (field or full path)', '', 'pthTxtReader7'],
+	['Text Reader 8 Item (field or full path)', '%storage_folder%\\item_properties.json', 'pthTxtReader7'],
 	['Text Reader 1 Lyrics', true, 'lyricsTxtReader0'],
 	['Text Reader 2 Lyrics', true, 'lyricsTxtReader1'],
 	['Text Reader 3 Lyrics', true, 'lyricsTxtReader2'],
@@ -408,6 +419,18 @@ const ppt = new PanelProperties;
 ppt.init('auto', properties);
 properties = undefined;
 
+if (ppt.get('Update Properties', true)) {
+	ppt.nmTxtReader7 = 'item properties';
+	ppt.pthTxtReader7 = '%storage_folder%\\item_properties.json';
+	ppt.lyricsTxtReader7 = false;
+	if (ppt.summary == '128,228,0') ppt.summary = '128,228,27';
+	const oldProperties = ['Stub Path: Front [No Title Format Except %profile%]', 'Stub Path: Back [No Title Format Except %profile%]', 'Stub Path: Disc [No Title Format Except %profile%]', 'Stub Path: Icon [No Title Format Except %profile%]', 'Stub Path: Artist [No Title Format Except %profile%]'];
+	const props = ['panelFrontStub', 'panelBackStub', 'panelDiscStub', 'panelIconStub', 'panelArtStub'];
+	oldProperties.forEach((v, i) => {const value = window.GetProperty(v); if (value) ppt[props[i]] = value; window.SetProperty(v, null);});
+	window.SetProperty('Lock Rev', null);
+	ppt.set('Update Properties', false);
+}
+
 if (ppt.get('Reset Track Review', true)) {
 	ppt.inclTrackRev = 0;
 	ppt.set('Reset Track Review', false);
@@ -416,6 +439,5 @@ if (ppt.get('Reset Track Review', true)) {
 if (ppt.get('Remove Old Properties', true)) {
 	const oldProperties = ['Allmusic Alb', 'Allmusic Bio', 'Both Bio', 'Both Rev', 'Heading', 'Heading BtnName Biography [AllMusic]', 'Heading BtnName Biography [Last.fm]', 'Heading BtnName Biography [Wikipedia]', 'Heading BtnName Review [AllMusic]', 'Heading BtnName Review [Last.fm]', 'Heading BtnName Review [Wikipedia]', 'Heading Title Format Album Review [AllMusic]', 'Heading Title Format Album Review [Last.fm]', 'Heading Title Format Biography [AllMusic]', 'Heading Title Format Biography [Last.fm]', 'Heading Title Format Track Review [AllMusic]', 'Heading Title Format Track Review [Last.fm]', 'Layout Dual Image+Text', 'Image Seeker Dots', 'Subheading [Source] Text Biography [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Biography [Last.fm]: Heading|No Heading', 'Subheading [Source] Text Biography [Wikipedia]: Heading|No Heading', 'Subheading [Source] Text Review [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Review [Last.fm]: Heading|No Heading', 'Subheading Source Hide-0 Show-1', 'Subheading [Source] Text Review [Wikipedia]: Heading|No Heading', 'Subheading [Track Review] Title Format [AllMusic]', 'Subheading [Track Review] Title Format [Last.fm]', 'Summary First', 'Tagger Last.fm Genre Find>Replace', 'Tagger Last.fm Genre Number Clean Up', 'Tagger Last.fm Genre Run Find>Replace', 'Tagger Last.fm Genre Strip Artist+Album Names', 'Text Album + Track Auto Optimise', 'Text Reader Source 0 Name', 'Text Reader Source 1 Name', 'Text Reader Source 2 Name', 'Text Reader Source 3 Name', 'Text Reader Source 4 Name', 'Text Reader Source 5 Name', 'Text Reader Source 6 Name', 'Text Reader Source 7 Name', 'Text Reader Source 1 (field or full path)', 'Text Reader Source 2 (field or full path)', 'Text Reader Source 3 (field or full path)', 'Text Reader Source 4 (field or full path)', 'Text Reader Source 5 (field or full path)', 'Text Reader Source 6 (field or full path)', 'Text Reader Source 7 (field or full path)', 'Text Reader Source 8 (field or full path)', 'Text Reader Source 1 Lyrics', 'Text Reader Source 2 Lyrics', 'Text Reader Source 3 Lyrics', 'Text Reader Source 4 Lyrics', 'Text Reader Source 5 Lyrics', 'Text Reader Source 6 Lyrics','Text Reader Source 7 Lyrics', 'Text Reader Source 8 Lyrics'];
 	oldProperties.forEach(v => window.SetProperty(v, null));
-	ppt.lockRev = ppt.lockBio;
 	ppt.set('Remove Old Properties', false);
 }

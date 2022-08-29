@@ -184,14 +184,13 @@ class Images {
 
 		this.transition.incr = Math.pow(284.2171 / this.transition.level, 0.0625);
 		if (this.transition.level == 100) this.transition.level = 255;
-
 		this.cycImages = this.cov.folderSameAsArt ? this.artImages : v => {
 			if (!$.file(v)) return false;
 			return /(?:jpe?g|png|webp|gif|bmp)$/i.test(fso.GetExtensionName(v));
 		}
 
 		['Front', 'Back', 'Disc', 'Icon', 'Art'].forEach((v, i) => {
-			const f = ppt[`panel${v}Stub`].replace(/%profile%\\/i, fb.ProfilePath);
+			const f = cfg.expandPath(ppt[`panel${v}Stub`]);
 			if ($.file(f)) {
 				this.stub[i].panel = true;
 				this.stub[i].path = f;
@@ -569,6 +568,15 @@ class Images {
 		image.ApplyMask(mask);
 	}
 
+	filmOK(newArr) {
+		return newArr && this.art.list.length && ppt.showFilmStrip && filmStrip.scroll.pos.art[this.artist] && filmStrip.scroll.pos.art[this.artist].arr && filmStrip.scroll.pos.art[this.artist].arr.length;
+	}
+
+	forceStnd() {
+		const n = ppt.artistView ? 'bio' : 'rev';
+		return !ppt.sourceAll && txt[n].loaded.txt && (txt.reader.props || txt.reader.lyrics) && (ppt.artistView && panel.art.ix || !ppt.artistView && panel.alb.ix);
+	}
+
 	format(image, n, type, w, h, caller, o, blur, border, fade, reflection) {
 		let ix = 0;
 		let iy = 0;
@@ -628,7 +636,7 @@ class Images {
 
 	fresh() {
 		this.counter++;
-		if (this.counter < ppt.cycTimePic || panel.id.lyricsSource && lyrics.scroll) return;
+		if (this.counter < ppt.cycTimePic || panel.id.lyricsSource && lyrics.display() && lyrics.scroll) return;
 		this.counter = 0;
 		if (panel.block() || !ppt.cycPic || ppt.text_only || seeker.dn || panel.zoom()) return;
 		if (ppt.artistView) {
@@ -638,10 +646,6 @@ class Images {
 			if (this.cov.images.length < 2 || Date.now() - this.timeStamp.cov < this.style.delay || panel.alb.ix) return;
 			this.changeCov(1);
 		}
-	}
-
-	filmOK(newArr) {
-		return newArr && this.art.list.length && ppt.showFilmStrip && filmStrip.scroll.pos.art[this.artist] && filmStrip.scroll.pos.art[this.artist].arr && filmStrip.scroll.pos.art[this.artist].arr.length;
 	}
 
 	getImgAlpha(image) {
@@ -692,16 +696,11 @@ class Images {
 		filmStrip.check(newArr);
 	}
 
-	getImages(force) {
-		if (ppt.text_only && !ui.style.isBlur && !ppt.showFilmStrip) return;
-		if (ppt.artistView && ppt.cycPhoto) {
-			if (!panel.art.ix) this.artistReset(force);
-			this.getArtImg();
-		} else this.getFbImg();
-	}
-
-	getArtImg(update) {
+	getArtImg(update, bypass) {
 		if (!ppt.artistView || ppt.text_only && !ui.style.isBlur && !ppt.showFilmStrip) return;
+		if (!bypass && (panel.id.lyricsSource || panel.id.propsSource)) {
+			this.getItem(panel.art.ix, panel.alb.ix);
+		}
 		if (!this.art.done || update) {
 			this.art.done = true;
 			if (this.artist) this.getArtImages();
@@ -791,10 +790,11 @@ class Images {
 
 	getFbImg() {
 		if (ppt.artistView && this.art.images.length && ppt.cycPhoto) return;
+		const forceStnd = this.forceStnd();
 		this.cov.ix = this.cov.cycle && !panel.alb.ix ? this.cov.cycle_ix : panel.alb.ix + 1000000;
 		this.blurCheck();
 		if (this.getCovImages()) return;
-		if (panel.alb.ix && panel.alb.ix < panel.alb.list.length && !ppt.artistView) { // !stndAlb
+		if (!forceStnd && (panel.alb.ix && panel.alb.ix < panel.alb.list.length && !ppt.artistView)) { // !stndAlb
 			const a = panel.alb.list[panel.alb.ix].artist;
 			const l = panel.alb.list[panel.alb.ix].album;
 			const l_handle = lib.inLibrary(2, a, l);
@@ -816,10 +816,10 @@ class Images {
 				return;
 			}
 		}
-		if (!panel.alb.ix && cfg.cusCov && !ppt.artistView && !ppt.covType) {
+		if ((forceStnd || !panel.alb.ix) && cfg.cusCov && !ppt.artistView && !ppt.covType) {
 			if (this.chkPths(cfg.cusCovPaths, '', 0, true)) return;
 		}
-		if (panel.art.ix && panel.art.ix < panel.art.list.length && ppt.artistView) { // !stndBio
+		if (!forceStnd && (panel.art.ix && panel.art.ix < panel.art.list.length && ppt.artistView)) { // !stndBio
 			const a_handle = lib.inLibrary(3, this.artist);
 			if (a_handle) {
 				this.getImg(a_handle, 4, false);
@@ -832,7 +832,7 @@ class Images {
 		const handle = $.handle(panel.id.focus);
 		if (handle) {
 			let id = ppt.artistView ? 4 : ppt.covType;
-			if (!ppt.loadCovAllFb || ppt.artistView) this.getImg(handle, id, this.stub[id].panel ? false : !ppt.covType || ppt.artistView ? false : true);
+			if (!ppt.loadCovAllFb || forceStnd || ppt.artistView) this.getImg(handle, id, this.stub[id].panel ? false : !ppt.covType || ppt.artistView ? false : true);
 			else {
 				id = this.cov.selFiltered[0];
 				let image = null;
@@ -847,6 +847,14 @@ class Images {
 		}
 		if (fb.IsPlaying && handle) return;
 		this.setStub(this.cache(), 'noitem', true, 2);
+	}
+
+	getImages(force) {
+		if (ppt.text_only && !ui.style.isBlur && !ppt.showFilmStrip) return;
+		if (ppt.artistView && ppt.cycPhoto) {
+			if (!panel.art.ix) this.artistReset(force);
+			this.getArtImg();
+		} else this.getFbImg();
 	}
 
 	getImg(handle, id, needStub) {
@@ -866,6 +874,10 @@ class Images {
 	}
 
 	getItem(art_ix, alb_ix, force) {
+		if (this.forceStnd()) {
+			art_ix = 0;
+			alb_ix = 0;
+		}
 		switch (true) {
 			case ppt.artistView: {
 				if (ppt.text_only && !ui.style.isBlur && !ppt.showFilmStrip) return;
@@ -888,7 +900,7 @@ class Images {
 						if (!this.art.images.length) this.art.allFilesLength = 0;
 						this.art.ix = 0;
 					}
-					this.getArtImg();
+					this.getArtImg(false, true);
 				} else this.getFbImg();
 				this.get = false;
 				break;
@@ -1209,10 +1221,11 @@ class Images {
 
 	on_get_album_art_done(handle, art_id, image, image_path) {
 		const embedded = handle.Path == image_path;
+		const forceStnd = this.forceStnd();
 		if (!this.cur_handle || !this.cur_handle.Compare(handle) || image && this.cache().cacheHit(image_path + (!embedded ? '' : art_id))) return;
-		if (this.loadCycCov(handle, art_id, image, image_path)) return;
-		if (panel.alb.ix && panel.alb.ix < panel.alb.list.length && !image && !ppt.artistView) return this.loadAltCov(handle, 1);
-		if (!image && !ppt.artistView && (!art_id || ppt.loadCovAllFb) && !panel.alb.ix) {
+		if (!forceStnd && this.loadCycCov(handle, art_id, image, image_path)) return;
+		if (!forceStnd && panel.alb.ix && panel.alb.ix < panel.alb.list.length && !image && !ppt.artistView) return this.loadAltCov(handle, 1);
+		if (!image && !ppt.artistView && (!art_id || ppt.loadCovAllFb) && (!panel.alb.ix || forceStnd)) {
 			if (this.loadAltCov(handle, 0)) return;
 			if (ppt.loadCovAllFb) art_id = this.cov.selFiltered[0];
 			if (this.stub[art_id].user) {
@@ -1712,7 +1725,8 @@ class ImageCache {
 			return;
 		}
 		const o = this.cache[key];
-		if (!o || !o.img || o.filmID != filmStrip.id() || img.refl.adjust) return false;
+		const id = filmStrip.id();
+		if (!o || !o.img || o.filmID.id != id.id || o.filmID.bor != id.bor || img.refl.adjust) return false;
 		img.x = o.x;
 		seeker.counter.x = o.counter_x;
 		img.y = o.y;
