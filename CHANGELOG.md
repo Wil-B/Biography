@@ -1,3 +1,16 @@
+# v1.3.5 [unreleased]
+
+### Added
+- Shortcut to open image: Alt+Click
+- Item properties: file creation date (requires foobar2000 v2)
+
+If updating from **v1.3.4** and you want to display the file creation date in item properties, delete item_properties.json & item_properties_alternative_grouping.json from biography package data: ...package_data\{BA9557CE-7B4B-4E0E-9373-99F511E81252}, then reload biography
+
+### Fixed
+- Issue with setTextType
+<br />
+
+
 # v1.3.4
 ### Added
 - Item properties. See screenshots at end of [README](https://github.com/Wil-B/Biography/blob/main/README.md#item-properties)
