@@ -163,12 +163,17 @@ function on_mouse_lbtn_down(x, y) {
 		x: x,
 		y: y
 	};
-	resize.lbtn_dn(x, y);
-	but.lbtn_dn(x, y);
-	if (!txt.lyricsDisplayed()) txt.scrollbar_type().lbtn_dn(x, y);
-	filmStrip.scrollerType().lbtn_dn(x, y);
-	seeker.lbtn_dn(x, y);
-	img.lbtn_dn(x);
+	if (panel.trace.image && vk.k('alt')) {
+		const imgPth = img.pth().imgPth;
+		if (imgPth) $.browser('explorer /select,' + '"' + imgPth + '"', false)
+	} else {
+		resize.lbtn_dn(x, y);
+		but.lbtn_dn(x, y);
+		if (!txt.lyricsDisplayed()) txt.scrollbar_type().lbtn_dn(x, y);
+		filmStrip.scrollerType().lbtn_dn(x, y);
+		seeker.lbtn_dn(x, y);
+		img.lbtn_dn(x);
+	}
 }
 
 function on_mouse_lbtn_up(x, y) {
@@ -493,6 +498,8 @@ function on_size() {
 	}
 	ui.pss.checkOnSize = false;
 	if (!panel.w || !panel.h) return;
+	txt.logScrollPos('bio');
+	txt.logScrollPos('rev');
 	ui.getFont();
 	panel.getLogo();
 	if (!ppt.panelActive) return;
@@ -502,5 +509,5 @@ function on_size() {
 	img.on_size();
 	filmStrip.on_size();
 	txt.repaint = true;
-	img.art.displayedOtherPanel = null;
+	img.art.displayedOtherPanel = null; 
 }

@@ -144,8 +144,14 @@ class Text {
 		}
 
 		this.line = {
-			h: 20,
-			drawn: 3
+			drawn: {
+				bio: 3,
+				rev: 3
+			},
+			h: {
+				bio: 20,
+				rev: 20
+			}
 		}
 
 		this.lyrics = {
@@ -308,7 +314,7 @@ class Text {
 		if (!this.rev.text.length || ppt.img_only || this.lyricsDisplayed()) return;
 		let font = !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main : ui.font.lyrics;
 		let j = 0;
-		this.line.h = this.rev.loaded.txt && !ppt.sourceAll && this.reader.props ? ui.font.main_h + 1 * $.scale : !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main_h : ui.font.lyrics_h + 4 * $.scale;
+		this.line.h.rev = this.rev.loaded.txt && !ppt.sourceAll && this.reader.props ? ui.font.main_h + 1 * $.scale : !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main_h : ui.font.lyrics_h + 4 * $.scale;
 		this.rev.arr = [];
 
 		for (let k = 0; k < this.rev.text.length; k++) {
@@ -360,8 +366,8 @@ class Text {
 					v.align = v.property ? (ppt.rowStripes ? this.lc : this.lp) : !this.reader.txtLyrics || ppt.sourceAll ? this.l : this.cc;
 					v.col = v.property && v.sectionHeading ? ui.col.accent : this.rev.subHeading && !i ? ui.col.source : i < summaryEnd ? ui.col.summary : ui.col.text;
 					v.font = !this.rev.subHeading || i ? (i < summaryEnd ? ui.font.summary : font) : ui.font.subHeadSource;
-					v.h1 = this.line.h;
-					v.h2 = this.line.h + 1;
+					v.h1 = this.line.h.rev;
+					v.h2 = this.line.h.rev + 1;
 					$.source.amLfmWikiTxt.forEach((w, i) => {
 						v[`${w}Line`] = (!v.property ? v.text : v.name) == this.rev.subhead[w][1] && !(this.ratingPos.line && panel.summary.show);
 						if (v[`${w}Line`]) {
@@ -416,11 +422,11 @@ class Text {
 		this.tidyWiki('rev');
 		but.refresh(true);
 		alb_scrollbar.reset();
-		this.line.drawn = this.reader.txtLyrics && !ppt.sourceAll || this.rev.loaded.txt && !ppt.sourceAll && this.reader.props ? Math.floor(panel.lines_drawn * ui.font.main_h / this.line.h) : panel.lines_drawn;
-		alb_scrollbar.metrics(panel.sbar.x, panel.sbar.y, ui.sbar.w, panel.sbar.h, this.line.drawn, this.line.h, false);
+		this.line.drawn.rev = this.reader.txtLyrics && !ppt.sourceAll || this.rev.loaded.txt && !ppt.sourceAll && this.reader.props ? Math.floor(panel.lines_drawn * ui.font.main_h / this.line.h.rev) : panel.lines_drawn;
+		alb_scrollbar.metrics(panel.sbar.x, panel.sbar.y, ui.sbar.w, panel.sbar.h, this.line.drawn.rev, this.line.h.rev, false);
 		alb_scrollbar.setRows(this.rev.arr.length);
 		if (this.ratingPos.subHeading || this.ratingPos.line) this.rating.y = Math.round((ui.font.main_h - but.rating.h1 / 2) / 1.8);
-		if (panel.style.inclTrackRev == 1 || ppt.sourceAll || this.rev.loaded.txt && this.reader.props) this.getScrollPos();
+		this.getScrollPos();
 	}
 
 	albumFlush() {
@@ -589,7 +595,7 @@ class Text {
 		if (!this.bio.text.length || ppt.img_only || this.lyricsDisplayed()) return;
 		let font = !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main : ui.font.lyrics;
 		let j = 0;
-		this.line.h = this.bio.loaded.txt && !ppt.sourceAll && this.reader.props ? ui.font.main_h + 1 * $.scale : !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main_h : ui.font.lyrics_h + 4 * $.scale;
+		this.line.h.bio = this.bio.loaded.txt && !ppt.sourceAll && this.reader.props ? ui.font.main_h + 1 * $.scale : !this.reader.txtLyrics || ppt.sourceAll ? ui.font.main_h : ui.font.lyrics_h + 4 * $.scale;
 		this.bio.arr = [];
 		
 		this.bio.text.forEach(v => {
@@ -629,8 +635,8 @@ class Text {
 				v.align = v.property ? (ppt.rowStripes ? this.lc : this.lp) : !this.reader.txtLyrics || ppt.sourceAll ? this.l : this.cc;
 				v.col = v.property && v.sectionHeading ? ui.col.accent : this.bio.subHeading && !i ? ui.col.source : i < summaryEnd ? ui.col.summary : ui.col.text;
 				v.font = !this.bio.subHeading || i ? (i < summaryEnd ? ui.font.summary : font) : ui.font.subHeadSource;
-				v.h1 = this.line.h;
-				v.h2 = this.line.h + 1;
+				v.h1 = this.line.h.bio;
+				v.h2 = this.line.h.bio + 1;
 				$.source.amLfmWikiTxt.forEach(w => {
 					v[`${w}Line`] = (!v.property ? v.text : v.name) == this.bio.subhead[w][1];
 					if (v[`${w}Line`]) {
@@ -657,10 +663,10 @@ class Text {
 		this.tidyWiki('bio');
 		but.refresh(true);
 		art_scrollbar.reset();
-		this.line.drawn = this.reader.txtLyrics && !ppt.sourceAll || this.bio.loaded.txt && !ppt.sourceAll && this.reader.props ? Math.floor(panel.lines_drawn * ui.font.main_h / this.line.h) : panel.lines_drawn;
-		art_scrollbar.metrics(panel.sbar.x, panel.sbar.y, ui.sbar.w, panel.sbar.h, this.line.drawn, this.line.h, false);
+		this.line.drawn.bio = this.reader.txtLyrics && !ppt.sourceAll || this.bio.loaded.txt && !ppt.sourceAll && this.reader.props ? Math.floor(panel.lines_drawn * ui.font.main_h / this.line.h.bio) : panel.lines_drawn;
+		art_scrollbar.metrics(panel.sbar.x, panel.sbar.y, ui.sbar.w, panel.sbar.h, this.line.drawn.bio, this.line.h.bio, false);
 		art_scrollbar.setRows(this.bio.arr.length);
-		if (ppt.sourceAll || this.bio.loaded.txt && this.reader.props) this.getScrollPos();
+		this.getScrollPos();
 	}
 
 	artistFlush() {
@@ -744,9 +750,9 @@ class Text {
 		return precedingSingleLineStr ? (w > panel.text.w ? sub[n] : '\r\n' + sub[n]) : sub[n];	
 	}
 
-	check_tooltip(item, x, y) {
+	check_tooltip(item, x, y, artistView, line_h) {
 		if (!item) return;
-		const onLine = item.tt && y >= item.tt.y && y <= item.tt.y + this.line.h;
+		const onLine = item.tt && y >= item.tt.y && y <= item.tt.y + line_h;
 		const traceName = onLine && item.tt.needed1 && x >= item.tt.x1 && x <= item.tt.x1 + item.tt.w1;
 		const traceValue = onLine && item.tt.needed2 && x >= item.tt.x2 && x <= item.tt.x2 + item.tt.w2;
 		const text = traceName ? item.name || item.membersTooltip || item.composersTooltip : traceValue ? item.value : '';
@@ -755,7 +761,7 @@ class Text {
 			this.deactivateTooltip();
 			return;
 		}
-		this.activateTooltip(text, ppt.artistView ? 1 : 0);
+		this.activateTooltip(text, artistView ? 1 : 0);
 		timer.tooltip();
 	}
 
@@ -807,8 +813,8 @@ class Text {
 				}
 			}
 			if (ppt.artistView && this.bio.text.length && !this.lyricsDisplayed()) {
-				const b = Math.max(Math.round(art_scrollbar.delta / this.line.h + 0.4), 0);
-				const f = Math.min(b + this.line.drawn, this.bio.arr.length);
+				const b = Math.max(Math.round(art_scrollbar.delta / this.line.h.bio + 0.4), 0);
+				const f = Math.min(b + this.line.drawn.bio, this.bio.arr.length);
 				this.bio.drawn = 0;
 				for (let i = b; i < f; i++) {
 					const item = this.bio.arr[i];
@@ -839,8 +845,8 @@ class Text {
 				if (ppt.sbarShow) art_scrollbar.draw(gr);
 			}
 			if (!ppt.artistView && this.rev.text.length && !this.lyricsDisplayed()) {
-				const b = Math.max(Math.round(alb_scrollbar.delta / this.line.h + 0.4), 0);
-				const f = Math.min(b + this.line.drawn, this.rev.arr.length);
+				const b = Math.max(Math.round(alb_scrollbar.delta / this.line.h.rev + 0.4), 0);
+				const f = Math.min(b + this.line.drawn.rev, this.rev.arr.length);
 				this.rev.drawn = 0;
 				for (let i = b; i < f; i++) {
 					const item = this.rev.arr[i];
@@ -974,7 +980,8 @@ class Text {
 		if (!v.property) return
 		if (ppt.rowStripes && !v.subHeading && !v.sectionHeading && v.name) {
 			v.rowStripe = j % 2 == 0 ? ui.col.bg3 : ui.col.bg2;
-			v.h3 = j % 2 == 0 ? this.line.h - 2 : this.line.h;
+			const line_h = ppt.artistView ? this.line.h.bio : this.line.h.rev;
+			v.h3 = j % 2 == 0 ? line_h - 2 : line_h;
 			v.stripeOffset = j % 2 == 0 ? 1 : 0;
 		}
 		if (ppt.lineDividers && v.sectionHeading) {
@@ -1143,10 +1150,10 @@ class Text {
 		this.bio.ix = -1;
 		switch (true) {
 			case !ppt.artistView:
-				if (y > alb_scrollbar.y && y < alb_scrollbar.y + this.rev.drawn * this.line.h && x >= panel.text.l && x < panel.text.l + this.reader.w.nameCol + panel.text.w - this.reader.w.nameCol) this.rev.ix = Math.round((y + alb_scrollbar.delta - panel.text.t - this.line.h  * 0.5) / this.line.h)
+				if (y > alb_scrollbar.y && y < alb_scrollbar.y + this.rev.drawn * this.line.h.rev && x >= panel.text.l && x < panel.text.l + this.reader.w.nameCol + panel.text.w - this.reader.w.nameCol) this.rev.ix = Math.round((y + alb_scrollbar.delta - panel.text.t - this.line.h.rev  * 0.5) / this.line.h.rev)
 				break;
 			case ppt.artistView:
-				if (y > art_scrollbar.y && y < art_scrollbar.y + this.bio.drawn * this.line.h && x >= panel.text.l && x < panel.text.l + this.reader.w.nameCol + panel.text.w - this.reader.w.nameCol) this.bio.ix = Math.round((y + art_scrollbar.delta - panel.text.t - this.line.h  * 0.5) / this.line.h);
+				if (y > art_scrollbar.y && y < art_scrollbar.y + this.bio.drawn * this.line.h.bio && x >= panel.text.l && x < panel.text.l + this.reader.w.nameCol + panel.text.w - this.reader.w.nameCol) this.bio.ix = Math.round((y + art_scrollbar.delta - panel.text.t - this.line.h.bio  * 0.5) / this.line.h.bio);
 				break;
 		}
 	}
@@ -1479,40 +1486,12 @@ class Text {
 			case true:
 				v = this.artist + '-' + this.bio.loaded.ix + '-' + (!this.bio.loaded.txt ? '' : this.bio.readerItem);
 				if (!this.bio.scrollPos[v]) return art_scrollbar.setScroll(0);
-				if (ppt.sourceAll && this.bio.txt) {
-					art_scrollbar.setScroll(this.bio.scrollPos[v].scroll || 0);
-					return;
-				}
-				if (this.bio.scrollPos[v].text === this.bio.arr.length + '-' + this.toString(this.bio.text)) art_scrollbar.setScroll(this.bio.scrollPos[v].scroll || 0);
-				else if (ppt.showFilmStrip && ppt.autoFilm) break;
-				else {
-					this.bio.scrollPos[v].scroll = 0;
-					this.bio.scrollPos[v].text = '';
-				}
+				art_scrollbar.setScroll(this.bio.scrollPos[v].scroll || 0);
 				break;
 			case false: {
 				v = (panel.style.inclTrackRev != 2 ? this.albumartist + this.album + this.composition + '-' : '') + '-' + this.rev.loaded.ix + '-' + ppt.inclTrackRev + (!this.rev.loaded.txt ? '' : this.rev.readerItem);
 				if (!this.rev.scrollPos[v]) return alb_scrollbar.setScroll(0);
-				if (ppt.sourceAll && this.rev.txt) {
-					alb_scrollbar.setScroll(this.rev.scrollPos[v].scroll || 0);
-					return;
-				}
-				let match = false;
-				if (panel.style.inclTrackRev != 1 || this.rev.loaded.txt && this.reader.props) {
-					if (this.rev.scrollPos[v].text === ui.font.main.Size + '-' + panel.text.w + '-' + this.toString(this.rev.text)) match = true;
-				} else {
-					const tx1 = (ui.font.main.Size + '-' + panel.text.w).toString();
-					const tx2 = this.rev.loaded.am ? $.strip(this.rev.amAlb || this.rev.am) : this.rev.loaded.lfm ? $.strip(this.rev.lfmAlb || this.rev.lfm) : $.strip(this.rev.wikiAlb || this.rev.wiki);
-					if (this.rev.scrollPos[v].text.startsWith(tx1) && (tx2 && this.rev.scrollPos[v].text.includes(tx2))) match = true;
-				}
-				if (match) {
-					const set_scroll = panel.style.inclTrackRev != 1 ? this.rev.scrollPos[v].scroll : Math.min(this.rev.scrollPos[v].scroll, alb_scrollbar.max_scroll);
-					alb_scrollbar.setScroll(set_scroll || 0);
-				} else if (ppt.showFilmStrip && ppt.autoFilm) break;
-				else {
-					this.rev.scrollPos[v].scroll = 0;
-					this.rev.scrollPos[v].text = '';
-				}
+				alb_scrollbar.setScroll(this.rev.scrollPos[v].scroll || 0);
 				break;
 			}
 		}
@@ -1597,8 +1576,7 @@ class Text {
 		}
 
 		if (!update || this.newText) {
-			this.rev.text = [];
-			this.bio.text = [];
+			this[n].text = [];
 			const fallbackText = !ppt.heading ? this[n].fallbackText[1] : this[n].fallbackText[0];
 			const types = $.source.amLfmWikiTxt;
 			const types_1 = this.moveArrayItem(types, 0, 3); // first to last
@@ -1690,16 +1668,14 @@ class Text {
 			}
 
 			img.setCrop(true);
-			const bioText = JSON.stringify(this.bio.text);
-			if (bioText != this.bio.cur || p_calc && p_calc !== 2) {
+			if (ppt.artistView) {
+				const bioText = JSON.stringify(this.bio.text);
+				if (bioText != this.bio.cur || p_calc && p_calc !== 2) this.artCalc();
 				this.bio.cur = bioText;
-				this.artCalc();
-			}
-
-			const revText = JSON.stringify(this.rev.text);
-			if (revText != this.rev.cur || p_calc && p_calc !== 1) {
+			} else {
+				const revText = JSON.stringify(this.rev.text);
+				if (revText != this.rev.cur || p_calc && p_calc !== 1) this.albCalc();
 				this.rev.cur = revText;
-				this.albCalc();
 			}
 			if (ppt.text_only && !ui.style.isBlur || panel.alb.ix && panel.style.inclTrackRev) this.paint();
 		}
@@ -1989,7 +1965,7 @@ class Text {
 	logScrollPos(n) {
 		let keys = [];
 		let v;
-		n = n == 'rev' ? false : ppt.artistView;
+		n = n == 'rev' ? false : n == 'bio' ? true : ppt.artistView;
 		switch (n) {
 			case true:
 				keys = Object.keys(this.bio.scrollPos);
@@ -1997,7 +1973,6 @@ class Text {
 				v = this.artist + '-' + this.bio.loaded.ix + '-' + (!this.bio.loaded.txt ? '' : this.bio.readerItem);
 				this.bio.scrollPos[v] = {};
 				this.bio.scrollPos[v].scroll = art_scrollbar.scroll;
-				this.bio.scrollPos[v].text = this.bio.arr.length + '-' + this.toString(this.bio.text);
 				break;
 			case false:
 				keys = Object.keys(this.rev.scrollPos);
@@ -2005,7 +1980,6 @@ class Text {
 				v = (panel.style.inclTrackRev != 2 ? this.albumartist + this.album + this.composition + '-' : '') + '-' + this.rev.loaded.ix + '-' + ppt.inclTrackRev + (!this.rev.loaded.txt ? '' : this.rev.readerItem);
 				this.rev.scrollPos[v] = {};
 				this.rev.scrollPos[v].scroll = alb_scrollbar.scroll;
-				this.rev.scrollPos[v].text = ui.font.main.Size + '-' + panel.text.w + '-' + (panel.style.inclTrackRev != 1 || this.rev.loaded.txt && this.reader.props ? this.toString(this.rev.text) : this.rev.loaded.am ? $.strip((this.rev.amAlb || this.rev.am)) : this.rev.loaded.lfm ? $.strip((this.rev.lfmAlb || this.rev.lfm)): $.strip((this.rev.wikiAlb || this.rev.wiki)));
 				break;
 		}
 	}
@@ -2050,9 +2024,9 @@ class Text {
 	move(x, y) {
 		this.get_ix(x, y);
 		if (this.rev.ix != -1) {
-			this.check_tooltip(this.rev.arr[this.rev.ix], x, y);
+			this.check_tooltip(this.rev.arr[this.rev.ix], x, y, false, this.line.h.rev);
 		} else if (this.bio.ix != -1) {
-			this.check_tooltip(this.bio.arr[this.bio.ix], x, y);
+			this.check_tooltip(this.bio.arr[this.bio.ix], x, y, true, this.line.h.bio);
 		} else this.deactivateTooltip();
 		if (this.rev.ix == this.rev.cur_ix && this.bio.ix == this.bio.cur_ix) return;
 		this.rev.cur_ix = this.rev.ix;
@@ -2092,10 +2066,11 @@ class Text {
 	}
 
 	on_size() {
+		this.logScrollPos();
 		this.albumFlush();
-		this.artistFlush()
-		this.bio.scrollPos = {};
-		this.rev.scrollPos = {};
+		this.artistFlush();
+		this.bio.cur = '';
+		this.rev.cur = '';
 		this.getText(false);
 		panel.getList(true);
 		but.refresh(true);
@@ -2110,7 +2085,7 @@ class Text {
 
 	refresh(n) {
 		switch (n) {
-			case 0:
+			case 0: // general style changes etc
 				filmStrip.logScrollPos();
 				filmStrip.setFilmStripSize();
 				panel.setStyle();
@@ -2125,7 +2100,7 @@ class Text {
 				if (ppt.showFilmStrip && ppt.autoFilm) this.getScrollPos();
 				but.setLookUpPos();
 				break;
-			case 1:
+			case 1: // onOff heading summary; setReviewType; toggle('sourceAll'); toggle('classicalMusicMode') all except setReviewType set scrollPos = {} to forcescrollReset
 				ui.getFont();
 				ui.calcText();
 				panel.setStyle();
@@ -2140,7 +2115,7 @@ class Text {
 				but.refresh(true);
 				img.getImages();
 				break;
-			case 2:
+			case 2: // reset zoom
 				if (panel.style.inclTrackRev == 1) this.logScrollPos();
 				ui.getColours();
 				ui.getFont();
@@ -2156,8 +2131,9 @@ class Text {
 				img.getImages();
 				if (ppt.text_only && !ui.style.isBlur) this.paint();
 				break;
-			case 3:
+			case 3: // wheel setZoom & resetStyle
 				filmStrip.logScrollPos();
+				this.logScrollPos();
 				panel.setStyle();
 				this.albumFlush();
 				this.artistFlush();

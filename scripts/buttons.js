@@ -510,6 +510,8 @@ class Buttons {
 	}
 
 	resetZoom() {
+		txt.bio.scrollPos = {}; // avoids sometimes memory
+		txt.rev.scrollPos = {};
 		ppt.zoomFont = 100;
 		ppt.zoomHead = 115;
 		this.lookUp.zoomSize = this.lookUp.baseSize;

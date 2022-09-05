@@ -884,7 +884,8 @@ let item_properties =
 			{"name": "File path", "titleformat": "[%path%]"},
 			{"name": "Subsong index", "titleformat": "[%subsong%]"},
 			{"name": "File size", "titleformat": "[%filesize_natural%]"},
-			{"name": "Last modified", "titleformat": "[%last_modified%]"}
+			{"name": "Last modified", "titleformat": "[%last_modified%]"},
+			{"name": "Created", "titleformat": "[%file_created%]"}
 		]
 	},
 	"General*": {

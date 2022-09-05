@@ -312,7 +312,7 @@ class Panel {
 	}
 
 	changeView(x, y, menu) {
-		if (!menu && (this.zoom() || x < 0 || y < 0 || x > this.w || y > this.h || but.Dn)) return false;
+		if (!menu && (this.zoom() || vk.k('alt') || x < 0 || y < 0 || x > this.w || y > this.h || but.Dn)) return false;
 		if (!menu && !ppt.dblClickToggle && this.isTouchEvent(x, y)) return false;
 		if (!menu && !ppt.img_only && (txt.scrollbar_type().onSbar && !txt.lyricsDisplayed())  || but.trace('heading', x, y) || but.trace('lookUp', x, y)) return false;
 		return true;

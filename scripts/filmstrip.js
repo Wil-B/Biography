@@ -79,7 +79,7 @@ class FilmStrip {
 			this.clearCache();
 			this.setSize();
 			this.check();
-			txt.refresh(0)
+			txt.refresh(0);
 		}, 100);
 	}
 
@@ -190,6 +190,7 @@ class FilmStrip {
 		if (id.id != this.cur.id) {
 			this.cur.id = id.id;
 			if (n != 'clear') {
+				txt.logScrollPos();
 				this.setSize(); // check required for initially hidden panels
 				txt.albumFlush(); // handle track change no filmStrip to needed
 				txt.artistFlush();

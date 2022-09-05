@@ -316,7 +316,7 @@ class MenuItems {
 		for (let i = 0; i < 5; i++) menu.newItem({
 			menuName: 'Text',
 			str: ['Auto-fallback', 'Static', 'Amalgamate', 'Show track review options on load menu', 'Prefer composition reviews (allmusic && wikipedia)'][i],
-			func: () => this.setTextType(i),
+			func: () => this.setTextType(i, b),
 			flags: !i && ppt.sourceAll || i == 1 && ppt.sourceAll ? MF_GRAYED : MF_STRING,
 			checkItem: i == 2 && ppt.sourceAll || i == 3 && ppt.showTrackRevOptions || i == 4 && ppt.classicalMusicMode,
 			checkRadio: !i && (!ppt.lockBio || ppt.sourceAll) || i == 1 && ppt.lockBio && !ppt.sourceAll,
@@ -662,7 +662,7 @@ class MenuItems {
 		const m = ppt.artistView ? ppt.bioMode : ppt.revMode;
 		this.display.check = [ppt.sameStyle ? !ppt.img_only && !ppt.text_only : m == 0, ppt.sameStyle ? ppt.img_only : m == 1, ppt.sameStyle ? ppt.text_only : m == 2, ppt.showFilmStrip, ppt.heading, ppt.summaryShow, ppt.artistView, !ppt.artistView, !panel.id.focus, panel.id.focus];
 		const n = ['Image+text', 'Image', 'Text', 'Filmstrip', 'Heading', 'Summary', 'Artist view', 'Album view', 'Prefer nowplaying', !panel.id.lyricsSource ? 'Follow selected track (playlist)' : 'Follow selected track: N/A lyrics source enabled'];
-		const click = [!this.display.check[0] ? '\tMiddle click' : '', !this.display.check[1] && !ppt.text_only && !ppt.img_only ? '\tMiddle click' : '', !this.display.check[2] && !ppt.img_only ? '\tMiddle click' : '', '\tALT+Middle click', '', '', !ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', '', ''];
+		const click = [!this.display.check[0] ? '\tMiddle click' : '', !this.display.check[1] && !ppt.text_only && !ppt.img_only ? '\tMiddle click' : '', !this.display.check[2] && !ppt.img_only ? '\tMiddle click' : '', '\tAlt+Middle click', '', '', !ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', ppt.artistView ? (!ppt.dblClickToggle ? '\tClick' : '\tDouble click') : '', '', ''];
 		this.display.str = n.map((v, i) => v + click[i])
 	}
 	
@@ -680,7 +680,7 @@ class MenuItems {
 
 	getOpenName() {
 		const fo = [this.path.img, this.path.am[3], this.path.lfm[3], this.path.wiki[3], this.path.tracksAm[3], this.path.tracksLfm[3], this.path.tracksWiki[3], this.path.txt[3]];
-		this.openName = ['Image', ppt.artistView ? 'Biography [allmusic]' : 'Review [allmusic]', ppt.artistView ? 'Biography [last.fm]' : 'Review [last.fm]', ppt.artistView ? 'Biography [wikipedia]' : 'Review [wikipedia]', ppt.artistView ? '' : 'Tracks [allmusic]', ppt.artistView ? '' : 'Tracks [last.fm]', ppt.artistView ? '' : 'Tracks [wikipedia]', ppt.artistView ? txt.bio.subhead.txt[0] : txt.rev.subhead.txt[0]];
+		this.openName = ['Image \tAlt+Click', ppt.artistView ? 'Biography [allmusic]' : 'Review [allmusic]', ppt.artistView ? 'Biography [last.fm]' : 'Review [last.fm]', ppt.artistView ? 'Biography [wikipedia]' : 'Review [wikipedia]', ppt.artistView ? '' : 'Tracks [allmusic]', ppt.artistView ? '' : 'Tracks [last.fm]', ppt.artistView ? '' : 'Tracks [wikipedia]', ppt.artistView ? txt.bio.subhead.txt[0] : txt.rev.subhead.txt[0]];
 		let i = this.openName.length;
 		while (i--)
 			if (!fo[i]) {
@@ -1099,12 +1099,14 @@ class MenuItems {
 				filmStrip.mbtn_up('onOff');
 				break;
 			case 4:
+				txt.bio.scrollPos = {}; txt.rev.scrollPos = {};
 				ppt.heading = !ppt.heading ? 1 : 0;
 				panel.style.fullWidthHeading = ppt.heading && ppt.fullWidthHeading;
 				if (panel.style.inclTrackRev == 1) txt.logScrollPos();
 				txt.refresh(1);
 				break;
 			case 5:
+				txt.bio.scrollPos = {}; txt.rev.scrollPos = {};
 				ppt.toggle('summaryShow');
 				panel.setSummary();
 				txt.refresh(1);
@@ -1305,11 +1307,11 @@ class MenuItems {
 		}
 	}
 
-	setTextType(i) {
+	setTextType(i, b) {
 		switch (i) {
 			case 0:
 			case 1: this.toggle(4, b); break;
-			case 2: ppt.toggle('sourceAll'); txt.refresh(1); break;
+			case 2: txt.bio.scrollPos = {}; txt.rev.scrollPos = {}; ppt.toggle('sourceAll'); txt.refresh(1); break; // want rest?
 			case 3:
 				ppt.toggle('showTrackRevOptions');
 				txt.logScrollPos();
