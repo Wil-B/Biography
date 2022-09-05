@@ -1,4 +1,4 @@
-# v1.3.5 [unreleased]
+# v1.3.5
 
 ### Added
 - Shortcut to open image: Alt+Click
