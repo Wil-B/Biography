@@ -332,7 +332,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Photo',
-			str: 'Photo'
+			str: 'Photo',
 			appendTo: 'Sources'
 		});
 
@@ -461,7 +461,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Image',
-			str: 'Image',
+			str: 'Image'
 		});
 
 		menu.newItem({
