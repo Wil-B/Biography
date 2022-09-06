@@ -250,6 +250,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: loadName,
+			str: 'Load',
 			hide: ppt.img_only
 		});
 
@@ -289,7 +290,8 @@ class MenuItems {
 		menu.addSeparator({separator: !ppt.img_only ? true : false});
 
 		menu.newMenu({
-			menuName: 'Display'
+			menuName: 'Display',
+			str: 'Display'
 		});
 
 		for (let i = 0; i < 10; i++) menu.newItem({
@@ -305,11 +307,13 @@ class MenuItems {
 		menu.addSeparator({});
 
 		menu.newMenu({
-			menuName: 'Sources'
+			menuName: 'Sources',
+			str: 'Sources'
 		});
 
 		menu.newMenu({
 			menuName: 'Text',
+			str: 'Text',
 			appendTo: 'Sources'
 		});
 
@@ -328,6 +332,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Photo',
+			str: 'Photo'
 			appendTo: 'Sources'
 		});
 
@@ -360,6 +365,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Open file location',
+			str: 'Open file location',
 			appendTo: 'Sources',
 			flags: this.getOpenFlag()
 		});
@@ -398,7 +404,8 @@ class MenuItems {
 
 		const style_arr = panel.style.name.slice();
 		menu.newMenu({
-			menuName: 'Layout'
+			menuName: 'Layout',
+			str: 'Layout'
 		});
 
 		const style = ppt.sameStyle ? ppt.style : ppt.artistView ? ppt.bioStyle : ppt.revStyle
@@ -412,6 +419,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Create && manage styles',
+			str: 'Create & manage styles',
 			appendTo: 'Layout'
 		});
 
@@ -427,6 +435,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Filmstrip',
+			str: 'Filmstrip',
 			appendTo: 'Layout'
 		});
 
@@ -451,7 +460,8 @@ class MenuItems {
 		}));
 
 		menu.newMenu({
-			menuName: 'Image'
+			menuName: 'Image',
+			str: 'Image',
 		});
 
 		menu.newItem({
@@ -465,6 +475,7 @@ class MenuItems {
 		if (ppt.style < 4) {
 			menu.newMenu({
 				menuName: 'Alignment',
+				str: 'Alignment',
 				appendTo: 'Image'
 			});
 			for (let i = 0; i < 4; i++) menu.newItem({
@@ -480,6 +491,7 @@ class MenuItems {
 		if (ppt.style > 3) {
 			menu.newMenu({
 				menuName: 'Alignment horizontal',
+				str: 'Alignment horizontal',
 				appendTo: 'Image'
 			});
 			['Left', 'Centre', 'Right'].forEach((v, i) => menu.newItem({
@@ -490,6 +502,7 @@ class MenuItems {
 			}));
 			menu.newMenu({
 				menuName: 'Alignment vertical',
+				str: 'Alignment vertical',
 				appendTo: 'Image'
 			});
 			['Top', 'Centre', 'Bottom', 'Auto'].forEach((v, i) => menu.newItem({
@@ -505,6 +518,7 @@ class MenuItems {
 
 		menu.newMenu({
 			menuName: 'Black list',
+			str: 'Black list',
 			appendTo: 'Image'
 		});
 
