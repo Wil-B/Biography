@@ -1,3 +1,10 @@
+# v1.3.6
+
+### Added
+- Refresh rate for panel (to delay repaint after successive track focus changes) at properties. Higher values for 'Panel Selection Refresh Rate' may be set to avoid lag while scrolling the library.
+
+<br />
+
 # v1.3.5
 
 ### Added

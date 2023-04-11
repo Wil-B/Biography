@@ -276,6 +276,10 @@ let properties = [
 	['Overlay Strength (%)', 84.5, 'overlayStrength'],
 	['Overlay Type', 0, 'typeOverlay'],
 	['Panel Active', true, 'panelActive'],
+	
+	['Panel Selection Refresh Rate', 250, 'focusLoadRate'],
+	['Panel Focus Refresh Rate', 5000, 'focusServerRate'],
+	['Panel Lookup Refresh Rate', 1500, 'lookUpServerRate'],
 
 	['Photo Border [Dual Mode]', false, 'artBorderDual'],
 	['Photo Border [Image Only]', false, 'artBorderImgOnly'],

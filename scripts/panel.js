@@ -192,21 +192,21 @@ class Panel {
 		this.focusLoad = $.debounce(() => {
 			if (!ppt.img_only) txt.on_playback_new_track();
 			if (!ppt.text_only || ui.style.isBlur || ppt.showFilmStrip) img.on_playback_new_track();
-		}, 250, {
+		}, ppt.focusLoadRate, {
 			'leading': true,
 			'trailing': true
 		});
 
 		this.focusServer = $.debounce(() => {
 			this.changed();
-		}, 5000, {
+		}, ppt.focusServerRate, {
 			'leading': true,
 			'trailing': true
 		});
 
 		this.lookUpServer = $.debounce(() => {
 			this.callServer(false, panel.id.focus, 'bio_lookUpItem', 0);
-		}, 1500);
+		}, ppt.lookUpServerRate);
 
 		if (!this.style.free || !$.isArray(this.style.free)) {
 			ppt.set('SYSTEM.Freestyle Custom BackUp', ppt.styleFree);
