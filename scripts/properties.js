@@ -276,6 +276,10 @@ let properties = [
 	['Overlay Strength (%)', 84.5, 'overlayStrength'],
 	['Overlay Type', 0, 'typeOverlay'],
 	['Panel Active', true, 'panelActive'],
+	
+	['Panel Selection Refresh Rate 200-3000 msec (Max)', 250, 'focusLoadRate'],
+	['Panel Focus Refresh Rate 5000-15000 msec (Max)', 5000, 'focusServerRate'],
+	['Panel Lookup Refresh Rate 1500-15000 msec (Max)', 1500, 'lookUpServerRate'],
 
 	['Photo Border [Dual Mode]', false, 'artBorderDual'],
 	['Photo Border [Image Only]', false, 'artBorderImgOnly'],
@@ -441,3 +445,20 @@ if (ppt.get('Remove Old Properties', true)) {
 	oldProperties.forEach(v => window.SetProperty(v, null));
 	ppt.set('Remove Old Properties', false);
 }
+
+[
+	{key: 'focusLoadRate', descr: 'Panel Selection Refresh Rate', min: 200, max: 3000, oldDef: 250, newDef: 250},
+	{key: 'focusServerRate', descr: 'Panel Focus Refresh Rate', min: 5000, max: 15000, oldDef: 5000, newDef: 5000},
+	{key: 'lookUpServerRate', descr: 'Panel Lookup Refresh Rate', min: 1500, max: 15000, oldDef: 1500, newDef: 1500}
+].forEach((rate) => {
+	const name = `${rate.descr} ${rate.min}-${rate.max} msec (Max)`;
+	const value = ppt.get(name, null);
+	if (value === null) {throw ('property_name: ' + name + '\nPanel\'s rate property name does not match range checked');}
+	else {
+		if (ppt[rate.key] === rate.oldDef && ppt[rate.key] !== rate.newDef) {ppt[rate.key] = rate.newDef;}
+		ppt[rate.key] = $.clamp(ppt[rate.key], rate.min, rate.max);
+		if (ppt[rate.key] !== Number(value)) {
+			ppt.set(name, ppt[rate.key]);
+		}
+	}
+});
