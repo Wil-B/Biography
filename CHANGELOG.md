@@ -27,7 +27,7 @@
 	- larger sync line options (options > textreader & lyrics tab)
 - customisable playlist interaction for follow selected item
 	- default settings should be fine for most users. If required:
-		- load delay can now be increased if scrolling laggy (options > advanced tab) [regorxxx]
+		- load delay can now be increased if moving through playlist is laggy (options > advanced tab) [regorxxx]
 		- leading item can now be set to use the delay or load immediately (options > advanced tab)
 
 ### Changed
