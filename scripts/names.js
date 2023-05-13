@@ -1,5 +1,7 @@
 ﻿'use strict';
 
+include(cfg.expandPath('%storage_folder%\\advanced_radio_stream_parser.js'));
+
 class Names {
 	constructor() {
 		this.cur_artist = '';
@@ -47,7 +49,9 @@ class Names {
 	}
 
 	artist(focus, ignoreLock) {
-		return $.eval('[$trim(' + cfg.tf.artist + ')]', focus, ignoreLock);
+		let artist = $.eval('[$trim(' + cfg.tf.artist + ')]', focus, ignoreLock);
+		const radioTrackArtist = !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
+		return radioTrackArtist || artist;
 	}
 
 	composition(focus, ignoreLock) {
@@ -65,18 +69,9 @@ class Names {
 	}
 
 	title(focus, ignoreLock) {
-		let n = $.eval('[$trim(' + cfg.tf.title + ')]', focus, ignoreLock);
-		if (cfg.local && panel.isRadio(focus)) {
-			const kw = '(-\\s*|\\s+)\\d\\d\\d\\d';
-			let ix = -1;
-			let yr = n.match(RegExp(kw));
-			if (yr) {
-				yr = yr[0].toString();
-				ix = n.indexOf(yr);
-			}
-			if (ix != -1) n = n.slice(0, ix).trim();
-		}
-		return n;
+		let title = $.eval('[$trim(' + cfg.tf.title + ')]', focus, ignoreLock);
+		const radioTrackTitle = !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).title;
+		return radioTrackTitle || title;
 	}
 
 	trackID(focus) {

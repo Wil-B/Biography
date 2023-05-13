@@ -4,6 +4,7 @@ class Tagger {
 	constructor() {
 		this.arr1 = [];
 		this.arr2 = [];
+		this.force = false;
 		this.genres = [];
 		this.simList = [];
 		this.setGenres();
@@ -194,7 +195,7 @@ class Tagger {
 		return out;
 	}
 
-	write(handles, notify) {
+	write(handles, notify, notifyFocus) {
 		if (!handles) return;
 		const kww = 'Founded In: |Born In: |Gegr\\u00fcndet: |Formado en: |Fond\\u00e9 en: |Luogo di fondazione: |\\u51fa\\u8eab\\u5730: |Za\\u0142o\\u017cono w: |Local de funda\\u00e7\\u00e3o: |\\u041c\\u0435\\u0441\\u0442\\u043e \\u043e\\u0441\\u043d\\u043e\\u0432\\u0430\\u043d\\u0438\\u044f: |Grundat \\u00e5r: |Kuruldu\\u011fu tarih: |\\u521b\\u5efa\\u4e8e: |Geboren in: |Lugar de nacimiento: |N\\u00e9\\(e\\) en: |Luogo di nascita: |\\u51fa\\u8eab\\u5730: |Urodzony w: |Local de nascimento: |\\u041c\\u0435\\u0441\\u0442\\u043e \\u0440\\u043e\\u0436\\u0434\\u0435\\u043d\\u0438\\u044f: |F\\u00f6dd: |Do\\u011fum yeri: |\\u751f\\u4e8e: ';
 		const lkw = 'Last.fm: ';
@@ -216,6 +217,7 @@ class Tagger {
 		const artListeners = [];
 		const artTags = [];
 		const cue = [];
+		const force = this.force && notify;
 		const locale = [];
 		const radioStream = notify && panel.isRadio(panel.id.focus);
 		const rem = [];
@@ -241,20 +243,20 @@ class Tagger {
 			if (artist != cur_artist) {
 				cur_artist = artist;
 				similarArtists[i] = '';
-				if (cfg.tagEnabled7 || cfg.tagEnabled8 || cfg.tagEnabled9 || cfg.tagEnabled10 && cfg.tagEnabled13 < 7) {
+				if (cfg.tagEnabled7 || cfg.tagEnabled8 || cfg.tagEnabled9 || cfg.tagEnabled10 && cfg.tagEnabled13 < 7 || force) {
 					artTags[i] = '';
 					artListeners[i] = '';
 					locale[i] = '';
 					const lfmBio = panel.cleanPth(cfg.pth.foLfmBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foLfmBio + '.txt';
 					if ($.file(lfmBio)) {
 						const lBio = $.open(lfmBio);
-						if (cfg.tagEnabled7) {
+						if (cfg.tagEnabled7 || force) {
 							artTags[i] = this.getTag(lBio, 'Top Tags: ').tag;
 							if (artTags[i]) artTags[i] = this.lfmTidy(artTags[i]);
 						}
 						if (cfg.tagEnabled8) artListeners[i] = this.getTag(lBio, lkw, false, 1, 'artist').tag;
-						if (cfg.tagEnabled9) locale[i] = this.getTag(lBio, kww).tag;
-						if (cfg.tagEnabled10 && cfg.tagEnabled13 < 7) {
+						if (cfg.tagEnabled9 || force) locale[i] = this.getTag(lBio, kww).tag;
+						if ((cfg.tagEnabled10 || force) && cfg.tagEnabled13 < 7) {
 							similarArtists[i] = this.getTag(lBio, panel.similarArtistsKey).tag;
 							if (similarArtists[i].length > 6) {
 								similarArtists[i] = '';
@@ -270,20 +272,26 @@ class Tagger {
 					}
 				}
 				if (!similarArtists[i].length) similarArtists[i] = '';
-				if (cfg.tagEnabled4) {
-					artGenre_am[i] = '';
-					const amBio = panel.cleanPth(cfg.pth.foAmBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foAmBio + '.txt';
-					if ($.file(amBio)) {
-						const aBio = $.open(amBio);
-						artGenre_am[i] = this.getTag(aBio, 'Genre: ').tag;
-					}
-				}
-				if (cfg.tagEnabled12) {
+				if (cfg.tagEnabled12 || !locale[i] && notify || force) {
 					artGenre_w[i] = '';
 					const wikiBio = panel.cleanPth(cfg.pth.foWikiBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foWikiBio + '.txt';
 					if ($.file(wikiBio)) {
 						const wBio = $.open(wikiBio);
 						artGenre_w[i] = this.getTag(wBio, 'Genre: ').tag;
+						if (!locale[i] && notify) locale[i] = this.getTag(wBio, kww).tag;
+					}
+				}
+				if (cfg.tagEnabled4 || !locale[i] && notify || force) {
+					artGenre_am[i] = '';
+					const amBio = panel.cleanPth(cfg.pth.foAmBio, !radioStream ? handles[i] : panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $.clean(artist) + cfg.suffix.foAmBio + '.txt';
+					if ($.file(amBio)) {
+						const aBio = $.open(amBio);
+						artGenre_am[i] = this.getTag(aBio, 'Genre: ').tag;
+						const localeTag = this.getTag(aBio, 'Formed: |Born: ').tag;
+						if (localeTag.length && !/\s*in\s/.test(localeTag[0])) localeTag.shift();
+						if (localeTag.length && /\s*in\s/.test(localeTag[0])) localeTag[0] = localeTag[0].split(/\s*in\s/)[1].trim();
+						if (!locale[i] && notify) locale[i] = localeTag;
+						if (!locale[i].length) locale[i] = '';
 					}
 				}
 			} else {
@@ -297,7 +305,7 @@ class Tagger {
 			if (albumArtist + album != cur_albumArtist + cur_album) {
 				cur_albumArtist = albumArtist;
 				cur_album = album;
-				if (cfg.tagEnabled0 || cfg.tagEnabled1 || cfg.tagEnabled2 || cfg.tagEnabled3) {
+				if (cfg.tagEnabled0 || cfg.tagEnabled1 || cfg.tagEnabled2 || cfg.tagEnabled3 || force) {
 					albGenre_am[i] = '';
 					amMoods[i] = '';
 					amRating[i] = '';
@@ -309,8 +317,8 @@ class Tagger {
 					}
 					if ($.file(amRev)) {
 						const aRev = $.open(amRev);
-						if (cfg.tagEnabled0) albGenre_am[i] = this.getTag(aRev, 'Genre: ').tag;
-						if (cfg.tagEnabled1) amMoods[i] = this.getTag(aRev, 'Album Moods: ').tag;
+						if (cfg.tagEnabled0 || force) albGenre_am[i] = this.getTag(aRev, 'Genre: ').tag;
+						if (cfg.tagEnabled1 || force) amMoods[i] = this.getTag(aRev, 'Album Moods: ').tag;
 						if (cfg.tagEnabled2) {
 							const b = aRev.indexOf('>> Album rating: ') + 17;
 							const f = aRev.indexOf(' <<');
@@ -319,10 +327,10 @@ class Tagger {
 								if (amRating[i] == 0) amRating[i] = '';
 							}
 						}
-						if (cfg.tagEnabled3) amThemes[i] = this.getTag(aRev, 'Album Themes: ').tag;
+						if (cfg.tagEnabled3 || force) amThemes[i] = this.getTag(aRev, 'Album Themes: ').tag;
 					}
 				}
-				if (cfg.tagEnabled5 || cfg.tagEnabled6) {
+				if (cfg.tagEnabled5 || cfg.tagEnabled6 || force) {
 					albTags[i] = '';
 					albListeners[i] = '';
 					let lfmRev = panel.cleanPth(cfg.pth.foLfmRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foLfmRev + '.txt';
@@ -332,14 +340,14 @@ class Tagger {
 					}
 					if ($.file(lfmRev)) {
 						const lRev = $.open(lfmRev);
-						if (cfg.tagEnabled5) {
+						if (cfg.tagEnabled5 || force) {
 							albTags[i] = this.getTag(lRev, 'Top Tags: ').tag;
 							if (albTags[i]) albTags[i] = this.lfmTidy(albTags[i]);
 						}
 						if (cfg.tagEnabled6) albListeners[i] = this.getTag(lRev, lkw, false, 1, 'album').tag;
 					}
 				}
-				if (cfg.tagEnabled11) {
+				if (cfg.tagEnabled11 || force) {
 					albGenre_w[i] = '';
 					let wikiRev = panel.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $.clean(albumArtist) + ' - ' + $.clean(album) + cfg.suffix.foWikiRev + '.txt';
 					if (wikiRev.length > 259) {
@@ -387,8 +395,10 @@ class Tagger {
 		while (i--) handles.RemoveById(rem[i]);
 		if (handles.Count && tags.length && notify) {
 			window.NotifyOthers('biographyTags', {
+				artist: artists[0],
+				album: albums[0],
 				handle: handles[0],
-				selectionMode: !panel.id.focus ? 'Prefer nowplaying' : 'Follow selected track (playlist)',
+				selectionMode: !notifyFocus ? 'Prefer nowplaying' : 'Follow selected track (playlist)',
 				tags: tags[0]
 			});
 		}

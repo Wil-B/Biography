@@ -199,6 +199,7 @@ class DldLastfmBio {
 			$.trace('last.fm biography: ' + this.artist + ': not found', true);
 			return;
 		}
+		if (!this.fo_bio) return;
 		$.buildPth(this.fo_bio);
 		$.save(this.pth_bio, this.con, true);
 		server.res();
@@ -247,7 +248,7 @@ class DldArtImages {
 
 	run(dl_ar, force, art, p_stndBio, p_supCache) {
 		if (!$.file(`${cfg.storageFolder}foo_lastfm_img.vbs`)) return;
-		let img_folder = p_stndBio ? panel.cleanPth(cfg.pth.foImgArt, art.focus, 'server') : panel.cleanPth(cfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
+		let img_folder = p_stndBio && !panel.isRadio(art.focus) ? panel.cleanPth(cfg.pth.foImgArt, art.focus, 'server') : panel.cleanPth(cfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
 		if (p_supCache && !$.folder(img_folder)) img_folder = panel.cleanPth(cfg.sup.foImgArt, art.focus, 'remap', dl_ar, '', 1);
 		const getNo = this.img_exp(dl_ar, img_folder, !force ? server.exp : 0);
 		if (!getNo[0]) return;
@@ -454,9 +455,11 @@ class LfmAlbum {
 			}
 			wiki = wiki ? wiki + this.tags + this.stats : this.tags + this.stats;
 			wiki = wiki.trim();
-			$.buildPth(this.fo);
-			$.save(this.pth, wiki, true);
-			server.res();
+			if (this.fo) {
+				$.buildPth(this.fo);
+				$.save(this.pth, wiki, true);
+				server.res();
+			}
 		} else if (this.rev) {
 			doc.open();
 			const counts = ['', '', ''];
@@ -635,7 +638,11 @@ class LfmTrack {
 				this.timer = null;
 			}, 30000);
 		}
-		this.xmlhttp.send();
+		try {
+			this.xmlhttp.send();
+		} catch (e) {
+			this.revSave();
+		}
 	}
 
 	analyse() {
@@ -783,8 +790,10 @@ class LfmTrack {
 			lang: this.retry ? 'EN' : cfg.language,
 			update: Date.now()
 		};
-		$.buildPth(this.fo);
-		$.save(this.pth, JSON.stringify($.sortKeys(this.text), null, 3), true);
+		if (this.fo) {
+			$.buildPth(this.fo);
+			$.save(this.pth, JSON.stringify($.sortKeys(this.text), null, 3), true);
+		}
 		if (ret) return $.trace('last.fm track review: ' + $.titlecase(this.track) + ' / ' + this.artist + ': not found', true);
 		server.res();
 	}
@@ -855,6 +864,7 @@ class LfmSimilarArtists {
 						name: this.artist,
 						score: 100
 					});
+					if (!this.pth_sim) break;
 					$.buildPth(this.pth_sim);
 					$.save(this.fn_sim, JSON.stringify(list), true);
 					if (cfg.lfmSim) {

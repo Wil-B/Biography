@@ -43,15 +43,15 @@ class Server {
 			wikisearch: 'https://www.wikidata.org/w/api.php?action=query&list=search&srprop=snippet|titlesnippet&srlimit=100&utf8&format=json&srsearch='
 		}
 
-		this.on_playback_new_track = $.debounce(() => {
+		this.call = $.debounce(focus => {
 			this.download(false, {
 				ix: 0,
-				focus: false,
+				focus: focus || false,
 				arr: []
 			},
 			{
 				ix: 0,
-				focus: false,
+				focus: focus || false,
 				arr: []
 			});
 		}, 2000, {
@@ -275,7 +275,7 @@ class Server {
 					} else timer.decelerating();
 
 					if (cfg.lfmSim && stndBio) {
-						const fo_sim = panel.cleanPth(cfg.pth.foLfmSim, art.focus, 'server');
+						const fo_sim = !panel.isRadio(art.focus) ? panel.cleanPth(cfg.pth.foLfmSim, art.focus, 'server') : panel.cleanPth(cfg.remap.foLfmSim, art.focus, 'remap', this.artist, '', 1);
 						const pth_sim = fo_sim + $.clean(this.artist) + ' And Similar Artists.json';
 						let len = 0;
 						let valid = false;

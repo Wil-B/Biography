@@ -1,6 +1,7 @@
 ﻿'use strict';
 
 if (typeof my_utils === 'undefined') include('utils.js');
+//include(fb.ProfilePath + 'elements\\colourSelector.js'); // sort handling n/a standalone
 
 const loadAsync = window.GetProperty('Load Biography Asynchronously', true);
 
@@ -17,6 +18,7 @@ const files = [
 	'properties.js',
 	'settings.js',
 	'interface.js',
+	'language.js',
 	'panel.js',
 	'server.js',
 	'allmusic.js',

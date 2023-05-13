@@ -85,6 +85,14 @@ class FilmStrip {
 
 	// Methods
 
+	async load_image_async(image_path) {
+		const image = await gdi.LoadImageAsyncV2(0, image_path);
+		if (!panel.style.showFilmStrip) return;
+		const key = this.getLoadKey(image_path);
+		const o = this.cache[key];
+		if (o && o.img == 'called') this.cacheIt(image, key, o.style);
+    }
+
 	cacheIt(image, key, style) {
 		try {
 			if (image) {
@@ -529,7 +537,14 @@ class FilmStrip {
 		if (!panel.style.showFilmStrip) return;
 		const key = this.getLoadKey(image_path);
 		const o = this.cache[key];
-		if (o && o.img == 'called') this.cacheIt(image, key, o.style);
+		if (o && o.img == 'called') {
+			if (image) this.cacheIt(image, key, o.style);
+			else {
+				setTimeout(() => {
+					this.load_image_async(image_path); // try again some dnlded can fail to load: folder temp locked?
+				}, 1500);
+			}
+		}
 	}
 
 	on_size() {
@@ -567,6 +582,7 @@ class FilmStrip {
 			case 1:
 			case 2:
 			case 3:
+				ppt.showFilmStrip = true;
 				ppt.filmStripPos = i;
 				break;
 			case 5: {
@@ -575,12 +591,13 @@ class FilmStrip {
 				}
 				const caption = 'Reset Filmstrip To Default Size';
 				const prompt = 'Continue?';
-				const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', continue_confirmation) : true;
+				const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 				break;
 			}
 		}
 		filmStrip.logScrollPos();
+		img.mask.reset = true;
 		this.clearCache();
 		this.setSize();
 		this.check(i);

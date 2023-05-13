@@ -15,6 +15,10 @@ function on_colours_changed() {
 	if (ui.font.heading && ui.font.heading.Size) but.createStars();
 	img.clearCache();
 	img.getImages();
+	if (panel.id.lyricsSource) {
+		lyrics.transBot = {}
+		lyrics.transTop = {}
+	}
 	txt.rev.cur = '';
 	txt.bio.cur = '';
 	txt.albCalc();
@@ -207,6 +211,7 @@ function on_mouse_leave() {
 }
 
 function on_mouse_mbtn_up(x, y, mask) {
+	// hacks at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure hacks: main window > move with > caption only & ensure pseudo-caption doesn't overlap buttons
 	switch (true) {
 		case mask == 0x0004:
 			panel.inactivate();
@@ -280,7 +285,7 @@ function on_mouse_wheel(step) {
 
 function on_notify_data(name, info) {
 	let clone;
-	if (ui.id.local) {
+	if (ui.id.local && name.startsWith('opt_')) {
 		clone = typeof info === 'string' ? String(info) : info;
 		on_cui_notify(name, clone);
 	}
@@ -364,9 +369,6 @@ function on_notify_data(name, info) {
 			panel.notifyTimestamp = Date.now();
 			window.NotifyOthers(`bio_notServer${ppt.serverName}`, panel.notifyTimestamp);
 			break;
-		case 'bio_checkTimerSync':
-			timer.image()
-			break;
 		case 'bio_refresh':
 			window.Reload();
 			break;
@@ -380,7 +382,7 @@ function on_notify_data(name, info) {
 			}
 			break;
 		case 'bio_followSelectedTrack':
-			if (!panel.id.lyricsSource) { // if there is a lyricsSource enabled, panel has to be in prefer nowplaying mode
+			if (!panel.id.lyricsSource && !panel.id.nowplayingSource) { // if enabled, panel has to be in prefer nowplaying mode
 				if (panel.id.focus !== info) {
 					panel.id.focus = ppt.focus = info;
 					panel.changed();
@@ -393,10 +395,36 @@ function on_notify_data(name, info) {
 			ppt.panelActive = info;
 			window.Reload();
 			break;
+		case 'bio_syncTags':
+			if ($.server) {
+				tag.force = true;
+				const focus = info;
+				server.call(focus);
+			}
+			break;
 		case 'bio_webRequest':
 			clone = String(info);
-			server.urlRequested[info] = Date.now(); // if multiServer enabled, limit URL requests for same item to one
+			server.urlRequested[clone] = Date.now(); // if multiServer enabled, limit URL requests for same item to one
 			break;
+		case 'newThemeColours':
+			if (!ppt.themed) break;
+			ppt.theme = info.theme;
+			ppt.themeBgImage = info.themeBgImage;
+			ppt.themeColour = info.themeColour;
+			on_colours_changed();
+			break;	
+		case 'Sync col':
+			if (!ppt.themed) break;
+			const themeLight = ppt.themeLight;
+			if (themeLight != info.themeLight) {
+				ppt.themeLight = info.themeLight;
+				on_colours_changed();
+			}
+			break;	
+		case 'Sync image':
+			if (!ppt.themed) break;
+			sync.image(new GdiBitmap(info.image), info.id);
+			break
 	}
 }
 
@@ -423,7 +451,7 @@ function on_playback_dynamic_info_track() {
 	txt.rev.wikiFallback = true;
 	if ($.server) server.downloadDynamic();
 	txt.reader.lyrics3Saved = false;
-	txt.reader.openLyricsSaved = false;
+	txt.reader.ESLyricSaved = false;
 	txt.reader.trackStartTime = fb.PlaybackTime;
 	txt.on_playback_new_track();
 	img.on_playback_new_track();
@@ -431,12 +459,12 @@ function on_playback_dynamic_info_track() {
 
 function on_playback_new_track() {
 	if (!ppt.panelActive) return;
-	if ($.server) server.on_playback_new_track();
+	if ($.server) server.call();
 	if (panel.id.focus) return;
 	txt.rev.amFallback = true;
 	txt.rev.wikiFallback = true;
 	txt.reader.lyrics3Saved = false;
-	txt.reader.openLyricsSaved = false;
+	txt.reader.ESLyricSaved = false;
 	txt.reader.trackStartTime = 0;
 	txt.on_playback_new_track();
 	img.on_playback_new_track();
@@ -448,12 +476,29 @@ function on_playback_pause(state) {
 
 function on_playback_seek() {
 	if (panel.id.lyricsSource) lyrics.seek();
+	if (panel.block()) return;
+	const n = ppt.artistView ? 'bio' : 'rev';
+	if ((txt[n].loaded.txt && txt.reader[n].nowplaying || ppt.sourceAll) && txt.reader[n].perSec) {
+		txt.logScrollPos();
+		txt.getText();
+		txt.paint();
+	}
+}
+
+function on_playback_time(t) {
+	if (panel.block()) return;
+	const n = ppt.artistView ? 'bio' : 'rev';
+	if ((txt[n].loaded.txt && txt.reader[n].nowplaying || ppt.sourceAll) && txt.reader[n].perSec) {
+		txt.logScrollPos();
+		txt.getText();
+		txt.paint();
+	}
 }
 
 function on_playback_stop(reason) {
 	if (!ppt.panelActive) return;
 	const n = ppt.artistView ? 'bio' : 'rev';
-    if (reason != 2 && txt[n].loaded.txt && txt.reader.lyrics) txt.getText();
+    if (reason != 2 && txt[n].loaded.txt && txt.reader[n].lyrics) txt.getText();
 	if (panel.id.lyricsSource) lyrics.clear();
 	if (reason == 2) return;
 	on_item_focus_change();
@@ -488,11 +533,12 @@ function on_script_unload() {
 	txt.deactivateTooltip();
 }
 
+const windowMetricsPath = `${fb.ProfilePath}settings\\themed\\windowMetrics.json`;
 function on_size() {
 	txt.repaint = false;
 	panel.w = window.Width;
 	panel.h = window.Height;
-	if (!window.IsVisible && ui.pss.installed) {
+	if (!window.IsVisible && ui.pss.installed && !ppt.themed) {
 		ui.pss.checkOnSize = true;
 		return;
 	}
@@ -500,14 +546,27 @@ function on_size() {
 	if (!panel.w || !panel.h) return;
 	txt.logScrollPos('bio');
 	txt.logScrollPos('rev');
-	ui.getFont();
-	panel.getLogo();
+	ui.getParams();
+
 	if (!ppt.panelActive) return;
 	txt.deactivateTooltip();
 	panel.calcText = true;
 	txt.on_size();
+
+	if (ppt.themed && ppt.theme) {
+		const themed_image = `${fb.ProfilePath}settings\\themed\\themed_image.bmp`;	
+		if ($.file(themed_image)) sync.image(gdi.Image(themed_image));
+	}
 	img.on_size();
 	filmStrip.on_size();
 	txt.repaint = true;
-	img.art.displayedOtherPanel = null; 
+	img.art.displayedOtherPanel = null;
+
+	if (!ppt.themed) return;
+	const windowMetrics = $.jsonParse(windowMetricsPath, {}, 'file');
+	windowMetrics[window.Name] = {
+		w: panel.w,
+		h: panel.h
+	}
+	$.save(windowMetricsPath, JSON.stringify(windowMetrics, null, 3), true);
 }

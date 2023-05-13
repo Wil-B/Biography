@@ -9,6 +9,7 @@ Feature rich biography plug-in for [foobar2000](https://www.foobar2000.org)
 - Lyrics: synced and unsynced
 - Textreader
 - Item properties
+- Nowplaying display
 - Layout presets: top, left, right, bottom and overlay. Fully customisable with freestyle layouts
 - Themes: user interface, dark, blend, light and random
 - Custom colours and fonts
@@ -63,4 +64,3 @@ Standard grouping
 
 Alternative grouping
 ![item_properties_alternative_grouping](https://user-images.githubusercontent.com/35600752/179354332-31ef0545-4834-4837-bcbc-a86f912181e6.png)
-

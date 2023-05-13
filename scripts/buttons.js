@@ -60,7 +60,6 @@ class Buttons {
 			bahnInstalled: utils.CheckFont('Bahnschrift SemiBold SemiConden'),
 			col: {},
 			font: gdi.Font('Segoe UI Symbol', 12, 1),
-			fontSize: 12,
 			h: 19,
 			icon: false,
 			item_w: {
@@ -232,67 +231,67 @@ class Buttons {
 		}
 	}
 
-	createStars() {
+	createStars(force) {
 		this.src.icon = ui.show.btnLabel == 2 ? 1 : 0;
 		const hs = ui.font.heading.Size;
 		const fs = ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $.scale : 12 * $.scale;
+		const srcFontSize = this.src.fontSize; 
 		this.src.fontSize = $.clamp(Math.round(hs * 0.47) + (ppt.zoomHeadBtn - 100) / 10, Math.min(fs, hs), Math.max(fs, hs));
-		this.src.font = gdi.Font('Segoe UI', this.src.fontSize, 1);
+		if (this.src.fontSize != srcFontSize || force) this.src.font = gdi.Font('Segoe UI', this.src.fontSize, 1);
 		$.gr(1, 1, false, g => {
 			this.src.h = g.CalcTextHeight('allmusic', this.src.font);
-		});
-		switch (this.src.icon) {
-			case 0:
-				this.src.amBio = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.lfmBio = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.lfmRev = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.wikiBio = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.wikiRev = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				if (!ui.show.btnLabel) {
-					this.src.amBio = '';
-					this.src.amRev = '';
-					this.src.lfmBio = '';
-					this.src.lfmRev = '';
-					this.src.wikiBio = '';
-					this.src.wikiRev = '';
-					this.src.txtBio = '';
-					this.src.txtRev = '';
-				}
-				$.gr(1, 1, false, g => {
-					['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio'].forEach(v => this.src.item_w[v] = g.CalcTextWidth(this.src[v], this.src.font, true))
-				});
-				break;
-			case 1: {
-				this.src.amBio = this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.lfmBio = this.src.lfmRev = '\uF202' + (!ppt.sourceAll ? '' : '... ');
-				this.src.wikiBio = this.src.wikiRev = '\uF266' + (!ppt.sourceAll ? '' : '... ');
-				this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
-				this.src.font = gdi.Font(this.src.bahnInstalled ? this.src.bahn : 'Segoe UI Semibold', this.src.fontSize, 0);
-				this.src.iconFont = gdi.Font('FontAwesome', Math.round(this.src.fontSize * (this.src.bahnInstalled ? 1.09 : 1.16)), 0);
-				const alt_w = [];
-				alt_w[9] = ' ';
-				const fonts = [this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.iconFont];
-				$.gr(1, 1, false, g => {
+			switch (this.src.icon) {
+				case 0:
+					this.src.amBio = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.lfmBio = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.lfmRev = cfg.lfmDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.wikiBio = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.wikiRev = cfg.wikiDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					if (!ui.show.btnLabel) {
+						this.src.amBio = '';
+						this.src.amRev = '';
+						this.src.lfmBio = '';
+						this.src.lfmRev = '';
+						this.src.wikiBio = '';
+						this.src.wikiRev = '';
+						this.src.txtBio = '';
+						this.src.txtRev = '';
+					}
+					$.gr(1, 1, false, g => {
+						['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio'].forEach(v => this.src.item_w[v] = g.CalcTextWidth(this.src[v], this.src.font, true))
+					});
+					break;
+				case 1: {
+					this.src.amBio = this.src.amRev = cfg.amDisplayName.toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.lfmBio = this.src.lfmRev = '\uF202' + (!ppt.sourceAll ? '' : '... ');
+					this.src.wikiBio = this.src.wikiRev = '\uF266' + (!ppt.sourceAll ? '' : '... ');
+					this.src.txtBio = (txt.bio.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					this.src.txtRev = (txt.rev.subhead.txt[0] || '').toLowerCase() + (!ppt.sourceAll ? '' : '... ');
+					if (this.src.fontSize != srcFontSize || force) {
+						this.src.font = gdi.Font(this.src.bahnInstalled ? this.src.bahn : 'Segoe UI Semibold', this.src.fontSize, 0);
+						this.src.iconFont = gdi.Font('FontAwesome', Math.round(this.src.fontSize * (this.src.bahnInstalled ? 1.09 : 1.16)), 0);
+					}
+					const alt_w = [];
+					alt_w[9] = ' ';
+					const fonts = [this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.font, this.src.iconFont, this.src.iconFont, this.src.font, this.src.iconFont];
 					['space', 'amRev', 'lfmRev', 'wikiRev', 'txtRev', 'amBio', 'lfmBio', 'wikiBio', 'txtBio', 'spaceIconFont'].forEach((v, i) => {
 						this.src.item_w[v] = g.CalcTextWidth(i < 9 ? this.src[v] : alt_w[i], fonts[i], true);
-					})
-				});
-				this.src.item_w.space = Math.max(this.src.item_w.space, this.src.item_w.spaceIconFont);
-				const n = ppt.artistView ? 'bio' : 'rev';
-				this.src.y = this.src.fontSize < 12 || txt[n].loaded.ix == 2 ? 1 : 0;
-				break;
+					});
+					this.src.item_w.space = Math.max(this.src.item_w.space, this.src.item_w.spaceIconFont);
+					const n = ppt.artistView ? 'bio' : 'rev';
+					this.src.y = this.src.fontSize < 12 || txt[n].loaded.ix == 2 ? 1 : 0;
+					break;
+				}
 			}
-		}
+		});
 		if (ui.stars == 1) this.setRatingImages(Math.round(this.src.h / 1.5) * 5, Math.round(this.src.h / 1.5), ui.col.starOn, ui.col.starOff, ui.col.starBor, false);
 		else if (ui.stars == 2) {
 			this.setRatingImages(Math.round(ui.font.main_h / 1.75) * 5, Math.round(ui.font.main_h / 1.75), ui.col.starOn, ui.col.starOff, ui.col.starBor, false);
 		}
 		if (ui.stars == 1 && ui.show.btnRedLastfm) this.setRatingImages(Math.round(this.src.h / 1.5) * 5, Math.round(this.src.h / 1.5), RGBA(225, 225, 245, 255), RGBA(225, 225, 245, 60), ui.col.starBor, true);
-
 		this.src.pxShift = /[gjpqy]/.test(this.src.amRev + this.src.lfmRev + this.src.wikiRev + this.src.txtRev + this.src.amBio + this.src.lfmBio + this.src.wikiBio + this.src.txtBio);
 	}
 
@@ -467,9 +466,14 @@ class Buttons {
 			this.btns.lookUp = new Btn(this.lookUp.x, this.lookUp.y, this.lookUp.w, this.lookUp.h, 7, this.lookUp.p1, this.lookUp.p2, '', {
 				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
 				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
-			//}, !panel.id.lookUp, '', () => men.buttonMenu(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
-			}, !panel.id.lookUp, '', () => bMenu.load(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics source'), true, 'lookUp');
+			}, !panel.id.lookUp, '', () => bMenu.load(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => 'Click: look up...\r\n' + (!panel.id.lyricsSource && !panel.id.nowplayingSource ? 'Middle click: ' + (!panel.lock ? 'lock: stop track change updates' : 'Unlock') + '...' : 'Lock N/A with enabled lyrics or nowplaying sources'), true, 'lookUp');
 		} else delete this.btns.lookUp;
+		if (ppt.summaryShow) {
+			this.btns.summary = new Btn(panel.text.l, panel.text.t, panel.text.w, ppt.artistView ? (txt.line.h.bio * txt.bio.summaryEnd) : (txt.line.h.rev * txt.rev.summaryEnd), 8, this.lookUp.p1, this.lookUp.p2, '', {
+				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
+				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
+			}, '', '', () => {ppt.toggle('summaryCompact'); txt.refresh(1);}, '', false, 'summary');
+		} else delete this.btns.summary;
 		if (ppt.sbarShow) {
 			switch (ui.sbar.type) {
 				case 2:
@@ -510,7 +514,7 @@ class Buttons {
 	}
 
 	resetZoom() {
-		txt.bio.scrollPos = {}; // avoids sometimes memory
+		txt.bio.scrollPos = {};
 		txt.rev.scrollPos = {};
 		ppt.zoomFont = 100;
 		ppt.zoomHead = 115;
@@ -527,7 +531,7 @@ class Buttons {
 		this.refresh(true);
 		txt.refresh(2);
 		const n = ppt.artistView ? 'bio' : 'rev';
-		if (txt[n].loaded.txt && txt.reader.lyrics) txt.getText();
+		if (txt[n].loaded.txt && txt.reader[n].lyrics) txt.getText();
 	}
 
 	scrollAlb() {
@@ -886,6 +890,7 @@ class Btn {
 
 	trace(x, y) {
 		but.traceBtn = !this.hide && x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+		if (this.name == 'summary' && (ppt.artistView && art_scrollbar.delta > txt.line.h.bio * txt.bio.summaryEnd || !ppt.artistView && alb_scrollbar.delta > txt.line.h.rev * txt.rev.summaryEnd)) but.traceBtn = false;
 		return but.traceBtn;
 	}
 }

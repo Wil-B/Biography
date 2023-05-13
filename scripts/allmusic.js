@@ -265,9 +265,11 @@ class DldAllmusicRev {
 						$.htmlParse(div.getElementsByTagName('li'), 'id', 'microdata-rating', v => rating = v.innerText.replace(/\D+/g, '') / 2);
 						review = '>> Album rating: ' + rating + ' <<  ' + review;
 						if (review.length > 22) {
-							$.buildPth(this.fo_rev);
-							$.save(this.pth_rev, review, true);
-							server.res();
+							if (this.fo_rev) {
+								$.buildPth(this.fo_rev);
+								$.save(this.pth_rev, review, true);
+								server.res();
+							}
 						} else {
 							server.updateNotFound('Rev ' + cfg.partialMatch + ' ' + this.pth_rev);
 							$.trace('allmusic review: ' + this.album + ' / ' + this.albumArtist + ': not found', true);
@@ -310,9 +312,11 @@ class DldAllmusicRev {
 							wiki: review,
 							update: Date.now()
 						};
-						$.buildPth(this.fo_rev);
-						$.save(this.pth_rev, JSON.stringify($.sortKeys(text), null, 3), true);
-							
+						if (this.fo_rev) {
+							$.buildPth(this.fo_rev);
+							$.save(this.pth_rev, JSON.stringify($.sortKeys(text), null, 3), true);
+						}
+
 						if (reviewAuthor || reviewGenre || reviewMood || reviewTheme || review || songReleaseYear || composer)	{
 							server.res();
 						} else {
@@ -385,9 +389,11 @@ class Parse {
 			biography = biography.trim();
 
 			if (biography.length > 19) {
-				$.buildPth(fo_bio);
-				$.save(pth_bio, biography, true);
-				server.res();
+				if (fo_bio) {
+					$.buildPth(fo_bio);
+					$.save(pth_bio, biography, true);
+					server.res();
+				}
 			} else {
 				album ? server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + pth_rev) : server.updateNotFound('Bio ' + cfg.partialMatch + ' ' + artist + ' - ' + title);
 				if (!$.file(pth_bio)) $.trace('allmusic biography: ' + artist + ': not found', true);

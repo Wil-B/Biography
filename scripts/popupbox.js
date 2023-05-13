@@ -9,9 +9,9 @@ class PopUpBox {
 
 	// Methods
 
-	confirm(msg_title, msg_content, btn_yes_label, btn_no_label, height_adjust, confirm_callback) {
+	confirm(msg_title, msg_content, btn_yes_label, btn_no_label, height_adjust, h_center, confirm_callback) {
 		utils.ShowHtmlDialog(0, this.confirmHtmlCode, {
-			data: [msg_title, msg_content, btn_yes_label, btn_no_label, height_adjust, confirm_callback]
+			data: [msg_title, msg_content, btn_yes_label, btn_no_label, height_adjust, h_center, confirm_callback]
 		});
 	}
 
@@ -86,7 +86,7 @@ class PopUpBox {
 			this.soFeat.clipboard = false;
 		}
 
-		ppt.isHtmlDialogSupported = this.soFeat.gecko && this.soFeat.clipboard ? 1 : 0;
+		ppt.isHtmlDialogSupported = this.soFeat.gecko && this.soFeat.clipboard || this.isIEInstalled() ? 1 : 0;
 		if (!ppt.isHtmlDialogSupported) {
 		const caption = 'Show HTML Dialog';
 			const prompt = 
@@ -113,6 +113,16 @@ Supported-1; unsupported-0`;
 			}
 		}
 		return ppt.isHtmlDialogSupported;
+	}
+
+	isIEInstalled() {
+		const diskLetters = Array.from(Array(26)).map((e, i) => i + 65).map((x) => `${String.fromCharCode(x)}:\\`);
+		const paths = ['Program Files\\Internet Explorer\\ieinstal.exe', 'Program Files (x86)\\Internet Explorer\\ieinstal.exe'];
+		return diskLetters.some(d => {
+			try { // Needed when permission error occurs and current SMP implementation is broken for some devices....
+				return utils.IsDirectory(d) ? paths.some(p => utils.IsFile(d + p)) : false;
+			} catch (e) {return false;}
+		});
 	}
 
 	tf_callback(tf, tfAll, type, sFind, sReplace) {

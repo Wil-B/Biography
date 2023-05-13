@@ -48,6 +48,8 @@ class Settings {
 		this.bio = `${this.storageFolder + this.cfgBaseName}.cfg`;
 		this.item_properties = `${this.storageFolder}item_properties.json`;
 		this.item_properties_alternative_grouping = `${this.storageFolder}item_properties_alternative_grouping.json`;
+		this.nowplaying = `${this.storageFolder}nowplaying.txt`;
+		this.radioParser = `${this.storageFolder}advanced_radio_stream_parser.js`;
 
 		this.cacheTime = 0;
 		this.cfg = $.jsonParse(this.bio, {}, 'file');
@@ -60,6 +62,7 @@ class Settings {
 		}
 
 		this.local = $.file('C:\\check_local\\1450343922.txt');
+		if (!this.local) ppt.themed = false;
 		this.remap = {}
 		this.pth = {}
 		this.sup = {}
@@ -174,6 +177,8 @@ class Settings {
 	checkCfg() {
 		if (!$.file(this.item_properties)) $.save(this.item_properties, item_properties, true);
 		if (!$.file(this.item_properties_alternative_grouping)) $.save(this.item_properties_alternative_grouping, item_properties_alternative_grouping, true);
+		if (!$.file(this.nowplaying)) $.save(this.nowplaying, nowplaying, true);
+		if (!$.file(this.radioParser)) $.save(this.radioParser, radioParser, true);
 		if ($.file(this.bio)) return;
 		const orig_cfg = `${fb.ProfilePath}yttm\\biography.cfg`;
 		const orig_cfg_copied = $.file(`${cfg.storageFolder}foo_lastfm_img.vbs`);
@@ -368,7 +373,7 @@ class Settings {
 					break;
 			}
 		}
-		const dialogWindow = ppt.get('Biography Dialog Box', JSON.stringify({
+		let dialogWindow = ppt.get('Biography Dialog Box', JSON.stringify({
 			w: 85,
 			h: 60,
 			def_w: 85,
@@ -376,8 +381,12 @@ class Settings {
 			tab: 'PanelCfg',
 			panelPage: 'display',
 			serverPage: 'download',
-			displaySaveFolders: false
+			displaySaveFolders: false,
+			version: `v${window.ScriptInfo.Version}`
 		}));
+		dialogWindow = $.jsonParse(dialogWindow);
+		dialogWindow.version = `v${window.ScriptInfo.Version}`;
+		dialogWindow = JSON.stringify(dialogWindow);
 		if (!panel.id.numServersChecked) panel.checkNumServers();
 		if (popUpBox.isHtmlDialogSupported()) popUpBox.config(JSON.stringify(ppt), JSON.stringify(cfg), dialogWindow, ok_callback, this.lang.ix, $.folder(cfg.photoRecycler));
 		else {
@@ -648,7 +657,7 @@ class Settings {
 				}
 				const caption = 'Tag Files:';
 				const prompt = handles.Count < 2000 ? `Update ${handles.Count} ${handles.Count > 1 ? 'tracks' : 'track'}.\n\nContinue?` : `Update ${handles.Count} tracks.\n\nADVISORY: This operation analyses a lot of data.\n\nContinue?`;
-				const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', continue_confirmation) : true;
+				const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'OK', 'Cancel', '', '', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $.wshPopup(prompt, caption));
 				break;
 			}
@@ -912,7 +921,141 @@ let item_properties_alternative_grouping = item_properties
 .replace(/("Metadata\*":\s{\s*?"show":\s)false/, '$1' + true)
 .replace(/(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g, '$1' + false);
 
+let nowplaying = `Artist: %artist%$crlf()
+$crlf()
+Title: %title%$crlf()
+$crlf()
+[Album: %album%$crlf()
+$crlf()]
+$if2(%playback_time%,0:00)[ / %length%]`;
+
+let radioParser = `/* RadioStreamParser is written in javascript and can be user edited with care.
+It's designed for use with internet radio streams that contain the artist name and song title in a non-standard format.
+Before editing, make a backup copy in case things go wrong.
+
+1. To add a new radio stream, copy one of the case instances including the break. Paste under the last and within the switch statement.
+2. For each, change the path. For this, open properties and copy and paste the File path. Retain the quotes below. Escape any backslashes: replace \\ with \\\\
+3. Extract artist and title from radio stream item.
+	In many cases this can be done simply by splitting the item, e.g. at -. The 1st item will then be item[0], the 2nd item[1] etc.
+	In more complex cases use RegExp or javascript string manipulation functions. Google for syntax.
+4. Adjust the format (comment out if unwanted). This is aesthetic. It won't affect searching.
+5. Use console.log traces to see what's going on and debug, e.g uncomment those below.
+	
+This parser is also used by Find & Play provided the biography package id {BA9557CE-7B4B-4E0E-9373-99F511E81252} is unaltered.
+*/
+
+'use strict';
+
+class radioStreamParser {
+
+	static getStreamInfo(focus, ignoreLock) {
+		// don't alter the next 4 lines
+		const path = $.eval('%path%', focus, ignoreLock);
+		let artist = '';
+		let item = $.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.title : ppt.tfTitle) + ')]', focus, ignoreLock);
+		let title = '';
+
+		switch (path) {
+
+			case 'http://dieneuewelle.cast.addradio.de/dieneuewelle/simulcast/high/stream.mp3':
+				//console.log('original item', item);
+				item = item.split('-');
+				//console.log('split item', item);
+
+				artist = (item[1] || '').trim(); // always return empty string if no match
+				//console.log('artist', artist);
+
+				title = (item[2] || '').trim();
+				//console.log('title', title);
+	
+				break;
+
+			case 'http://energyzuerich.ice.infomaniak.ch/energyzuerich-high.mp3': // items requiring same parsing can be grouped as shown
+			case 'http://vintageradio.ice.infomaniak.ch/vintageradio-high.mp3':
+
+				//console.log('original item', item);
+				item = item.split('˗'); // use correct hyphen(s)!; it's safest to save file as utf-8-BOM especially if there are unicode characters
+				//console.log('split item', item);
+				
+				artist = (item[0] || '').trim();
+				//console.log('artist', artist);
+				
+				title = (item[1] || '').trim();
+				//console.log('title', title);
+
+				break;
+				
+			case 'http://kohina.duckdns.org:8000/stream.ogg':
+
+				//console.log('original item', item);
+				item = item.split('-');
+				//console.log('split item', item);
+
+				artist = (item[0] || '').trim(); // always return empty string if no match
+				//console.log('artist', artist);
+				
+				title = (item[1] || '').trim();
+				if (item[2]) title = (title + ' - ' + item[2].trim());
+				//console.log('title', title);
+
+				break;
+
+			case 'http://www.rcgoldserver.eu:8253/': // artist name and song title in standard format except title has year
+			case 'http://www.rmgoldserver.eu:8199/':
+			
+				//console.log('original item', item);
+				title = this.removeTrailingYear(item);	// item is the original parsed title; trailing year removed as it interferes with searching
+				//console.log('title', title);
+				
+				// artist is correct: return will be '': as its empty  original parsed artist is used without modification
+	
+				break;
+
+			case 'artist and title are switched - a path would need to be put here':
+
+				//console.log('original item', item);
+				artist = item; // item is the title, which is the artist as they're swapped
+				//console.log('artist', artist);
+				
+				title = $.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : ppt.tfArtist) + ')]', focus, ignoreLock);
+				//console.log('title', title);
+	
+				break;
+
+		}
+		
+		// adjust format
+		artist = artist.toLowerCase(); // toLowerCase() stops all uppercase being treated as abbreviation by $.titlecase
+		artist = $.titlecase(artist); 
+		//console.log('formatted artist', artist);
+		
+		title = title.toLowerCase();
+		title = $.titlecase(title);
+		//console.log('formatted title', title);
+		
+		// return object containing artist & title: don't alter
+		return {
+			artist: artist,
+			title: title
+		}
+	}
+
+	static removeTrailingYear(title) {
+		const kw = '(-\\s*|\\s+)\\d\\d\\d\\d';
+		let ix = -1;
+		let yr = title.match(RegExp(kw));
+		if (yr) {
+			yr = yr[0].toString();
+			ix = title.indexOf(yr);
+		}
+		if (ix != -1) title = title.slice(0, ix).trim();
+		return title;
+	}
+}`
+
 cfg.init(settings);
 settings = undefined;
 item_properties = undefined;
 item_properties_alternative_grouping = undefined;
+nowplaying = undefined;
+radioParser = undefined;
