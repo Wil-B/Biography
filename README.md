@@ -24,7 +24,9 @@ Feature rich biography plug-in for [foobar2000](https://www.foobar2000.org)
 - [Spider Monkey Panel 1.5.2+](https://www.foobar2000.org/components)
 - IE9 or later
 - [FontAwesome](https://github.com/FortAwesome/Font-Awesome/blob/fa-4/fonts/fontawesome-webfont.ttf?raw=true)
-- Segoe UI symbol greater than 5.00 (should be present on most windows systems, else [download here](https://www.stephanpringle.com/corrupted-segoe-ui-symbol-font/))
+- Segoe UI Symbol
+    - should be present on most windows systems
+    - if you're on win7 and symbols don't render properly you can download an updated version that includes newer symbols [here](https://www.stephanpringle.com/corrupted-segoe-ui-symbol-font/))
 
 ### INSTALLATION
 Install as a package as follows.
