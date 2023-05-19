@@ -692,7 +692,6 @@ class Images {
 	getArtImages() {
 		let allFiles = this.art.folder ? utils.Glob(this.art.folder + '*') : [];
 		if (!allFiles.length && this.art.folderSup) allFiles = utils.Glob(this.art.folderSup + '*');
-		console.log('allFiles.length',allFiles.length,'this.art.allFilesLength',this.art.allFilesLength)
 		if (allFiles.length == this.art.allFilesLength) return;
 		let newArr = false;
 		if (!this.art.images.length) {

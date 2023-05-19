@@ -1,8 +1,8 @@
 ﻿'use strict';
 
 if (typeof my_utils === 'undefined') include('utils.js');
-//include(fb.ProfilePath + 'elements\\colourSelector.js'); // sort handling n/a standalone
 
+let isRadioStreamParser = false;
 const loadAsync = window.GetProperty('Load Biography Asynchronously', true);
 
 async function readFiles(files) {

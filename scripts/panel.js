@@ -369,6 +369,7 @@ class Panel {
 	}
 
 	cleanPth(pth, item, type, artist, album, bio) {
+		if (!pth) return '';
 		pth = pth.trim().replace(/\//g, '\\');
 		pth = cfg.expandPath(pth);
 		switch (type) {

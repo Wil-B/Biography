@@ -1,7 +1,5 @@
 ﻿'use strict';
 
-include(cfg.expandPath('%storage_folder%\\advanced_radio_stream_parser.js'));
-
 class Names {
 	constructor() {
 		this.cur_artist = '';
@@ -37,7 +35,9 @@ class Names {
 	}
 
 	albumArtist(focus, ignoreLock) {
-		return $.eval('[$trim(' + cfg.tf.albumArtist + ')]', focus, ignoreLock);
+		let albumArtist = $.eval('[$trim(' + cfg.tf.albumArtist + ')]', focus, ignoreLock);
+		const radioTrackArtist = !isRadioStreamParser || !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
+		return radioTrackArtist || albumArtist;
 	}
 
 	albumClean(n) {
@@ -50,7 +50,7 @@ class Names {
 
 	artist(focus, ignoreLock) {
 		let artist = $.eval('[$trim(' + cfg.tf.artist + ')]', focus, ignoreLock);
-		const radioTrackArtist = !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
+		const radioTrackArtist = !isRadioStreamParser || !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
 		return radioTrackArtist || artist;
 	}
 
@@ -70,7 +70,7 @@ class Names {
 
 	title(focus, ignoreLock) {
 		let title = $.eval('[$trim(' + cfg.tf.title + ')]', focus, ignoreLock);
-		const radioTrackTitle = !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).title;
+		const radioTrackTitle = !isRadioStreamParser || !panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).title;
 		return radioTrackTitle || title;
 	}
 

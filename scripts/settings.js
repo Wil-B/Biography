@@ -1059,3 +1059,8 @@ item_properties = undefined;
 item_properties_alternative_grouping = undefined;
 nowplaying = undefined;
 radioParser = undefined;
+
+if ($.file(cfg.radioParser)) {
+	include(cfg.radioParser);
+	isRadioStreamParser = true;
+}

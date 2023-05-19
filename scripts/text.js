@@ -2244,9 +2244,9 @@ class Text {
 	tf(n, artistView, trackreview) {
 		if (!n) return '';
 		if (panel.lock) n = n.replace(/%artist%|\$meta\(artist,0\)/g, '#\u00a6#\u00a6#%artist%#\u00a6#\u00a6#').replace(/%title%|\$meta\(title,0\)/g, '#!#!#%title%#!#!#');
-		const b = ppt.artistView ? 'bio' : 'rev';
+		const b = artistView ? 'bio' : 'rev';
 		let a = this[b].loaded.txt && (this.reader[b].lyrics || this.reader[b].props || this.reader[b].nowplaying) ? $.tfEscape(name.artist(panel.id.focus)) : $.tfEscape(artistView ? this.artist : (!trackreview ? (panel.alb.ix ? this.albumartist : this.artist) : this.trackartist));
-		let aa = this[b].loaded.txt && (this.reader[b].lyrics || this.reader[b].props || this.reader[b].nowplaying) ? $.tfEscape(name.albumArtist(panel.id.focus)) : $.tfEscape(artistView ? (panel.art.ix ? this.artist : this.albumartist) : (!trackreview ? this.albumartist : this.trackartist));
+		let aa = this[b].loaded.txt && (this.reader[b].lyrics || this.reader[b].props || this.reader[b].nowplaying) || panel.isRadio(panel.id.focus) ? $.tfEscape(name.albumArtist(panel.id.focus)) : $.tfEscape(artistView ? (panel.art.ix ? this.artist : this.albumartist) : (!trackreview ? this.albumartist : this.trackartist));
 		let composition = this.isCompositionLoaded();
 		let l = composition ? $.tfEscape(this.composition.replace('Album Unknown', '')) : $.tfEscape(this.album.replace('Album Unknown', ''));
 		let tr = $.tfEscape(this.track);
