@@ -413,18 +413,23 @@ function on_notify_data(name, info) {
 			ppt.themeColour = info.themeColour;
 			on_colours_changed();
 			break;	
-		case 'Sync col':
+		case 'Sync col': {
 			if (!ppt.themed) break;
 			const themeLight = ppt.themeLight;
 			if (themeLight != info.themeLight) {
 				ppt.themeLight = info.themeLight;
 				on_colours_changed();
 			}
-			break;	
+			break;
+		}
 		case 'Sync image':
 			if (!ppt.themed) break;
-			sync.image(new GdiBitmap(info.image), info.id);
-			break
+			sync.img = {image: new GdiBitmap(info.image), id: info.id};
+			if (!panel.block()) {
+				sync.image(sync.img.image, sync.img.id);
+				sync.get = false;
+			} else sync.get = true;
+			break;
 	}
 }
 
@@ -485,12 +490,12 @@ function on_playback_seek() {
 	}
 }
 
-function on_playback_time(t) {
+function on_playback_time() {
 	if (panel.block()) return;
 	const n = ppt.artistView ? 'bio' : 'rev';
 	if ((txt[n].loaded.txt && txt.reader[n].nowplaying || ppt.sourceAll) && txt.reader[n].perSec) {
 		txt.logScrollPos();
-		txt.getText();
+		txt.getText('', '', 'playbackTime');
 		txt.paint();
 	}
 }
@@ -553,9 +558,9 @@ function on_size() {
 	panel.calcText = true;
 	txt.on_size();
 
-	if (ppt.themed && ppt.theme) {
+	if (ppt.themed && (ppt.theme || ppt.themeBgImage)) {
 		const themed_image = `${fb.ProfilePath}settings\\themed\\themed_image.bmp`;	
-		if ($.file(themed_image)) sync.image(gdi.Image(themed_image));
+		if ($.file(themed_image) && !panel.block()) sync.image(gdi.Image(themed_image));
 	}
 	img.on_size();
 	filmStrip.on_size();

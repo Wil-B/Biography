@@ -1,3 +1,24 @@
+# v1.4.2
+### Fixed
+- AllMusic (thx to @regorxxx)
+- Various other issues
+
+### Added
+- scrollbar: new options (behaviour tab > scroll)
+	- windows dark mode scrollbar // has to be manually enabled as SMP isn't dark mode aware
+	- rounded thumb gripper
+- support for bio variables in nowplaying display (textreader & lyrics already supported them)
+- advanced radio parser is now also supported by textreader, lyrics* & nowplaying display provided bio var %BIO_ARTIST% & %BIO_TITLE% are used.
+	* lyrics may only be available if already exist
+- Arrow Rock Radio is now one of the defaults in advanced radio stream parser (backup original if you've made changes then delete to update)
+
+### Changed
+
+- lyrics: improvements to fade effect and multiline handling (thx to TT)
+- flags now have a tooltip
+
+<br />
+
 # v1.4.1
 ### Hotfix for v1.4.0
 ### Fixed
