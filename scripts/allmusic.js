@@ -39,6 +39,7 @@ function send({method = 'GET', URL, body = void(0), func = null, requestHeader =
 		xmlhttp.Send(method === 'POST' ? body : void(0));
 		// Add a timer for timeout
 		const timer = setTimeout(() => {
+			clearInterval(checkResponse);
 			try {
 				xmlhttp.WaitForResponse(-1);
 				onStateChange.call(xmlhttp, resolve, reject, func);
